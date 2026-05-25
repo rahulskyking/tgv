@@ -1,0 +1,61 @@
+﻿@model IReadOnlyList<TheGameVoice.Domain.Entities.Article>
+
+<div class="space-y-6">
+
+    <div class="flex items-center justify-between">
+
+        <h1 class="text-3xl font-bold">
+            Articles
+        </h1>
+
+        <a asp-action="Create"
+           class="rounded-lg bg-[#fa743e] px-4 py-2 text-white">
+            Create Article
+        </a>
+
+    </div>
+
+    <div class="rounded-xl bg-white shadow-sm">
+
+        <table class="min-w-full">
+
+            <thead class="border-b bg-gray-50">
+
+                <tr>
+
+                    <th class="px-6 py-4 text-left">
+                        Title
+                    </th>
+
+                    <th class="px-6 py-4 text-left">
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var article in Model)
+                {
+                    <tr class="border-b">
+
+                        <td class="px-6 py-4">
+                            @article.Title
+                        </td>
+
+                        <td class="px-6 py-4">
+                            @article.Status
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

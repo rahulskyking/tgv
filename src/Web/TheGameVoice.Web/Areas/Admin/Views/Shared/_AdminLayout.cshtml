@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>TheGameVoice Admin</title>
+
+    <link rel="stylesheet"
+          href="~/css/site.css" />
+</head>
+
+<body class="bg-gray-100">
+
+    <div class="flex min-h-screen">
+
+        <aside class="w-64 bg-gray-900 text-white">
+
+            <div class="p-4 text-2xl font-bold">
+                TGV Admin
+            </div>
+
+            <nav class="mt-6">
+
+                <a href="#"
+                   class="block px-4 py-3 hover:bg-gray-800">
+                    Dashboard
+                </a>
+                <a asp-area="Admin"
+                   asp-controller="Articles"
+                   asp-action="Index"
+                   class="block rounded-lg px-4 py-3 hover:bg-gray-700 transition">
+                    Articles
+                </a>
+
+                <a href="#"
+                   class="block px-4 py-3 hover:bg-gray-800">
+                    Reviews
+                </a>
+
+                <a href="#"
+                   class="block px-4 py-3 hover:bg-gray-800">
+                    Media
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <main class="flex-1 p-6">
+
+            @RenderBody()
+
+        </main>
+
+    </div>
+    <script src="https://cdn.tiny.cloud/1/00a9squ7bst5dxgjcudejes4cujli8zjx4ubvho2xlqpu0jw/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+
+
+    <script>
+            tinymce.init({
+                selector: '#editor',
+                height: 500
+            });
+    </script>
+</body>
+</html>

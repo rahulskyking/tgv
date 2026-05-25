@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+node_modules/
+wwwroot/css/site.css
+
+appsettings.Development.json
+
+*.user
+*.suo
