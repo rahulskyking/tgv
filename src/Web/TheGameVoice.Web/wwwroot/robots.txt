@@ -1,0 +1,5 @@
+﻿User-agent: *
+
+Allow: /
+
+Sitemap: https://localhost:7025/sitemap.xml

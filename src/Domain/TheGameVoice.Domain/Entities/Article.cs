@@ -23,9 +23,9 @@ public class Article : AuditableEntity
 
     public Guid AuthorId { get; set; }
 
-    public Guid? CategoryId { get; set; }
+    public Guid CategoryId { get; set; }
 
-    public Category? Category { get; set; }
+    public Category Category { get; set; } = default!;
 
     public Guid? FeaturedImageId { get; set; }
 
@@ -33,4 +33,8 @@ public class Article : AuditableEntity
 
     public ICollection<ArticleTag> ArticleTags { get; set; }
     = new List<ArticleTag>();
+
+    public ICollection<ArticleGame> ArticleGames
+    { get; set; }
+    = new List<ArticleGame>();
 }

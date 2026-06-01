@@ -24,11 +24,28 @@
                 <tr>
 
                     <th class="px-6 py-4 text-left">
+                        Thumbnail
+                    </th>
+                    <th class="px-6 py-4 text-left">
                         Title
+                    </th>
+                    <th class="px-6 py-4 text-left">
+                        Category
+                    </th>
+                    <th class="px-6 py-4 text-left">
+                        Status
                     </th>
 
                     <th class="px-6 py-4 text-left">
-                        Status
+                        Created
+                    </th>
+
+                    <th class="px-6 py-4 text-left">
+                        Published
+                    </th>
+
+                    <th class="px-6 py-4 text-left">
+                        Actions
                     </th>
 
                 </tr>
@@ -40,13 +57,111 @@
                 @foreach (var article in Model)
                 {
                     <tr class="border-b">
+                        <td class="px-6 py-4">
 
+                            @if (article.FeaturedImage != null)
+                            {
+                                <img src="@article.FeaturedImage.FilePath"
+                                     class="h-16 w-24 rounded-lg object-cover" />
+                            }
+
+                        </td>
                         <td class="px-6 py-4">
                             @article.Title
                         </td>
+                        <td class="px-6 py-4">
+                            @article.Category.Name
+                        </td>
+                        <td class="px-6 py-4">
+
+                            @{
+                                var badgeClass =
+                                article.Status switch
+                                {
+                                    TheGameVoice.Domain.Enums.ArticleStatus.Draft =>
+                                        "bg-gray-100 text-gray-700",
+
+                                    TheGameVoice.Domain.Enums.ArticleStatus.ReviewPending =>
+                                        "bg-yellow-100 text-yellow-800",
+
+                                    TheGameVoice.Domain.Enums.ArticleStatus.Published =>
+                                        "bg-green-100 text-green-800",
+
+                                    TheGameVoice.Domain.Enums.ArticleStatus.Rejected =>
+                                        "bg-red-100 text-red-800",
+
+                                    _ =>
+                                        "bg-gray-100 text-gray-700"
+                                };
+                            }
+
+                            <span class="rounded-full px-3 py-1 text-sm @badgeClass">
+                                @article.Status
+                            </span>
+
+                        </td>
 
                         <td class="px-6 py-4">
-                            @article.Status
+                            @(article.CreatedAt.ToLocalTime().ToString("dd MMM yyyy") ?? "-")
+                        </td>
+
+                        <td class="px-6 py-4">
+                            @article.PublishedAt
+                        </td>
+
+                        <td class="px-6 py-4">
+
+                            <div class="flex gap-3 items-center">
+
+                                <a asp-action="Edit"
+                                   asp-route-id="@article.Id"
+                                   class="text-[#fa743e] font-medium">
+                                    Edit
+                                </a>
+
+                                @if (article.Status ==
+                                    TheGameVoice.Domain.Enums.ArticleStatus.Draft)
+                                {
+                                    <form asp-action="SubmitForReview"
+                                          asp-route-id="@article.Id"
+                                          method="post">
+
+                                        <button type="submit"
+                                                class="text-blue-600 font-medium">
+                                            Submit Review
+                                        </button>
+
+                                    </form>
+                                }
+
+                                @if (article.Status ==
+                                    TheGameVoice.Domain.Enums.ArticleStatus.ReviewPending)
+                                {
+                                    <form asp-action="Publish"
+                                          asp-route-id="@article.Id"
+                                          method="post">
+
+                                        <button type="submit"
+                                                class="text-green-600 font-medium">
+                                            Publish
+                                        </button>
+
+                                    </form>
+
+                                    <form asp-action="Reject"
+                                          asp-route-id="@article.Id"
+                                          method="post">
+
+                                        <button type="submit"
+                                                class="text-red-600 font-medium">
+                                            Reject
+                                        </button>
+
+                                    </form>
+                                }
+
+                            </div>
+
                         </td>
 
                     </tr>

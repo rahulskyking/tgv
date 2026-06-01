@@ -1,0 +1,111 @@
+﻿@model TheGameVoice.Web.ViewModels.Shared.NavigationViewModel
+
+<header class="sticky top-0 z-50 border-b bg-black text-white shadow-sm">
+
+    <div class="tgv-container">
+
+        <div class="flex items-center justify-between py-4">
+
+            <!-- LOGO -->
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="text-3xl font-black tracking-tight text-[#fa743e]">
+
+                TheGameVoice
+
+            </a>
+
+            <!-- DESKTOP NAVIGATION -->
+
+            <nav class="hidden items-center gap-8 lg:flex">
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="text-sm font-semibold uppercase tracking-wide hover:text-[#fa743e]">
+                    Home
+                </a>
+
+                @foreach (var category in Model.Categories)
+                {
+                    <a asp-controller="Categories"
+                       asp-action="Details"
+                       asp-route-slug="@category.Slug"
+                       class="text-sm font-semibold uppercase tracking-wide hover:text-[#fa743e]">
+
+                        @category.Name
+
+                    </a>
+                }
+
+            </nav>
+
+            <!-- MOBILE BUTTON -->
+
+            <button id="mobile-menu-button"
+                    class="rounded-lg border border-gray-700 px-3 py-2 lg:hidden">
+
+                ☰
+
+            </button>
+
+        </div>
+
+        <!-- MOBILE MENU -->
+
+        <div id="mobile-menu"
+             class="hidden border-t border-gray-800 py-4 lg:hidden">
+
+            <div class="flex flex-col gap-4">
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="font-semibold hover:text-[#fa743e]">
+
+                    Home
+
+                </a>
+
+                @foreach (var category in Model.Categories)
+                {
+                    <a asp-controller="Categories"
+                       asp-action="Details"
+                       asp-route-slug="@category.Slug"
+                       class="font-semibold hover:text-[#fa743e]">
+
+                        @category.Name
+
+                    </a>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const button =
+            document.getElementById("mobile-menu-button");
+
+        const menu =
+            document.getElementById("mobile-menu");
+
+        if (button && menu) {
+
+            button.addEventListener("click", function () {
+
+                menu.classList.toggle("hidden");
+
+            });
+
+        }
+
+    });
+
+</script>

@@ -1,0 +1,81 @@
+﻿@model TheGameVoice.Domain.Entities.Article
+
+<a asp-controller="News"
+   asp-action="Details"
+   asp-route-slug="@Model.Slug"
+   class="group block overflow-hidden bg-white transition-all duration-300">
+
+
+    @if (Model.FeaturedImage != null)
+    {
+       @*  <div class="overflow-hidden border border-default">
+
+            <img src="@Model.FeaturedImage.FilePath"
+                 alt="@Model.Title"
+                 class="h-[280px] md:h-[400px] lg:h-[500px] w-full object-cover transition duration-700 group-hover:scale-105" />
+
+        </div> *@
+        <div class="aspect-video overflow-hidden rounded-xl">
+
+            <img src="@Model.FeaturedImage.FilePath"
+                 alt="@Model.Title"
+                 class="h-full w-full object-cover object-center" />
+
+        </div>
+    }
+
+    <div class="pt-8">
+
+        <div class="mb-6 flex flex-wrap items-center gap-3">
+
+            @if (Model.Category != null)
+            {
+                <partial name="~/Views/Shared/Components/_CategoryBadge.cshtml"
+                         model="@Model.Category.Name" />
+            }
+
+            <span class="text-xs font-black uppercase tracking-[0.2em] text-primary">
+
+                Featured Story
+
+            </span>
+
+        </div>
+
+        <h1 class="tgv-display text-4xl md:text-5xl xl:text-6xl text-slate-900">
+
+            @Model.Title
+
+        </h1>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Summary))
+        {
+            <p class="mt-6 max-w-3xl text-lg leading-relaxed text-slate-600">
+
+                @Model.Summary
+
+            </p>
+        }
+
+        <div class="mt-8 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+
+            <span>
+                Published
+            </span>
+
+            <span>•</span>
+
+            <span>
+
+                @(Model.PublishedAt?
+                                .ToLocalTime()
+                                .ToString("dd MMM yyyy"))
+
+            </span>
+
+        </div>
+
+    </div>
+
+
+</a>

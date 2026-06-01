@@ -1,0 +1,53 @@
+﻿@model IReadOnlyList<TheGameVoice.Domain.Entities.Article>
+
+<div class="mx-auto max-w-7xl px-6 py-10">
+
+    <div class="mb-10">
+
+        <h1 class="text-5xl font-bold">
+            Latest News
+        </h1>
+
+    </div>
+
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+
+        @foreach (var article in Model)
+        {
+            <a asp-controller="News"
+               asp-action="Details"
+               asp-route-slug="@article.Slug"
+               class="overflow-hidden rounded-2xl bg-white shadow-sm transition hover:-translate-y-1">
+
+                @if (article.FeaturedImage != null)
+                {
+                    <img src="@article.FeaturedImage.FilePath"
+                         class="h-56 w-full object-cover" />
+                }
+
+            <div class="p-5">
+
+                <h2 class="text-2xl font-bold">
+                    @article.Title
+                </h2>
+
+                <p class="mt-3 text-gray-600">
+                    @article.Summary
+                </p>
+
+                <div class="mt-4 text-sm text-gray-500">
+
+                    @(article.PublishedAt?
+                                        .ToLocalTime()
+                                        .ToString("dd MMM yyyy"))
+
+                </div>
+
+                </div>
+
+            </a>
+                }
+
+    </div>
+
+</div>

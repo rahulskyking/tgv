@@ -1,0 +1,68 @@
+﻿@model IReadOnlyList<TheGameVoice.Domain.Entities.Media>
+
+<div class="space-y-6">
+
+    <div class="flex items-center justify-between">
+
+        <h1 class="text-3xl font-bold">
+            Media Library
+        </h1>
+
+        <a asp-action="Upload"
+           class="rounded-lg bg-[#fa743e] px-4 py-2 text-white">
+            Upload Media
+        </a>
+
+    </div>
+    <input id="media-search"
+           type="text"
+           placeholder="Search media..."
+           class="w-full rounded-xl border px-4 py-3" />
+    <div class="grid grid-cols-2 gap-6 md:grid-cols-4">
+
+        @foreach (var item in Model)
+        {
+            <div class="group overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:shadow-lg">
+                @if (item.IsImage)
+                {
+                    <div class="aspect-video overflow-hidden">
+                        <a asp-action="Edit"
+                           asp-route-id="@item.Id">
+                        <img src="@item.FilePath"
+                             class="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+                           </a>
+                    </div>
+                }
+
+                <div class="p-4">
+
+                    <p class="truncate text-sm font-semibold">
+
+                        @item.FileName
+
+                    </p>
+
+                    <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
+
+                        <span>
+
+                            @item.ContentType.Replace("image/", "").ToUpper()
+
+                        </span>
+
+                        <span>
+
+                            @(item.FileSize / 1024) KB
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+</div>

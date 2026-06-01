@@ -1,0 +1,108 @@
+﻿@model TheGameVoice.Web.ViewModels.Games.GameDetailsViewModel
+
+<div class="tgv-container py-12 space-y-20">
+
+
+    <!-- GAME HERO -->
+
+    <section class="overflow-hidden rounded-[32px] bg-white shadow-xl">
+
+        @if (Model.Game.CoverImage != null)
+        {
+            <img src="@Model.Game.CoverImage.FilePath"
+                 alt="@Model.Game.Name"
+                 class="h-[350px] w-full object-cover lg:h-[450px]" />
+        }
+
+        <div class="p-8 lg:p-12">
+
+            <div class="mb-6">
+
+                <span class="rounded-full border-2 border-primary px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-primary">
+
+                    Game Hub
+
+                </span>
+
+            </div>
+
+            <h1 class="tgv-display text-4xl color: var(--tgv-text); lg:text-6xl">
+
+                @Model.Game.Name
+
+            </h1>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Game.Summary))
+            {
+                <p class="mt-6 max-w-4xl text-lg leading-relaxed text-slate-600">
+
+                    @Model.Game.Summary
+
+                </p>
+            }
+
+            <div class="mt-8 flex flex-wrap gap-8 border-t border-default pt-6">
+
+                @if (Model.Game.ReleaseDate.HasValue)
+                {
+                    <div>
+
+                        <div class="text-xs font-black uppercase tracking-[0.2em] text-primary">
+
+                            Release Date
+
+                        </div>
+
+                        <div class="mt-2 font-semibold">
+
+                            @Model.Game.ReleaseDate.Value.ToString("dd MMM yyyy")
+
+                        </div>
+
+                    </div>
+                }
+
+                <div>
+
+                    <div class="text-xs font-black uppercase tracking-[0.2em] text-primary">
+
+                        Coverage
+
+                    </div>
+
+                    <div class="mt-2 font-semibold">
+
+                        @Model.Game.ArticleGames.Count Articles
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- COVERAGE -->
+
+    <section>
+
+
+        <div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+
+            @foreach (var item in Model.Game.ArticleGames)
+            {
+                if (item.Article != null)
+                {
+                    <partial name="~/Views/Shared/Components/_ArticleCard.cshtml"
+                             model="item.Article" />
+                }
+            }
+
+        </div>
+
+    </section>
+ 
+
+</div>

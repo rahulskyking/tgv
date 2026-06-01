@@ -1,4 +1,4 @@
-﻿using TheGameVoice.Application.Interfaces.Repositories;
+﻿using TheGameVoice.Domain.Entities;
 
 namespace TheGameVoice.Application.Interfaces.Persistence;
 
@@ -8,4 +8,10 @@ public interface IUnitOfWork
 
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
-}
+
+    IMediaRepository Media { get; }
+    ICategoryRepository Categories { get; }
+
+    ITagRepository Tags { get; }
+    IGameRepository Games { get; }
+} 

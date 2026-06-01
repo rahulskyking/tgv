@@ -1,0 +1,74 @@
+﻿@model TheGameVoice.Web.ViewModels.Categories.CategoryDetailsViewModel
+
+<div class="tgv-container py-12 space-y-20">
+
+    
+    <!-- CATEGORY HERO -->
+
+    <section class="overflow-hidden rounded-[32px] bg-white shadow-xl">
+
+        <div class="p-10 lg:p-14">
+
+            <div class="mb-6">
+
+                <span class="rounded-full border-2 border-primary px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-primary">
+
+                    Category
+
+                </span>
+
+            </div>
+
+            <h1 class="tgv-display text-5xl color: var(--tgv-text); lg:text-7xl">
+
+                @Model.Category.Name
+
+            </h1>
+
+            <p class="mt-8 max-w-4xl text-xl leading-relaxed text-slate-600">
+
+                Latest @Model.Category.Name coverage,
+                news, reviews, features and editorial content
+                from TheGameVoice.
+
+            </p>
+
+            <div class="mt-10 border-t border-default pt-8">
+
+                <div class="text-xs font-black uppercase tracking-[0.2em] text-primary">
+
+                    Articles
+
+                </div>
+
+                <div class="mt-2 text-lg font-semibold color: var(--tgv-text);">
+
+                    @Model.Articles.Count
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ARTICLES -->
+
+    <section>
+
+       
+
+        <div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+
+            @foreach (var article in Model.Articles)
+            {
+                <partial name="~/Views/Shared/Components/_ArticleCard.cshtml"
+                         model="article" />
+            }
+
+        </div>
+
+    </section>
+   
+</div>

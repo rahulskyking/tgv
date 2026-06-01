@@ -1,4 +1,5 @@
 using TheGameVoice.Domain.Common.Base;
+using TheGameVoice.Domain.Entities;
 
 public class Review : AuditableEntity
 {

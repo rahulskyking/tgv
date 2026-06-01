@@ -22,75 +22,6 @@ namespace TheGameVoice.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Game", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uuid")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Developer")
-                        .HasColumnType("text")
-                        .HasColumnName("developer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Publisher")
-                        .HasColumnType("text")
-                        .HasColumnName("publisher");
-
-                    b.Property<DateTime?>("ReleaseDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("release_date");
-
-                    b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
-                        .HasColumnName("slug");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uuid")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id")
-                        .HasName("pk_games");
-
-                    b.HasIndex("Name")
-                        .HasDatabaseName("ix_games_name");
-
-                    b.HasIndex("Slug")
-                        .IsUnique()
-                        .HasDatabaseName("ix_games_slug");
-
-                    b.ToTable("games", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
@@ -286,6 +217,10 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("pros");
 
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("published_at");
+
                     b.Property<decimal>("Score")
                         .HasPrecision(3, 1)
                         .HasColumnType("numeric(3,1)")
@@ -340,7 +275,7 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("author_id");
 
-                    b.Property<Guid?>("CategoryId")
+                    b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid")
                         .HasColumnName("category_id");
 
@@ -370,19 +305,16 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasColumnName("published_at");
 
                     b.Property<string>("SeoDescription")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasColumnType("text")
                         .HasColumnName("seo_description");
 
                     b.Property<string>("SeoTitle")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
+                        .HasColumnType("text")
                         .HasColumnName("seo_title");
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)")
+                        .HasColumnType("text")
                         .HasColumnName("slug");
 
                     b.Property<int>("Status")
@@ -391,14 +323,12 @@ namespace TheGameVoice.Infrastructure.Migrations
 
                     b.Property<string>("Summary")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
+                        .HasColumnType("text")
                         .HasColumnName("summary");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
+                        .HasColumnType("text")
                         .HasColumnName("title");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -418,26 +348,30 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.HasIndex("FeaturedImageId")
                         .HasDatabaseName("ix_articles_featured_image_id");
 
-                    b.HasIndex("PublishedAt")
-                        .HasDatabaseName("ix_articles_published_at");
-
-                    b.HasIndex("Slug")
-                        .IsUnique()
-                        .HasDatabaseName("ix_articles_slug");
-
-                    b.HasIndex("Status")
-                        .HasDatabaseName("ix_articles_status");
-
                     b.ToTable("articles", (string)null);
+                });
+
+            modelBuilder.Entity("TheGameVoice.Domain.Entities.ArticleGame", b =>
+                {
+                    b.Property<Guid>("ArticleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("article_id");
+
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("game_id");
+
+                    b.HasKey("ArticleId", "GameId")
+                        .HasName("pk_article_games");
+
+                    b.HasIndex("GameId")
+                        .HasDatabaseName("ix_article_games_game_id");
+
+                    b.ToTable("article_games", (string)null);
                 });
 
             modelBuilder.Entity("TheGameVoice.Domain.Entities.ArticleTag", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
                     b.Property<Guid>("ArticleId")
                         .HasColumnType("uuid")
                         .HasColumnName("article_id");
@@ -446,15 +380,11 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("tag_id");
 
-                    b.HasKey("Id")
+                    b.HasKey("ArticleId", "TagId")
                         .HasName("pk_article_tags");
 
                     b.HasIndex("TagId")
                         .HasDatabaseName("ix_article_tags_tag_id");
-
-                    b.HasIndex("ArticleId", "TagId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_article_tags_article_id_tag_id");
 
                     b.ToTable("article_tags", (string)null);
                 });
@@ -478,15 +408,15 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)")
                         .HasColumnName("name");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("published_at");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -512,12 +442,91 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.ToTable("categories", (string)null);
                 });
 
+            modelBuilder.Entity("TheGameVoice.Domain.Entities.Game", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("CoverImageId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("cover_image_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("published_at");
+
+                    b.Property<DateTime?>("ReleaseDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("release_date");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("slug");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("text")
+                        .HasColumnName("summary");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_games");
+
+                    b.HasIndex("CoverImageId")
+                        .HasDatabaseName("ix_games_cover_image_id");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_games_name");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasDatabaseName("ix_games_slug");
+
+                    b.ToTable("games", (string)null);
+                });
+
             modelBuilder.Entity("TheGameVoice.Domain.Entities.Media", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<string>("AltText")
+                        .HasColumnType("text")
+                        .HasColumnName("alt_text");
+
+                    b.Property<string>("Caption")
+                        .HasColumnType("text")
+                        .HasColumnName("caption");
 
                     b.Property<string>("ContentType")
                         .IsRequired()
@@ -532,6 +541,10 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid")
                         .HasColumnName("created_by");
+
+                    b.Property<string>("Credit")
+                        .HasColumnType("text")
+                        .HasColumnName("credit");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
@@ -553,9 +566,13 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("file_size");
 
-                    b.Property<int>("MediaType")
-                        .HasColumnType("integer")
-                        .HasColumnName("media_type");
+                    b.Property<bool>("IsImage")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_image");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("published_at");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -595,6 +612,10 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("published_at");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -769,7 +790,7 @@ namespace TheGameVoice.Infrastructure.Migrations
 
             modelBuilder.Entity("Review", b =>
                 {
-                    b.HasOne("Game", "Game")
+                    b.HasOne("TheGameVoice.Domain.Entities.Game", "Game")
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -782,20 +803,41 @@ namespace TheGameVoice.Infrastructure.Migrations
             modelBuilder.Entity("TheGameVoice.Domain.Entities.Article", b =>
                 {
                     b.HasOne("TheGameVoice.Domain.Entities.Category", "Category")
-                        .WithMany()
+                        .WithMany("Articles")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_articles_categories_category_id");
 
                     b.HasOne("TheGameVoice.Domain.Entities.Media", "FeaturedImage")
                         .WithMany()
                         .HasForeignKey("FeaturedImageId")
-                        .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("fk_articles_media_featured_image_id");
 
                     b.Navigation("Category");
 
                     b.Navigation("FeaturedImage");
+                });
+
+            modelBuilder.Entity("TheGameVoice.Domain.Entities.ArticleGame", b =>
+                {
+                    b.HasOne("TheGameVoice.Domain.Entities.Article", "Article")
+                        .WithMany("ArticleGames")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_article_games_articles_article_id");
+
+                    b.HasOne("TheGameVoice.Domain.Entities.Game", "Game")
+                        .WithMany("ArticleGames")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_article_games_games_game_id");
+
+                    b.Navigation("Article");
+
+                    b.Navigation("Game");
                 });
 
             modelBuilder.Entity("TheGameVoice.Domain.Entities.ArticleTag", b =>
@@ -804,12 +846,14 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .WithMany("ArticleTags")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_article_tags_articles_article_id");
 
                     b.HasOne("TheGameVoice.Domain.Entities.Tag", "Tag")
                         .WithMany("ArticleTags")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_article_tags_tags_tag_id");
 
                     b.Navigation("Article");
@@ -817,9 +861,31 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.Navigation("Tag");
                 });
 
+            modelBuilder.Entity("TheGameVoice.Domain.Entities.Game", b =>
+                {
+                    b.HasOne("TheGameVoice.Domain.Entities.Media", "CoverImage")
+                        .WithMany()
+                        .HasForeignKey("CoverImageId")
+                        .HasConstraintName("fk_games_media_cover_image_id");
+
+                    b.Navigation("CoverImage");
+                });
+
             modelBuilder.Entity("TheGameVoice.Domain.Entities.Article", b =>
                 {
+                    b.Navigation("ArticleGames");
+
                     b.Navigation("ArticleTags");
+                });
+
+            modelBuilder.Entity("TheGameVoice.Domain.Entities.Category", b =>
+                {
+                    b.Navigation("Articles");
+                });
+
+            modelBuilder.Entity("TheGameVoice.Domain.Entities.Game", b =>
+                {
+                    b.Navigation("ArticleGames");
                 });
 
             modelBuilder.Entity("TheGameVoice.Domain.Entities.Tag", b =>

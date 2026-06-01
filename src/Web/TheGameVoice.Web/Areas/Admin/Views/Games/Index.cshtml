@@ -1,0 +1,77 @@
+﻿@model IReadOnlyList<TheGameVoice.Domain.Entities.Game>
+
+<div class="space-y-6">
+
+    <div class="flex items-center justify-between">
+
+        <h1 class="text-3xl font-bold">
+            Games
+        </h1>
+
+        <a asp-action="Create"
+           class="tgv-button-primary">
+            Create Game
+        </a>
+
+    </div>
+
+    <div class="overflow-hidden rounded-2xl bg-white shadow-sm">
+
+        <table class="min-w-full">
+
+            <thead>
+
+                <tr>
+
+                    <th class="px-6 py-4 text-left">
+                        Name
+                    </th>
+
+                    <th class="px-6 py-4 text-left">
+                        Release Date
+                    </th>
+                    <th class="px-6 py-4 text-left">
+                       Action
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var game in Model)
+                {
+                    <tr>
+
+                        <td class="px-6 py-4">
+                            @game.Name
+                        </td>
+
+                        <td class="px-6 py-4">
+
+                            @(game.ReleaseDate?.ToString("dd MMM yyyy")?? "-")
+
+                    </td>
+                        <td class="px-6 py-4">
+
+                            <a asp-action="Edit"
+                               asp-route-id="@game.Id"
+                               class="text-blue-600">
+
+                                Edit
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+                                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

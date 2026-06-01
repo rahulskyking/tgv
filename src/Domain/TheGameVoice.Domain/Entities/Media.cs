@@ -1,5 +1,4 @@
 using TheGameVoice.Domain.Common.Base;
-using TheGameVoice.Domain.Enums;
 
 namespace TheGameVoice.Domain.Entities;
 
@@ -13,5 +12,11 @@ public class Media : AuditableEntity
 
     public long FileSize { get; set; }
 
-    public MediaType MediaType { get; set; }
+    public bool IsImage { get; set; }
+
+    public string? AltText { get; set; }
+
+    public string? Caption { get; set; }
+
+    public string? Credit { get; set; }
 }

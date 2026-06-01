@@ -1,0 +1,182 @@
+﻿@model TheGameVoice.Web.ViewModels.News.ArticleDetailsViewModel
+<div class="tgv-container py-12">
+
+  
+    <article class="mx-auto max-w-5xl">
+
+        <!-- CATEGORY -->
+        <nav class="mb-8 text-sm text-slate-500">
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="hover:text-primary">
+
+                Home
+
+            </a>
+
+            <span class="mx-2">/</span>
+
+            @if (Model.Article.Category != null)
+            {
+                <a asp-controller="Categories"
+                   asp-action="Details"
+                   asp-route-slug="@Model.Article.Category.Slug"
+                   class="hover:text-primary">
+
+                    @Model.Article.Category.Name
+
+                </a>
+
+                <span class="mx-2">/</span>
+            }
+
+            <span class="text-slate-900">
+
+                @Model.Article.Title
+
+            </span>
+
+        </nav>
+        <div class="mb-6">
+
+            <partial name="~/Views/Shared/Components/_CategoryBadge.cshtml"
+                     model="@Model.Article.Category.Name" />
+
+        </div>
+
+        <!-- TITLE -->
+
+        <h1 class="tgv-display text-4xl font-extrabold leading-tight tracking-tight md:text-5xl xl:text-6xl">
+            @Model.Article.Title
+        </h1>
+
+        <!-- SUMMARY -->
+        @if (!string.IsNullOrWhiteSpace(Model.Article.Summary))
+        {
+            <p class="mt-8 max-w-4xl text-lg leading-relaxed text-muted md:text-xl">
+
+                @Model.Article.Summary
+
+            </p>
+        }
+
+        <!-- META -->
+
+        <div class="mt-8 flex flex-wrap items-center gap-3 border-b border-default pb-8 text-sm text-muted">
+
+            <span>
+                Published
+            </span>
+
+            <span>•</span>
+
+            <span>
+
+                @(Model.Article.PublishedAt?
+                                .ToLocalTime()
+                                .ToString("dd MMM yyyy"))
+
+            </span>
+
+        </div>
+        <div class="mt-8 flex items-center gap-4">
+
+            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+
+                TGV
+
+            </div>
+
+            <div>
+
+                <div class="font-semibold">
+
+                    TheGameVoice Editorial Team
+
+                </div>
+
+                <div class="text-sm text-muted">
+
+                    Gaming news, reviews and features
+
+                </div>
+
+            </div>
+
+        </div>
+        <!-- FEATURED IMAGE -->
+        @if (Model.Article.FeaturedImage != null)
+        {
+            <div class="mt-10 overflow-hidden rounded-[32px] shadow-xl">
+
+                <img src="@Model.Article.FeaturedImage.FilePath"
+                     alt="@Model.Article.Title"
+                     class="w-full object-cover" />
+
+            </div>
+        }
+        <!-- CONTENT -->
+
+        <div class="article-content mt-12">
+
+
+            @Html.Raw(Model.Article.Content)
+
+
+        </div>
+
+        @if (Model.Article.ArticleTags.Any())
+        {
+            <section class="mt-16 border-t border-default pt-10">
+
+
+
+
+                <div class="mt-6 flex flex-wrap gap-3">
+
+                    @foreach (var articleTag in Model.Article.ArticleTags)
+                    {
+                        <a asp-controller="Tags"
+                           asp-action="Details"
+                           asp-route-slug="@articleTag.Tag.Slug"
+                           class="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white">
+
+                            @articleTag.Tag.Name
+
+                        </a>
+                    }
+
+                </div>
+
+            </section>
+
+
+        }
+
+        @if (Model.RelatedArticles.Any())
+        {
+            <section class="mt-20 border-t border-default pt-10">
+
+                <h2 class="text-2xl font-semibold tracking-tight">
+
+                    Continue Reading
+
+                </h2>
+
+                <div class="mt-8 divide-y divide-default">
+
+                    @foreach (var article in Model.RelatedArticles)
+                    {
+                        <partial name="~/Views/Shared/Components/_RelatedArticleCard.cshtml"
+                                 model="article" />
+                    }
+
+                </div>
+
+            </section>
+        }
+    </article>
+   
+
+</div>

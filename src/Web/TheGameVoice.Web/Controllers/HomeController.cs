@@ -1,31 +1,65 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using TheGameVoice.Web.Models;
+using TheGameVoice.Application.Interfaces.Persistence;
+using TheGameVoice.Web.ViewModels.Home;
 
 namespace TheGameVoice.Web.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    private readonly IArticleRepository
+        _articleRepository;
+    private readonly IGameRepository
+    _gameRepository;
+    public HomeController(
+        IArticleRepository articleRepository,
+        IGameRepository gameRepository)
     {
-        _logger = logger;
+        _articleRepository =
+            articleRepository;
+
+        _gameRepository =
+            gameRepository;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
-    }
+        var latestNews =
+            await _articleRepository
+                .GetPublishedAsync();
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+        var games =
+            await _gameRepository
+                .GetAllAsync();
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        var reviews =
+            latestNews
+                .Where(x =>
+                    x.Category != null
+                    &&
+                    x.Category.Name == "Reviews")
+                .ToList();
+
+        var model = new HomePageViewModel
+        {
+            HeroArticle =
+                latestNews.FirstOrDefault(),
+
+            LatestNews =
+                latestNews.Take(6).ToList(),
+
+            FeaturedReview =
+                reviews.FirstOrDefault(),
+
+            Reviews =
+                reviews
+                    .Skip(1)
+                    .Take(4)
+                    .ToList(),
+
+            TrendingGames =
+                games.Take(6).ToList()
+        };
+
+        return View(model);
     }
 }

@@ -16,4 +16,8 @@
     <ProjectReference Include="..\..\Domain\TheGameVoice.Domain\TheGameVoice.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\Repositories\" />
+  </ItemGroup>
+
 </Project>

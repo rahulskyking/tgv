@@ -4,9 +4,13 @@ namespace TheGameVoice.Domain.Entities;
 
 public class Category : AuditableEntity
 {
-    public string Name { get; set; } = default!;
+    public string Name { get; set; }
+        = default!;
 
-    public string Slug { get; set; } = default!;
+    public string Slug { get; set; }
+        = default!;
 
-    public string? Description { get; set; }
+    public ICollection<Article> Articles
+    { get; set; }
+        = new List<Article>();
 }

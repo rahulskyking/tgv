@@ -1,0 +1,71 @@
+﻿@model IReadOnlyList<TheGameVoice.Domain.Entities.Tag>
+
+<div class="space-y-6">
+
+    <div class="flex items-center justify-between">
+
+        <h1 class="text-3xl font-bold">
+            Tags
+        </h1>
+
+        <a asp-action="Create"
+           class="tgv-button-primary">
+            Create Tag
+        </a>
+
+    </div>
+
+    <div class="overflow-hidden rounded-2xl bg-white shadow-sm">
+
+        <table class="min-w-full">
+
+            <thead class="border-b bg-gray-50">
+
+                <tr>
+
+                    <th class="px-6 py-4 text-left">
+                        Name
+                    </th>
+
+                    <th class="px-6 py-4 text-left">
+                        Slug
+                    </th>
+
+                    <th class="px-6 py-4 text-left">
+                        Created
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var tag in Model)
+                {
+                    <tr class="border-b">
+
+                        <td class="px-6 py-4">
+                            @tag.Name
+                        </td>
+
+                        <td class="px-6 py-4 text-gray-500">
+                            @tag.Slug
+                        </td>
+
+                        <td class="px-6 py-4">
+
+                            @tag.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

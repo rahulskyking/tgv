@@ -1,0 +1,73 @@
+﻿@model TheGameVoice.Web.Areas.Admin.ViewModels.Media.EditMediaViewModel
+
+<div class="max-w-4xl space-y-6">
+
+    <h1 class="text-3xl font-bold">
+
+        Edit Media
+
+    </h1>
+
+    <div class="overflow-hidden rounded-2xl border bg-white">
+
+        <img src="@Model.FilePath"
+             class="w-full object-cover" />
+
+    </div>
+
+    <form method="post"
+          class="space-y-6">
+
+        <input asp-for="Id" type="hidden" />
+
+        <div>
+
+            <label class="mb-2 block font-medium">
+
+                Alt Text
+
+            </label>
+
+            <input asp-for="AltText"
+                   class="w-full rounded-xl border px-4 py-3" />
+
+        </div>
+
+        <div>
+
+            <label class="mb-2 block font-medium">
+
+                Caption
+
+            </label>
+
+            <textarea asp-for="Caption"
+                      rows="3"
+                      class="w-full rounded-xl border px-4 py-3">
+            </textarea>
+
+        </div>
+
+        <div>
+
+            <label class="mb-2 block font-medium">
+
+                Credit
+
+            </label>
+
+            <input asp-for="Credit"
+                   class="w-full rounded-xl border px-4 py-3" />
+
+        </div>
+
+        <button type="submit"
+                class="rounded-xl bg-primary px-6 py-3 text-white">
+
+            Save Changes
+
+        </button>
+
+    </form>
+
+</div>

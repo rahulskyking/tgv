@@ -1,0 +1,249 @@
+﻿@model TheGameVoice.Web.ViewModels.Shared.NavigationViewModel
+
+@{
+    var primaryCategories =
+        Model.Categories
+            .Take(5)
+            .ToList();
+
+    var secondaryCategories =
+        Model.Categories
+            .Skip(5)
+            .ToList();
+}
+
+<header class="sticky top-0 z-50 border-b border-default bg-white">
+
+    <div class="tgv-container">
+
+        <!-- MAIN NAVIGATION -->
+
+        <div class="hidden lg:flex items-center justify-between py-5">
+
+            <!-- LEFT -->
+
+            <div class="flex items-center gap-10">
+
+                <!-- LOGO -->
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="shrink-0">
+
+                    <span class="text-3xl font-black tracking-tight text-primary">
+
+                        TheGameVoice
+
+                    </span>
+
+                </a>
+
+                <!-- PRIMARY NAV -->
+
+                <nav class="flex items-center gap-6">
+
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="text-sm font-bold uppercase tracking-[0.12em] text-slate-900 transition hover:text-primary">
+
+                        Home
+
+                    </a>
+
+                    @foreach (var category in primaryCategories)
+                    {
+                        <a asp-controller="Categories"
+                           asp-action="Details"
+                           asp-route-slug="@category.Slug"
+                           class="text-sm font-bold uppercase tracking-[0.12em] text-slate-900 transition hover:text-primary">
+
+                            @category.Name
+
+                        </a>
+                    }
+
+                </nav>
+
+            </div>
+
+            <!-- SEARCH -->
+
+            <form method="get"
+                  asp-controller="Search"
+                  asp-action="Index">
+
+                <input type="text"
+                       name="query"
+                       placeholder="Search articles..."
+                       class="w-56 rounded-full border border-default bg-white px-5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-primary" />
+
+            </form>
+
+        </div>
+
+        <!-- SECONDARY NAV -->
+        @if (secondaryCategories.Any())
+        {
+            <div class="hidden border-t border-default lg:block">
+
+                <nav class="flex flex-wrap items-center gap-6 py-3">
+
+                    @foreach (var category in secondaryCategories)
+                    {
+                        <a asp-controller="Categories"
+                           asp-action="Details"
+                           asp-route-slug="@category.Slug"
+                           class="text-sm font-semibold uppercase tracking-[0.12em] text-slate-600 transition hover:text-primary">
+
+                            @category.Name
+
+                        </a>
+                    }
+
+                </nav>
+
+            </div>
+        }
+
+        <!-- MOBILE HEADER -->
+
+        <div class="flex h-16 items-center justify-between lg:hidden">
+
+            <a asp-controller="Home"
+               asp-action="Index">
+
+                <span class="text-2xl font-black tracking-tight text-primary">
+
+                    TheGameVoice
+
+                </span>
+
+            </a>
+
+            <button id="mobile-menu-button"
+                    type="button"
+                    class="flex h-10 w-10 items-center justify-center rounded-md border border-default bg-white">
+
+                ☰
+
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+<!-- MOBILE OVERLAY -->
+
+<div id="mobile-menu-overlay"
+     class="fixed inset-0 z-[999] hidden bg-white">
+
+    <div class="tgv-container">
+
+        <div class="flex h-16 items-center justify-between border-b border-default">
+
+            <span class="text-2xl font-black text-primary">
+
+                TheGameVoice
+
+            </span>
+
+            <button id="mobile-menu-close"
+                    type="button"
+                    class="text-3xl">
+
+                ×
+
+            </button>
+
+        </div>
+
+        <div class="py-8">
+
+            <!-- SEARCH -->
+
+            <form method="get"
+                  asp-controller="Search"
+                  asp-action="Index"
+                  class="mb-8">
+
+                <input type="text"
+                       name="query"
+                       placeholder="Search articles..."
+                       class="w-full rounded-full border border-default bg-white px-5 py-3 text-slate-900 outline-none focus:border-primary" />
+
+            </form>
+
+            <!-- NAVIGATION -->
+
+            <nav class="flex flex-col gap-5">
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="text-lg font-bold uppercase">
+
+                    Home
+
+                </a>
+
+                @foreach (var category in Model.Categories)
+                {
+                    <a asp-controller="Categories"
+                       asp-action="Details"
+                       asp-route-slug="@category.Slug"
+                       class="text-lg font-bold uppercase">
+
+                        @category.Name
+
+                    </a>
+                }
+
+            </nav>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const openButton =
+            document.getElementById("mobile-menu-button");
+
+        const closeButton =
+            document.getElementById("mobile-menu-close");
+
+        const overlay =
+            document.getElementById("mobile-menu-overlay");
+
+        if (openButton && overlay) {
+
+            openButton.addEventListener("click", function () {
+
+                overlay.classList.remove("hidden");
+
+                document.body.style.overflow = "hidden";
+
+            });
+
+        }
+
+        if (closeButton && overlay) {
+
+            closeButton.addEventListener("click", function () {
+
+                overlay.classList.add("hidden");
+
+                document.body.style.overflow = "";
+
+            });
+
+        }
+
+    });
+
+</script>

@@ -1,8 +1,149 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model TheGameVoice.Web.ViewModels.Home.HomePageViewModel
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="tgv-container space-y-20 py-10">
+
+    <!-- HERO + TRENDING -->
+
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-4">
+
+        <!-- HERO -->
+
+        <div class="lg:col-span-3">
+
+            @if (Model.HeroArticle != null)
+            {
+                @await Html.PartialAsync(
+                "~/Views/Shared/Components/_HeroCard.cshtml",
+                        Model.HeroArticle)
+                        }
+
+        </div>
+
+        <!-- TRENDING -->
+
+        <aside>
+
+            <div class="mb-8">
+
+                <h2 class="text-2xl font-medium tracking-tight">
+
+                    Trending
+
+                </h2>
+
+            </div>
+
+            @{
+                var trendingItems = Model.LatestNews
+                .Take(5)
+                .Select((article, index) => new { article, index })
+                .ToList();
+            }
+
+            <div>
+
+                @foreach (var item in trendingItems)
+                {
+                    <a asp-controller="News"
+                       asp-action="Details"
+                       asp-route-slug="@item.article.Slug"
+                       class="group block border-b border-default py-5">
+
+                        <div class="flex gap-4">
+
+                            <div class="shrink-0 text-4xl font-medium text-primary/40">
+
+                                @((item.index + 1).ToString("D2"))
+
+                            </div>
+
+                            <div>
+
+                                <div class="mb-2 text-xs font-medium uppercase tracking-[0.15em] text-primary">
+
+                                    @item.article.Category.Name
+
+                                </div>
+
+                                <h3 class="text-base font-medium leading-snug text-slate-900 transition group-hover:text-primary">
+
+                                    @item.article.Title
+
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+                    </a>
+                }
+
+            </div>
+
+        </aside>
+
+    </div>
+
+    <!-- LATEST NEWS -->
+
+    <section>
+
+        @await Html.PartialAsync(
+        "~/Views/Shared/Components/_SectionHeader.cshtml",
+                "Latest News")
+
+        <div class="mt-8">
+
+            @foreach (var article in Model.LatestNews.Take(6))
+            {
+                @await Html.PartialAsync(
+                "~/Views/Shared/Components/_ArticleCard.cshtml",
+                        article)
+                        }
+
+        </div>
+
+    </section>
+
+    <!-- TRENDING GAMES -->
+
+    <section>
+
+        @await Html.PartialAsync(
+        "~/Views/Shared/Components/_SectionHeader.cshtml",
+                "Trending Games")
+
+        <div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+
+            @foreach (var game in Model.TrendingGames)
+            {
+                @await Html.PartialAsync(
+                "~/Views/Shared/Components/_GameCard.cshtml",
+                        game)
+                        }
+
+        </div>
+
+    </section>
+
+    <!-- FEATURED REVIEW -->
+    @if (Model.FeaturedReview != null)
+    {
+        <section>
+
+            @await Html.PartialAsync(
+            "~/Views/Shared/Components/_SectionHeader.cshtml",
+                "Featured Review")
+
+        <div class="mt-10">
+
+            @await Html.PartialAsync(
+                        "~/Views/Shared/Components/_HeroCard.cshtml",
+                        Model.FeaturedReview)
+
+        </div>
+
+    </section>
+        }
+
 </div>

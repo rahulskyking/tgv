@@ -5,6 +5,8 @@
 
     <link rel="stylesheet"
           href="~/css/site.css" />
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css"
+          rel="stylesheet">
 </head>
 
 <body class="bg-gray-100">
@@ -35,11 +37,30 @@
                     Reviews
                 </a>
 
-                <a href="#"
-                   class="block px-4 py-3 hover:bg-gray-800">
+                <a asp-area="Admin"
+                   asp-controller="Media"
+                   asp-action="Index"
+                   class="block rounded-lg px-4 py-3 hover:bg-gray-700 transition">
                     Media
                 </a>
-
+                <a asp-area="Admin"
+                   asp-controller="Categories"
+                   asp-action="Index"
+                   class="block rounded-lg px-4 py-3 hover:bg-gray-700 transition">
+                    Categories
+                </a>
+                <a asp-area="Admin"
+                   asp-controller="Tags"
+                   asp-action="Index"
+                   class="block rounded-lg px-4 py-3 hover:bg-gray-700 transition">
+                    Tags
+                </a>
+                <a asp-area="Admin"
+                   asp-controller="Games"
+                   asp-action="Index" 
+                   class="block rounded-lg px-4 py-3 hover:bg-gray-700 transition">
+                    Games
+                </a>
             </nav>
 
         </aside>
@@ -53,12 +74,246 @@
     </div>
     <script src="https://cdn.tiny.cloud/1/00a9squ7bst5dxgjcudejes4cujli8zjx4ubvho2xlqpu0jw/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
 
-
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
     <script>
-            tinymce.init({
-                selector: '#editor',
-                height: 500
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const select =
+                document.getElementById("featured-image-select");
+
+            const image =
+                document.getElementById("preview-image");
+
+            const placeholder =
+                document.getElementById("preview-placeholder");
+
+            if (!select)
+                return;
+
+            function updatePreview() {
+
+                const option =
+                    select.options[select.selectedIndex];
+
+                const imagePath =
+                    option.dataset.image;
+
+                if (imagePath) {
+
+                    image.src = imagePath;
+
+                    image.classList.remove("hidden");
+
+                    placeholder.classList.add("hidden");
+
+                }
+                else {
+
+                    image.classList.add("hidden");
+
+                    placeholder.classList.remove("hidden");
+
+                }
+
+            }
+
+            select.addEventListener(
+                "change",
+                updatePreview);
+
+            updatePreview();
+
+        });
+
+    </script>
+    <script>
+                  tinymce.init({
+            selector: '#editor',
+
+            height: 700,
+
+            menubar: false,
+
+            plugins: [
+                'link',
+                'image',
+                'media',
+                'table',
+                'lists',
+                'code',
+                'fullscreen',
+                'wordcount'
+            ],
+
+            toolbar:
+                'undo redo | styles | bold italic underline | ' +
+                'alignleft aligncenter alignright | ' +
+                'bullist numlist | link image media table | ' +
+                'fullscreen code'
+        });
+    </script>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const tags =
+                document.getElementById("tags-select");
+
+            if (tags) {
+
+                new TomSelect(tags, {
+                    plugins: ['remove_button']
+                });
+
+            }
+
+            const games =
+                document.getElementById("games-select");
+
+            if (games) {
+
+                new TomSelect(games, {
+                    plugins: ['remove_button']
+                });
+
+            }
+
+        });
+
+    </script>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const openBtn =
+                document.getElementById("open-media-picker");
+
+            const closeBtn =
+                document.getElementById("close-media-picker");
+
+            const modal =
+                document.getElementById("media-picker-modal");
+
+            const featuredSelect =
+                document.getElementById("featured-image-select");
+
+            const searchInput =
+                document.getElementById("media-search");
+
+            if (!openBtn || !modal || !featuredSelect)
+                return;
+
+            // Open Modal
+
+            openBtn.addEventListener("click", () => {
+
+                modal.classList.remove("hidden");
+
             });
+
+            // Close Modal Button
+
+            if (closeBtn) {
+
+                closeBtn.addEventListener("click", () => {
+
+                    modal.classList.add("hidden");
+
+                });
+
+            }
+
+            // Close Modal on Backdrop Click
+
+            modal.addEventListener("click", (e) => {
+
+                if (e.target === modal) {
+
+                    modal.classList.add("hidden");
+
+                }
+
+            });
+
+            // Image Selection
+
+            document
+                .querySelectorAll(".media-item")
+                .forEach(item => {
+
+                    item.addEventListener("click", () => {
+
+                        document
+                            .querySelectorAll(".media-item")
+                            .forEach(x =>
+                                x.classList.remove(
+                                    "border-primary"));
+
+                        item.classList.add(
+                            "border-primary");
+
+                        const mediaId =
+                            item.dataset.id;
+
+                        console.log(
+                            "Selected Media:",
+                            mediaId);
+
+                        featuredSelect.value =
+                            mediaId;
+
+                        featuredSelect.dispatchEvent(
+                            new Event("change", {
+                                bubbles: true
+                            }));
+
+                        modal.classList.add("hidden");
+
+                    });
+
+                });
+
+            // Search
+
+            if (searchInput) {
+
+                searchInput.addEventListener("input", () => {
+
+                    const term =
+                        searchInput.value
+                            .toLowerCase()
+                            .trim();
+
+                    document
+                        .querySelectorAll(".media-item")
+                        .forEach(item => {
+
+                            const name =
+                                (item.dataset.name || "")
+                                    .toLowerCase();
+
+                            if (name.includes(term)) {
+
+                                item.classList.remove(
+                                    "hidden");
+
+                            }
+                            else {
+
+                                item.classList.add(
+                                    "hidden");
+
+                            }
+
+                        });
+
+                });
+
+            }
+
+        });
+
     </script>
 </body>
 </html>

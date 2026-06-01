@@ -1,0 +1,32 @@
+﻿@model TheGameVoice.Web.Areas.Admin.ViewModels.Media.UploadMediaViewModel
+
+<div class="max-w-2xl space-y-6">
+
+    <h1 class="text-3xl font-bold">
+        Upload Media
+    </h1>
+
+    <form method="post"
+          enctype="multipart/form-data"
+          class="space-y-6">
+
+        <div>
+
+            <label class="mb-2 block font-medium">
+                Select File
+            </label>
+
+            <input asp-for="File"
+                   type="file"
+                   class="block w-full rounded-lg border p-3" />
+
+        </div>
+
+        <button type="submit"
+                class="rounded-lg bg-[#fa743e] px-6 py-3 text-white">
+            Upload
+        </button>
+
+    </form>
+
+</div>

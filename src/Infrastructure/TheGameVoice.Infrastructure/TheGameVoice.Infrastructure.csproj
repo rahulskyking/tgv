@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Persistence\Repositories\ArticleDetailsViewModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.27" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.*" />
@@ -27,7 +31,6 @@
     <Folder Include="Identity\Services\" />
     <Folder Include="Migrations\" />
     <Folder Include="Persistence\Interceptors\" />
-    <Folder Include="Services\" />
     <Folder Include="Storage\" />
   </ItemGroup>
 

@@ -1,10 +1,39 @@
+# Build
+
 bin/
 obj/
+
+# Visual Studio
+
 .vs/
+*.user
+*.suo
+
+# Rider
+
+.idea/
+
+# Node
+
 node_modules/
-wwwroot/css/site.css
+
+# Logs
+
+*.log
+
+# ASP.NET
 
 appsettings.Development.json
 
-*.user
-*.suo
+# Tailwind
+
+dist/
+
+# Uploads (don't store uploaded media in git)
+
+src/Web/TheGameVoice.Web/wwwroot/uploads/
+
+# OS Files
+
+Thumbs.db
+.DS_Store

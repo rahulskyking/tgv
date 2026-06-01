@@ -1,0 +1,104 @@
+﻿@model TheGameVoice.Web.ViewModels.Search.SearchResultsViewModel
+
+<!-- SEARCH HERO -->
+
+<section class="overflow-hidden rounded-[32px] bg-white shadow-xl">
+
+    <div class="p-10 lg:p-14">
+
+        <div class="mb-6">
+
+            <span class="rounded-full border-2 border-primary px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-primary">
+
+                Search
+            </span>
+
+        </div>
+
+        <h1 class="tgv-display text-5xl color: var(--tgv-text); lg:text-7xl">
+
+            Search Articles
+
+        </h1>
+
+        <p class="mt-8 max-w-3xl text-xl leading-relaxed text-slate-600">
+
+            Find gaming news, reviews, features and guides
+            across TheGameVoice.
+
+        </p>
+
+        <form method="get"
+              asp-controller="Search"
+              asp-action="Index"
+              class="mt-10">
+
+            <div class="flex flex-col gap-4 md:flex-row">
+
+                <input type="text"
+                       name="query"
+                       value="@Model.Query"
+                       placeholder="Search articles..."
+                       class="flex-1 rounded-2xl border border-gray-200 bg-slate-50 px-6 py-4 text-lg outline-none transition focus:border-primary" />
+
+                <button type="submit"
+                        class="tgv-button-primary">
+
+                    Search
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+@if (!string.IsNullOrWhiteSpace(Model.Query))
+{
+    <section>
+
+ 
+
+        <div class="mb-10 text-slate-500">
+
+            Found @Model.Articles.Count result(s) for
+            "<strong>@Model.Query</strong>"
+
+        </div>
+
+        @if (Model.Articles.Any())
+        {
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+
+                @foreach (var article in Model.Articles)
+                {
+                    <partial name="~/Views/Shared/Components/_ArticleCard.cshtml"
+                             model="article" />
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="rounded-3xl bg-white p-12 text-center shadow-sm">
+
+                <h3 class="text-2xl font-bold color: var(--tgv-text);">
+
+                    No Results Found
+
+                </h3>
+
+                <p class="mt-4 text-slate-500">
+
+                    Try a different keyword or search phrase.
+
+                </p>
+
+            </div>
+        }
+
+    </section>
+}

@@ -1,20 +1,64 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
     <meta charset="utf-8" />
 
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0" />
 
-    <title>TheGameVoice</title>
+    <title>
+        @(ViewData["Title"] ?? "TheGameVoice")
+    </title>
+
+    <meta name="description"
+          content="@(ViewData["Description"] ?? "Gaming News, Reviews and Features")" />
+
+    <meta property="og:title"
+          content="@(ViewData["Title"] ?? "TheGameVoice")" />
+
+    <meta property="og:description"
+          content="@(ViewData["Description"] ?? "Gaming News, Reviews and Features")" />
+
+@if (ViewData["CanonicalUrl"] != null)
+{
+    <link rel="canonical"
+          href="@ViewData["CanonicalUrl"]" />
+}
+    <meta property="og:type"
+          content="website" />
 
     <link rel="stylesheet"
-          href="~/css/site.css" />
+          href="~/css/site.css"
+          asp-append-version="true" />
+          
+    <link rel="stylesheet"
+          href="~/css/app.css"
+          asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/css/theme.css" />
+    <link rel="stylesheet"
+          href="~/css/theme-utilities.css" />
 </head>
 
-<body>
+<body class="bg-slate-50 color: var(--tgv-text);">
 
-    @RenderBody()
+    @await Component.InvokeAsync("Navigation")
+
+    <main>
+
+        @RenderBody()
+
+    </main>
+
+    @await Html.PartialAsync(
+        "~/Views/Shared/Layout/_Footer.cshtml")
+
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false)
 
 </body>
+
 </html>

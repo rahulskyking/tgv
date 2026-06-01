@@ -25,6 +25,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<ArticleTag> ArticleTags => Set<ArticleTag>();
     public DbSet<Media> Media => Set<Media>();
+    public DbSet<ArticleGame> ArticleGames => Set<ArticleGame>();
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -32,8 +34,42 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
 
         builder.ApplyConfigurationsFromAssembly(
             typeof(AppDbContext).Assembly);
+        builder.Entity<ArticleTag>()
+            .HasKey(x =>
+                new
+                {
+                    x.ArticleId,
+                    x.TagId
+                });
 
+        builder.Entity<ArticleTag>()
+            .HasOne(x => x.Article)
+            .WithMany(x => x.ArticleTags)
+            .HasForeignKey(x => x.ArticleId);
+
+        builder.Entity<ArticleTag>()
+            .HasOne(x => x.Tag)
+            .WithMany(x => x.ArticleTags)
+            .HasForeignKey(x => x.TagId);
         builder.ApplySoftDeleteQueryFilters();
+
+        builder.Entity<ArticleGame>()
+    .HasKey(x =>
+        new
+        {
+            x.ArticleId,
+            x.GameId
+        });
+
+        builder.Entity<ArticleGame>()
+            .HasOne(x => x.Article)
+            .WithMany(x => x.ArticleGames)
+            .HasForeignKey(x => x.ArticleId);
+
+        builder.Entity<ArticleGame>()
+            .HasOne(x => x.Game)
+            .WithMany(x => x.ArticleGames)
+            .HasForeignKey(x => x.GameId);
     }
 
     public override async Task<int> SaveChangesAsync(

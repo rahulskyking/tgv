@@ -1,0 +1,46 @@
+﻿@model TheGameVoice.Domain.Entities.Game
+
+<a asp-controller="Games"
+   asp-action="Details"
+   asp-route-slug="@Model.Slug"
+   class="group block overflow-hidden rounded-3xl bg-surface shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+
+    <div class="p-6">
+
+        <div class="mb-4 flex items-center justify-between">
+
+            <span class="text-xs font-black uppercase tracking-[0.2em] text-primary">
+
+                Game
+
+            </span>
+
+            @if (Model.ReleaseDate.HasValue)
+            {
+                <span class="text-sm text-muted">
+
+                    @Model.ReleaseDate.Value.ToString("yyyy")
+
+                </span>
+            }
+
+        </div>
+
+        <h3 class="tgv-title text-xl leading-tight transition-colors duration-300 group-hover:text-primary">
+
+            @Model.Name
+
+        </h3>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Summary))
+        {
+            <p class="mt-4 line-clamp-3 text-sm leading-relaxed text-muted">
+
+                @Model.Summary
+
+            </p>
+        }
+
+    </div>
+
+</a>

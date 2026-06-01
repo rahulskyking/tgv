@@ -1,0 +1,96 @@
+﻿@model TheGameVoice.Web.ViewModels.Tags.TagDetailsViewModel
+
+<div class="tgv-container py-12 space-y-20">
+
+    <!-- TAG HERO -->
+
+    <section class="overflow-hidden rounded-[32px] bg-white shadow-xl">
+
+        <div class="p-10 lg:p-14">
+
+            <div class="mb-6">
+
+                <span class="rounded-full border-2 border-primary px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-primary">
+
+                    Tag
+
+                </span>
+
+            </div>
+
+            <h1 class="tgv-display text-5xl text-slate-900 lg:text-7xl">
+
+                @Model.Tag.Name
+
+            </h1>
+
+            <p class="mt-8 max-w-4xl text-xl leading-relaxed text-slate-600">
+
+                Explore all coverage related to @Model.Tag.Name.
+
+            </p>
+
+            <div class="mt-10 border-t border-default pt-8">
+
+                <div class="text-xs font-black uppercase tracking-[0.2em] text-primary">
+
+                    Articles
+
+                </div>
+
+                <div class="mt-2 text-lg font-semibold text-slate-900">
+
+                    @Model.Articles.Count
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ARTICLES -->
+
+    <section>
+
+        <h2 class="mb-8 text-3xl font-bold">
+
+            Latest Coverage
+
+        </h2>
+
+        @if (Model.Articles.Any())
+        {
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+
+                @foreach (var article in Model.Articles)
+                {
+                    <partial name="~/Views/Shared/Components/_ArticleCard.cshtml"
+                             model="article" />
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="rounded-3xl bg-white p-12 text-center shadow-sm">
+
+                <h3 class="text-2xl font-bold">
+
+                    No Articles Yet
+
+                </h3>
+
+                <p class="mt-4 text-slate-500">
+
+                    Content for this tag will appear here soon.
+
+                </p>
+
+            </div>
+        }
+
+    </section>
+
+</div>

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TheGameVoice;
-using TheGameVoice.Application.Interfaces.Repositories;
+using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Infrastructure.Persistence.Context;
 
 namespace TheGameVoice.Infrastructure.Persistence.Repositories;
@@ -18,7 +18,7 @@ public class Repository<T> : IRepository<T>
         _dbSet = context.Set<T>();
     }
 
-    public async Task<T?> GetByIdAsync(Guid id)
+    public virtual async Task<T?> GetByIdAsync(Guid id)
     {
         return await _dbSet.FindAsync(id);
     }
