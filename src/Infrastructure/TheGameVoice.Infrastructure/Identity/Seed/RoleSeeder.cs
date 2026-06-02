@@ -7,14 +7,13 @@ public static class RoleSeeder
     public static async Task SeedAsync(
         RoleManager<IdentityRole<Guid>> roleManager)
     {
-        string[] roles =
-        {
-            Roles.SuperAdmin,
-            Roles.Admin,
-            Roles.Editor,
-            Roles.Writer
-        };
-
+        var roles = new[]
+     {
+    Roles.SuperAdmin,
+    Roles.Admin,
+    Roles.Editor,
+    Roles.Author
+};
         foreach (var role in roles)
         {
             if (!await roleManager.RoleExistsAsync(role))

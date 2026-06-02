@@ -30,5 +30,6 @@ public interface IArticleRepository
     SearchAsync(string query);
 
     Task<IReadOnlyList<Article>>GetPublishedByTagAsync(string slug);
+    void Update(Article article);
 
 }

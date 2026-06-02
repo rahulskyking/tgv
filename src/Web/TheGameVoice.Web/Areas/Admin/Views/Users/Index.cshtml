@@ -1,0 +1,140 @@
+﻿@model IReadOnlyList<TheGameVoice.Web.Areas.Admin.ViewModels.Users.UserListItemViewModel>
+
+<div class="space-y-6">
+
+    <div class="flex items-center justify-between">
+
+        <h1 class="text-3xl font-bold">
+            Users
+        </h1>
+
+        <a asp-action="Create"
+           class="rounded-xl bg-primary px-4 py-3 text-black">
+
+            Create User
+
+        </a>
+
+    </div>
+
+    <div class="overflow-hidden rounded-2xl bg-white shadow-sm">
+
+        <table class="w-full">
+
+            <thead class="bg-slate-100">
+
+                <tr>
+
+                    <th class="px-6 py-4 text-left">
+                        Name
+                    </th>
+
+                    <th class="px-6 py-4 text-left">
+                        Username
+                    </th>
+
+                    <th class="px-6 py-4 text-left">
+                        Email
+                    </th>
+
+                    <th class="px-6 py-4 text-left">
+                        Role
+                    </th>
+
+                    <th class="px-6 py-4 text-left">
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var user in Model)
+                {
+                    <tr class="border-t">
+
+                        <td class="px-6 py-4">
+                            @user.FullName
+                        </td>
+
+                        <td class="px-6 py-4">
+                            @user.UserName
+                        </td>
+
+                        <td class="px-6 py-4">
+                            @user.Email
+                        </td>
+
+                        <td class="px-6 py-4">
+                            @user.Role
+                        </td>
+
+                        <td class="px-6 py-4">
+
+                            @if (user.IsActive)
+                            {
+                                <span class="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">
+
+                                    Active
+
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="rounded-full bg-red-100 px-3 py-1 text-sm text-red-700">
+
+                                    Inactive
+
+                                </span>
+                            }
+
+                        </td>
+                    <td class="px-6 py-4">
+
+                        <div class="flex gap-4">
+
+                            <a asp-action="Edit"
+                               asp-route-id="@user.Id"
+                               class="text-primary">
+
+                                Edit
+
+                            </a>
+                                <a asp-action="ResetPassword"
+                                   asp-route-id="@user.Id"
+                                   class="text-orange-600">
+
+                                    Reset Password
+
+                                </a>
+                            <form asp-action="ToggleStatus"
+                                  asp-route-id="@user.Id"
+                                  method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit">
+
+                                    @(user.IsActive? "Deactivate" : "Activate")
+
+                                </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

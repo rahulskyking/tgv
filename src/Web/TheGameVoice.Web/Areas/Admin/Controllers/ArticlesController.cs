@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TheGameVoice.Application.Interfaces.Persistence;
@@ -6,6 +7,7 @@ using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Entities;
 using TheGameVoice.Domain.Enums;
 using TheGameVoice.Infrastructure.Identity;
+using TheGameVoice.Infrastructure.Identity.Entities;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Articles;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Media;
 
@@ -17,14 +19,18 @@ public class ArticlesController
 {
     private readonly IUnitOfWork _unitOfWork;
 
+    private readonly UserManager<ApplicationUser>
+    _userManager;
     private readonly ISlugService _slugService;
 
     public ArticlesController(
         IUnitOfWork unitOfWork,
-        ISlugService slugService)
+        ISlugService slugService,
+        UserManager<ApplicationUser> userManager)
     {
         _unitOfWork = unitOfWork;
         _slugService = slugService;
+        _userManager = userManager;
     }
 
     public async Task<IActionResult> Index()
@@ -39,9 +45,16 @@ public class ArticlesController
     public async Task<IActionResult> Create()
     {
         var model = new CreateArticleViewModel();
+        var currentUser =
+    await _userManager.GetUserAsync(User);
 
+        if (currentUser != null)
+        {
+            model.AuthorId =
+                currentUser.Id;
+        }
         await PopulateArticleFormData(model);
-
+        model.StatusDisplay = "Draft";
         return View(model);
         
     }
@@ -55,7 +68,19 @@ public class ArticlesController
 
             return View(model);
         }
+        var currentUser =
+    await _userManager.GetUserAsync(User);
 
+        Guid authorId;
+
+        if (User.IsInRole(Roles.Author))
+        {
+            authorId = currentUser!.Id;
+        }
+        else
+        {
+            authorId = model.AuthorId;
+        }
         var article = new Article
         {
             Title = model.Title,
@@ -65,10 +90,14 @@ public class ArticlesController
             SeoDescription = model.SeoDescription,
             FeaturedImageId = model.FeaturedImageId,
 
+            AuthorId = authorId,
+
             Status = ArticleStatus.Draft,
+
             CategoryId = model.CategoryId,
+
             Slug = await _slugService
-                  .GenerateSlugAsync(model.Title)
+        .GenerateSlugAsync(model.Title)
         };
 
         await _unitOfWork.Articles
@@ -123,6 +152,8 @@ public class ArticlesController
 
             CategoryId = article.CategoryId,
 
+            AuthorId = article.AuthorId,
+
             SelectedTagIds = article.ArticleTags
                 .Select(x => x.TagId)
                 .ToList(),
@@ -130,9 +161,10 @@ public class ArticlesController
             SelectedGameIds = article.ArticleGames
                 .Select(x => x.GameId)
                 .ToList()
+
         };
         await PopulateArticleFormData(model);
-
+        model.StatusDisplay = article.Status.ToString();
         return View(model);
     }
     [HttpPost]
@@ -155,6 +187,21 @@ public class ArticlesController
             return NotFound();
         }
         article.ArticleTags.Clear();
+
+        var currentUser =
+    await _userManager.GetUserAsync(User);
+
+        if (User.IsInRole(Roles.Author))
+        {
+            article.AuthorId =
+                currentUser!.Id;
+        }
+        else
+        {
+            article.AuthorId =
+                model.AuthorId;
+        }
+
 
         article.Title = model.Title;
         article.Summary = model.Summary;
@@ -195,7 +242,7 @@ public class ArticlesController
 
     [HttpPost]
     [Authorize(Roles =
-    $"{Roles.Writer},{Roles.Editor},{Roles.Admin},{Roles.SuperAdmin}")]
+    $"{Roles.Author},{Roles.Editor},{Roles.Admin},{Roles.SuperAdmin}")]
     public async Task<IActionResult> SubmitForReview(Guid id)
     {
         var article =
@@ -216,8 +263,11 @@ public class ArticlesController
     }
 
     [HttpPost]
-    [Authorize(Roles =
-    $"{Roles.Admin},{Roles.SuperAdmin}")]
+    [Authorize(
+    Roles =
+    $"{Roles.Editor}," +
+    $"{Roles.Admin}," +
+    $"{Roles.SuperAdmin}")]
     public async Task<IActionResult> Publish(Guid id)
     {
         var article =
@@ -228,9 +278,17 @@ public class ArticlesController
             return NotFound();
         }
 
-        article.Status = ArticleStatus.Published;
+        var currentUser =
+      await _userManager.GetUserAsync(User);
 
-        article.PublishedAt = DateTime.UtcNow;
+        article.Status =
+            ArticleStatus.Published;
+
+        article.PublishedAt =
+            DateTime.UtcNow;
+
+        article.PublishedById =
+            currentUser?.Id;
 
         _unitOfWork.Articles.Update(article);
 
@@ -280,5 +338,85 @@ public class ArticlesController
                 FilePath = x.FilePath
             })
             .ToList();
+        var users = _userManager.Users.ToList();
+
+        model.Authors =
+            users
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.FullName
+                })
+                .ToList();
+
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reject(Guid id)
+    {
+        var article =
+            await _unitOfWork.Articles.GetByIdAsync(id);
+
+        if (article == null)
+        {
+            return NotFound();
+        }
+
+        article.Status =
+            ArticleStatus.Rejected;
+
+        _unitOfWork.Articles.Update(article);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(
+    Roles =
+    $"{Roles.Admin}," +
+    $"{Roles.SuperAdmin}")]
+    public async Task<IActionResult> Archive(Guid id)
+    {
+        var article =
+            await _unitOfWork.Articles.GetByIdAsync(id);
+
+        if (article == null)
+        {
+            return NotFound();
+        }
+
+        article.Status =
+            ArticleStatus.Archived;
+
+        _unitOfWork.Articles.Update(article);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Restore(Guid id)
+    {
+        var article =
+            await _unitOfWork.Articles.GetByIdAsync(id);
+
+        if (article == null)
+        {
+            return NotFound();
+        }
+
+        article.Status =
+            ArticleStatus.Draft;
+
+        _unitOfWork.Articles.Update(article);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
     }
 }

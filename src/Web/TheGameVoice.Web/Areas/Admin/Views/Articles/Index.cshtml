@@ -1,4 +1,6 @@
-﻿@model IReadOnlyList<TheGameVoice.Domain.Entities.Article>
+﻿@using TheGameVoice.Domain.Enums
+@using TheGameVoice.Infrastructure.Identity
+@model IReadOnlyList<TheGameVoice.Domain.Entities.Article>
 
 <div class="space-y-6">
 
@@ -78,25 +80,38 @@
                                 var badgeClass =
                                 article.Status switch
                                 {
-                                    TheGameVoice.Domain.Enums.ArticleStatus.Draft =>
-                                        "bg-gray-100 text-gray-700",
+                                    ArticleStatus.Draft =>
+                                                    "bg-slate-100 text-slate-700",
 
-                                    TheGameVoice.Domain.Enums.ArticleStatus.ReviewPending =>
-                                        "bg-yellow-100 text-yellow-800",
+                                    ArticleStatus.ReviewPending =>
+                                                    "bg-amber-100 text-amber-800",
 
-                                    TheGameVoice.Domain.Enums.ArticleStatus.Published =>
-                                        "bg-green-100 text-green-800",
+                                    ArticleStatus.Published =>
+                                                    "bg-green-100 text-green-800",
 
-                                    TheGameVoice.Domain.Enums.ArticleStatus.Rejected =>
-                                        "bg-red-100 text-red-800",
+                                    ArticleStatus.Rejected =>
+                                                    "bg-red-100 text-red-800",
+
+                                    ArticleStatus.Archived =>
+                                                    "bg-gray-200 text-gray-700",
 
                                     _ =>
-                                        "bg-gray-100 text-gray-700"
+                                                    "bg-slate-100 text-slate-700"
+                                };
+
+                                var displayStatus =
+                                article.Status switch
+                                {
+                                    ArticleStatus.ReviewPending =>
+                                                    "In Review",
+
+                                    _ =>
+                                                    article.Status.ToString()
                                 };
                             }
 
-                            <span class="rounded-full px-3 py-1 text-sm @badgeClass">
-                                @article.Status
+                            <span class="rounded-full px-3 py-1 text-sm font-medium @badgeClass">
+                                @displayStatus
                             </span>
 
                         </td>
@@ -111,39 +126,57 @@
 
                         <td class="px-6 py-4">
 
-                            <div class="flex gap-3 items-center">
+                            <div class="flex flex-wrap items-center gap-3">
 
                                 <a asp-action="Edit"
                                    asp-route-id="@article.Id"
-                                   class="text-[#fa743e] font-medium">
-                                    Edit
-                                </a>
+                                   class="font-medium text-[#fa743e]">
 
-                                @if (article.Status ==
-                                    TheGameVoice.Domain.Enums.ArticleStatus.Draft)
+                                    Edit
+
+                                </a>
+                                @if (
+                                User.IsInRole(Roles.Author) ||
+                                User.IsInRole(Roles.Editor) ||
+                                User.IsInRole(Roles.Admin) ||
+                                User.IsInRole(Roles.SuperAdmin))
+    {
+                                @if (article.Status == ArticleStatus.Draft)
                                 {
                                     <form asp-action="SubmitForReview"
                                           asp-route-id="@article.Id"
                                           method="post">
 
+                                        @Html.AntiForgeryToken()
+
                                         <button type="submit"
-                                                class="text-blue-600 font-medium">
+                                                class="font-medium text-blue-600">
+
                                             Submit Review
+
                                         </button>
 
                                     </form>
                                 }
-
-                                @if (article.Status ==
-                                    TheGameVoice.Domain.Enums.ArticleStatus.ReviewPending)
+                                }
+                                @if (
+                                User.IsInRole(Roles.Editor) ||
+                                User.IsInRole(Roles.Admin) ||
+                                User.IsInRole(Roles.SuperAdmin))
+    {
+                                @if (article.Status == ArticleStatus.ReviewPending)
                                 {
                                     <form asp-action="Publish"
                                           asp-route-id="@article.Id"
                                           method="post">
 
+                                        @Html.AntiForgeryToken()
+
                                         <button type="submit"
-                                                class="text-green-600 font-medium">
+                                                class="font-medium text-green-600">
+
                                             Publish
+
                                         </button>
 
                                     </form>
@@ -152,14 +185,80 @@
                                           asp-route-id="@article.Id"
                                           method="post">
 
+                                        @Html.AntiForgeryToken()
+
                                         <button type="submit"
-                                                class="text-red-600 font-medium">
+                                                class="font-medium text-red-600">
+
                                             Reject
+
+                                        </button>
+
+                                    </form>
+                                     }
+                                }
+
+                                @if (
+                                User.IsInRole(Roles.Admin) ||
+                                User.IsInRole(Roles.SuperAdmin))
+                                {
+                                @if (article.Status == ArticleStatus.Published)
+                                {
+                                    <form asp-action="Archive"
+                                          asp-route-id="@article.Id"
+                                          method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="font-medium text-gray-600">
+
+                                            Archive
+
                                         </button>
 
                                     </form>
                                 }
+                                }
+                                @if (article.Status == ArticleStatus.Rejected)
+                                {
+                                    <form asp-action="Restore"
+                                          asp-route-id="@article.Id"
+                                          method="post">
 
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="font-medium text-blue-600">
+
+                                            Return To Draft
+
+                                        </button>
+
+                                    </form>
+                                }
+                                @if (
+                                User.IsInRole(Roles.Admin) ||
+                                User.IsInRole(Roles.SuperAdmin))
+                                {
+                                @if (article.Status == ArticleStatus.Archived)
+                                {
+                                    <form asp-action="Restore"
+                                          asp-route-id="@article.Id"
+                                          method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="font-medium text-green-600">
+
+                                            Restore
+
+                                        </button>
+
+                                    </form>
+                                }
+                            }
                             </div>
 
                         </td>

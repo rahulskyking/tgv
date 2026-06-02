@@ -2,11 +2,15 @@
 
 public static class Roles
 {
-    public const string SuperAdmin = "SuperAdmin";
+    public const string SuperAdmin =
+        nameof(SuperAdmin);
 
-    public const string Admin = "Admin";
+    public const string Admin =
+        nameof(Admin);
 
-    public const string Editor = "Editor";
+    public const string Editor =
+        nameof(Editor);
 
-    public const string Writer = "Writer";
+    public const string Author =
+        nameof(Author);
 }

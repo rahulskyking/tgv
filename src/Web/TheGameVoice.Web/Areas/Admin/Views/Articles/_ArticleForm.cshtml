@@ -1,4 +1,6 @@
-﻿@model TheGameVoice.Web.Areas.Admin.ViewModels.Articles.ArticleFormViewModel
+﻿@using TheGameVoice.Infrastructure.Identity
+@model TheGameVoice.Web.Areas.Admin.ViewModels.Articles.ArticleFormViewModel
+
 
 <div class="grid grid-cols-1 gap-8 xl:grid-cols-[1fr_350px]">
 
@@ -61,12 +63,79 @@
 
             </h3>
 
-            <button type="submit"
-                    class="w-full rounded-xl bg-primary px-4 py-3 text-white">
+            <div class="mb-4 rounded-xl bg-slate-100 px-4 py-3">
 
-                Save Draft
+                <div class="text-xs uppercase tracking-wide text-gray-500">
 
-            </button>
+                    Current Status
+
+                </div>
+                <div class="mt-1 font-semibold">
+
+                    @Model.StatusDisplay
+
+                </div>
+
+            </div>
+
+            <div class="space-y-3">
+
+                <button type="submit"
+                        class="w-full rounded-xl bg-primary px-4 py-3 text-black">
+
+                    Save Draft
+
+                </button>
+
+                <button type="button"
+                        disabled
+                        class="w-full cursor-not-allowed rounded-xl bg-slate-200 px-4 py-3 text-slate-500">
+
+                    Submit For Review
+                    (Coming Soon)
+
+                </button>
+
+            </div>
+            <div class="rounded-2xl border border-default bg-white p-5">
+
+                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide">
+
+                    Author
+
+                </h3>
+
+                @if (User.IsInRole(Roles.Author))
+                {
+                    <input asp-for="AuthorId"
+                           type="hidden" />
+
+                    <div class="rounded-xl bg-slate-100 px-4 py-3">
+
+                        @Model.Authors
+                        .FirstOrDefault(
+                        x => x.Value ==
+                        Model.AuthorId.ToString())
+                        ?.Text
+
+                    </div>
+                }
+                else
+                {
+                    <select asp-for="AuthorId"
+                            class="w-full rounded-xl border border-default px-4 py-3">
+
+                        @foreach (var author in Model.Authors)
+                        {
+                            <option value="@author.Value">
+                                @author.Text
+                            </option>
+                        }
+
+                    </select>
+                }
+
+            </div>
 
         </div>
 

@@ -45,4 +45,12 @@ public class ArticleFormViewModel
 
     public List<MediaPickerItemViewModel> MediaItems { get; set; }
         = new();
+
+    public string StatusDisplay { get; set; }
+    = "Draft";
+    public Guid AuthorId { get; set; }
+
+    public List<SelectListItem> Authors { get; set; }
+        = new();
+
 }

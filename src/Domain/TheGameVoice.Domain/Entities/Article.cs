@@ -20,7 +20,7 @@ public class Article : AuditableEntity
     public ArticleStatus Status { get; set; }
 
     public DateTime? PublishedAt { get; set; }
-
+    public Guid? PublishedById { get; set; }
     public Guid AuthorId { get; set; }
 
     public Guid CategoryId { get; set; }
