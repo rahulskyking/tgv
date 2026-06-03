@@ -53,4 +53,24 @@ public class ArticleFormViewModel
     public List<SelectListItem> Authors { get; set; }
         = new();
 
+    public List<Guid> SelectedGalleryImageIds
+    {
+        get;
+        set;
+    }
+= new();
+
+    public List<MediaPickerItemViewModel> GalleryImages
+    {
+        get;
+        set;
+    }
+= new();
+
+    public List<ArticleVideoInputViewModel> Videos
+    {
+        get;
+        set;
+    }
+= new();
 }

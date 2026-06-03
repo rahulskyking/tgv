@@ -57,7 +57,13 @@ public class HomeController : Controller
                     .ToList(),
 
             TrendingGames =
-                games.Take(6).ToList()
+                games.Take(6).ToList(),
+
+            LatestReviews =
+    reviews
+        .Take(4)
+        .ToList()
+
         };
 
         return View(model);

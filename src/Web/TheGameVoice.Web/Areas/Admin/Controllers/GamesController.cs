@@ -3,6 +3,7 @@ using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Entities;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Games;
+using TheGameVoice.Web.Areas.Admin.ViewModels.Media;
 
 namespace TheGameVoice.Web.Areas.Admin.Controllers;
 
@@ -49,7 +50,10 @@ public class GamesController : BaseAdminController
 
             Summary = model.Summary,
 
-            ReleaseDate = model.ReleaseDate
+            ReleaseDate = model.ReleaseDate,
+            CoverImageId =
+                model.CoverImageId
+
         };
 
         await _unitOfWork.Games
@@ -79,7 +83,21 @@ public class GamesController : BaseAdminController
                 Summary = game.Summary,
                 ReleaseDate = game.ReleaseDate
             };
+        model.CoverImageId =
+    game.CoverImageId;
 
+        model.CoverImagePath =
+            game.CoverImage?.FilePath;
+
+        model.MediaItems =
+            (await _unitOfWork.Media.GetAllAsync())
+            .Select(x => new MediaPickerItemViewModel
+            {
+                Id = x.Id,
+                FileName = x.FileName,
+                FilePath = x.FilePath
+            })
+            .ToList();
         return View(model);
     }
     [HttpPost]
@@ -110,7 +128,15 @@ public class GamesController : BaseAdminController
 
         game.ReleaseDate =
             model.ReleaseDate;
+        model.CoverImageId =
+    game.CoverImageId;
+        game.Name =
+    model.Name;
 
+        game.CoverImageId =
+            model.CoverImageId;
+        model.CoverImagePath =
+            game.CoverImage?.FilePath;
         _unitOfWork.Games
             .Update(game);
 
@@ -119,4 +145,45 @@ public class GamesController : BaseAdminController
 
         return RedirectToAction(nameof(Index));
     }
+
+    #region Quick Create
+    [HttpPost]
+    public async Task<IActionResult> QuickCreate(
+    [FromBody] QuickCreateGameRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            return BadRequest();
+        }
+
+        var existingGames =
+            await _unitOfWork.Games.GetAllAsync();
+
+        if (existingGames.Any(x =>
+            x.Name.ToLower() ==
+            request.Name.ToLower()))
+        {
+            return BadRequest(
+                "Game already exists.");
+        }
+
+        var game = new Game
+        {
+            Name = request.Name.Trim()
+        };
+
+        await _unitOfWork.Games
+            .AddAsync(game);
+
+        await _unitOfWork
+            .SaveChangesAsync();
+
+        return Json(
+            new
+            {
+                id = game.Id,
+                name = game.Name
+            });
+    }
+    #endregion
 }

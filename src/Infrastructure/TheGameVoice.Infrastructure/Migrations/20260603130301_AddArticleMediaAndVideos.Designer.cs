@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TheGameVoice.Infrastructure.Persistence.Context;
@@ -11,9 +12,11 @@ using TheGameVoice.Infrastructure.Persistence.Context;
 namespace TheGameVoice.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260603130301_AddArticleMediaAndVideos")]
+    partial class AddArticleMediaAndVideos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -597,10 +600,6 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasColumnType("character varying(150)")
                         .HasColumnName("content_type");
 
-                    b.Property<Guid?>("CoverImageId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("cover_image_id");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -651,9 +650,6 @@ namespace TheGameVoice.Infrastructure.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_media");
-
-                    b.HasIndex("CoverImageId")
-                        .HasDatabaseName("ix_media_cover_image_id");
 
                     b.ToTable("media", (string)null);
                 });
@@ -969,18 +965,7 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.HasOne("TheGameVoice.Domain.Entities.Media", "CoverImage")
                         .WithMany()
                         .HasForeignKey("CoverImageId")
-                        .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("fk_games_media_cover_image_id");
-
-                    b.Navigation("CoverImage");
-                });
-
-            modelBuilder.Entity("TheGameVoice.Domain.Entities.Media", b =>
-                {
-                    b.HasOne("TheGameVoice.Domain.Entities.Media", "CoverImage")
-                        .WithMany()
-                        .HasForeignKey("CoverImageId")
-                        .HasConstraintName("fk_media_media_cover_image_id");
 
                     b.Navigation("CoverImage");
                 });

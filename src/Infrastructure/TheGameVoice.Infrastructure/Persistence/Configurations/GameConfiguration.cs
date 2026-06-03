@@ -24,5 +24,10 @@ public class GameConfiguration : IEntityTypeConfiguration<Game>
             .IsUnique();
 
         builder.HasIndex(x => x.Name);
+        builder
+    .HasOne(x => x.CoverImage)
+    .WithMany()
+    .HasForeignKey(x => x.CoverImageId)
+    .OnDelete(DeleteBehavior.SetNull);
     }
 }

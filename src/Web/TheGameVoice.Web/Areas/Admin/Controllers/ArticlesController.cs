@@ -36,7 +36,21 @@ public class ArticlesController
     public async Task<IActionResult> Index()
     {
         var articles =
-            await _unitOfWork.Articles.GetAllWithDetailsAsync();
+            await _unitOfWork.Articles
+                .GetAllWithDetailsAsync();
+
+        var currentUser =
+            await _userManager.GetUserAsync(User);
+
+        if (User.IsInRole(Roles.Author))
+        {
+            articles =
+                articles
+                    .Where(x =>
+                        x.AuthorId ==
+                        currentUser!.Id)
+                    .ToList();
+        }
 
         return View(articles);
     }
@@ -118,6 +132,38 @@ public class ArticlesController
                     GameId = gameId
                 });
         }
+        var sortOrder = 1;
+
+        foreach (var mediaId in model.SelectedGalleryImageIds)
+        {
+            article.ArticleMedia.Add(
+                new ArticleMedia
+                {
+                    MediaId = mediaId,
+                    SortOrder = sortOrder++
+                });
+        }
+
+        var videoSortOrder = 1;
+
+        foreach (var video in model.Videos)
+        {
+            if (string.IsNullOrWhiteSpace(
+                video.VideoUrl))
+            {
+                continue;
+            }
+
+            article.ArticleVideos.Add(
+                new ArticleVideo
+                {
+                    Title = video.Title,
+
+                    VideoUrl = video.VideoUrl,
+
+                    SortOrder = videoSortOrder++
+                });
+        }
         await _unitOfWork.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
@@ -134,6 +180,16 @@ public class ArticlesController
         {
             return NotFound();
         }
+        var currentUser =
+    await _userManager.GetUserAsync(User);
+
+        if (User.IsInRole(Roles.Author) &&
+            article.AuthorId != currentUser!.Id)
+        {
+            return Forbid();
+        }
+
+
         var model = new EditArticleViewModel
         {
             Id = article.Id,
@@ -160,9 +216,37 @@ public class ArticlesController
 
             SelectedGameIds = article.ArticleGames
                 .Select(x => x.GameId)
+                .ToList(),
+
+            SelectedGalleryImageIds =
+            article.ArticleMedia
+                .OrderBy(x => x.SortOrder)
+                .Select(x => x.MediaId)
                 .ToList()
 
         };
+        model.GalleryImages =
+    article.ArticleMedia
+        .OrderBy(x => x.SortOrder)
+        .Select(x => new MediaPickerItemViewModel
+        {
+            Id = x.Media.Id,
+            FileName = x.Media.FileName,
+            FilePath = x.Media.FilePath
+        })
+        .ToList();
+
+        model.Videos =
+    article.ArticleVideos
+        .OrderBy(x => x.SortOrder)
+        .Select(x =>
+            new ArticleVideoInputViewModel
+            {
+                Title = x.Title,
+
+                VideoUrl = x.VideoUrl
+            })
+        .ToList();
         await PopulateArticleFormData(model);
         model.StatusDisplay = article.Status.ToString();
         return View(model);
@@ -186,10 +270,20 @@ public class ArticlesController
         {
             return NotFound();
         }
-        article.ArticleTags.Clear();
-
         var currentUser =
     await _userManager.GetUserAsync(User);
+
+        if (User.IsInRole(Roles.Author) &&
+            article.AuthorId != currentUser!.Id)
+        {
+            return Forbid();
+        }
+
+        article.ArticleTags.Clear();
+        article.ArticleVideos.Clear();
+        article.ArticleMedia.Clear();
+        article.ArticleGames.Clear();
+
 
         if (User.IsInRole(Roles.Author))
         {
@@ -210,7 +304,7 @@ public class ArticlesController
         article.FeaturedImageId = model.FeaturedImageId;
         article.SeoDescription = model.SeoDescription;
         article.CategoryId = model.CategoryId;
-        article.ArticleGames.Clear();
+
 
         foreach (var tagId in model.SelectedTagIds)
         {
@@ -230,6 +324,18 @@ public class ArticlesController
                 {
                     ArticleId = article.Id,
                     GameId = gameId
+                });
+        }
+        var sortOrder = 1;
+
+        foreach (var mediaId in model.SelectedGalleryImageIds)
+        {
+            article.ArticleMedia.Add(
+                new ArticleMedia
+                {
+                    ArticleId = article.Id,
+                    MediaId = mediaId,
+                    SortOrder = sortOrder++
                 });
         }
         _unitOfWork.Articles.Update(article);
@@ -252,7 +358,14 @@ public class ArticlesController
         {
             return NotFound();
         }
+        var currentUser =
+    await _userManager.GetUserAsync(User);
 
+        if (User.IsInRole(Roles.Author) &&
+            article.AuthorId != currentUser!.Id)
+        {
+            return Forbid();
+        }
         article.Status = ArticleStatus.ReviewPending;
 
         _unitOfWork.Articles.Update(article);
@@ -353,6 +466,11 @@ public class ArticlesController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(
+Roles =
+$"{Roles.Editor}," +
+$"{Roles.Admin}," +
+$"{Roles.SuperAdmin}")]
     public async Task<IActionResult> Reject(Guid id)
     {
         var article =
@@ -400,6 +518,11 @@ public class ArticlesController
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(
+Roles =
+$"{Roles.Editor}," +
+$"{Roles.Admin}," +
+$"{Roles.SuperAdmin}")]
     public async Task<IActionResult> Restore(Guid id)
     {
         var article =
@@ -419,4 +542,30 @@ public class ArticlesController
 
         return RedirectToAction(nameof(Index));
     }
+
+    #region Preview
+    [HttpGet]
+    public async Task<IActionResult> Preview(Guid id)
+    {
+        var article =
+            await _unitOfWork.Articles
+                .GetByIdAsync(id);
+
+        if (article == null)
+        {
+            return NotFound();
+        }
+
+        var currentUser =
+            await _userManager.GetUserAsync(User);
+
+        if (User.IsInRole(Roles.Author) &&
+            article.AuthorId != currentUser!.Id)
+        {
+            return Forbid();
+        }
+
+        return View(article);
+    }
+    #endregion
 }

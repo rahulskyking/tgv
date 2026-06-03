@@ -26,7 +26,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     public DbSet<ArticleTag> ArticleTags => Set<ArticleTag>();
     public DbSet<Media> Media => Set<Media>();
     public DbSet<ArticleGame> ArticleGames => Set<ArticleGame>();
+    public DbSet<ArticleMedia> ArticleMedia
+        => Set<ArticleMedia>();
 
+    public DbSet<ArticleVideo> ArticleVideos
+        => Set<ArticleVideo>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

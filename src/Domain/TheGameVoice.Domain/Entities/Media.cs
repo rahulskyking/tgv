@@ -19,4 +19,14 @@ public class Media : AuditableEntity
     public string? Caption { get; set; }
 
     public string? Credit { get; set; }
+
+    public ICollection<ArticleMedia> ArticleMedia
+    {
+        get;
+        set;
+    }
+= new List<ArticleMedia>();
+    public Guid? CoverImageId { get; set; }
+
+    public Media? CoverImage { get; set; }
 }

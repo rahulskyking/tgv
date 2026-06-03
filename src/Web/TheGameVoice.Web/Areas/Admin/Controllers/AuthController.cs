@@ -49,13 +49,36 @@ public class AuthController : Controller
 
             return View(model);
         }
+        if (!user.IsActive)
+        {
+            ModelState.AddModelError(
+                string.Empty,
+                "User account is inactive.");
 
-        var result = await _signInManager
-            .PasswordSignInAsync(
-                user.UserName!,
-                model.Password,
-                model.RememberMe,
-                lockoutOnFailure: false);
+            return View(model);
+        }
+        var passwordValid =
+    await _userManager.CheckPasswordAsync(
+        user,
+        model.Password);
+
+        if (!passwordValid)
+        {
+            ModelState.AddModelError(
+                "",
+                "Password is incorrect.");
+
+            return View(model);
+        }
+
+        var result =
+            await _signInManager
+                .PasswordSignInAsync(
+                    user.UserName!,
+                    model.Password,
+                    model.RememberMe,
+                    false);
+  
 
         if (!result.Succeeded)
         {

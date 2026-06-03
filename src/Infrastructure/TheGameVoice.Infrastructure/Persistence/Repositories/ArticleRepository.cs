@@ -16,14 +16,22 @@ public class ArticleRepository
     public override async Task<Article?> GetByIdAsync(Guid id)
     {
         return await _context.Articles
-        .Include(x => x.Category)
-        .Include(x => x.FeaturedImage)
-        .Include(x => x.ArticleTags)
-            .ThenInclude(x => x.Tag)
-        .Include(x => x.ArticleGames)
-            .ThenInclude(x => x.Game)
-        .FirstOrDefaultAsync(x =>
-            x.Id == id);
+            .Include(x => x.Category)
+            .Include(x => x.FeaturedImage)
+
+            .Include(x => x.ArticleTags)
+                .ThenInclude(x => x.Tag)
+
+            .Include(x => x.ArticleGames)
+                .ThenInclude(x => x.Game)
+
+            .Include(x => x.ArticleMedia)
+                .ThenInclude(x => x.Media)
+
+            .Include(x => x.ArticleVideos)
+
+            .FirstOrDefaultAsync(x =>
+                x.Id == id);
     }
     public async Task<IReadOnlyList<Article>>
         GetLatestPublishedAsync(int count)

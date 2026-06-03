@@ -83,6 +83,9 @@
     <script src="https://cdn.tiny.cloud/1/00a9squ7bst5dxgjcudejes4cujli8zjx4ubvho2xlqpu0jw/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+    <script src="~/js/imagepicker.js?v=1.0"></script>
+    <script src="~/js/article.js?v=1.0"></script>
+    <script src="~/js/tomselect.js?v=1.0"></script>
     <script>
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -136,7 +139,133 @@
 
     </script>
     <script>
-                  tinymce.init({
+
+        let activeEditor = null;
+        let activeVideoEditor = null;
+
+        function openEditorMediaPicker(editor)
+        {
+            activeEditor = editor;
+
+            document
+                .getElementById("editor-media-modal")
+                .classList.remove("hidden");
+        }
+
+        function insertImageIntoEditor(imageUrl)
+        {
+            if (!activeEditor)
+            {
+                return;
+            }
+
+            activeEditor.insertContent(
+                '<figure class="article-image">' +
+                '<img src="' + imageUrl + '" alt="" loading="lazy" />' +
+                '</figure>' +
+                '<p></p>'
+            );
+
+            document
+                .getElementById("editor-media-modal")
+                .classList.add("hidden");
+        }
+
+        function openVideoModal(editor)
+        {
+            activeVideoEditor = editor;
+
+            document
+                .getElementById("video-insert-modal")
+                .classList.remove("hidden");
+        }
+
+        function getYoutubeEmbedUrl(url)
+        {
+            try
+            {
+                const parsed =
+                    new URL(url);
+
+                if (
+                    parsed.hostname.includes(
+                        "youtube.com"))
+                {
+                    const id =
+                        parsed.searchParams.get("v");
+
+                    if (!id)
+                    {
+                        return null;
+                    }
+
+                    return `https://www.youtube.com/embed/${id}`;
+                }
+
+                if (
+                    parsed.hostname.includes(
+                        "youtu.be"))
+                {
+                    const id =
+                        parsed.pathname.replace("/", "");
+
+                    return `https://www.youtube.com/embed/${id}`;
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        function insertVideoIntoEditor()
+        {
+            const url =
+                document
+                    .getElementById(
+                        "video-url-input")
+                    .value
+                    .trim();
+
+            const embedUrl =
+                getYoutubeEmbedUrl(url);
+
+            if (!embedUrl)
+            {
+                alert(
+                    "Please enter a valid YouTube URL.");
+
+                return;
+            }
+
+            activeVideoEditor.insertContent(
+                '<div class="article-video">' +
+                    '<iframe ' +
+                        'src="' + embedUrl + '" ' +
+                        'width="100%" ' +
+                        'height="500" ' +
+                        'allowfullscreen ' +
+                        'loading="lazy">' +
+                    '</iframe>' +
+                '</div>' +
+                '<p></p>'
+            );
+
+            document
+                .getElementById(
+                    "video-insert-modal")
+                .classList.add("hidden");
+
+            document
+                .getElementById(
+                    "video-url-input")
+                .value = "";
+        }
+
+        tinymce.init({
+
             selector: '#editor',
 
             height: 700,
@@ -158,38 +287,39 @@
                 'undo redo | styles | bold italic underline | ' +
                 'alignleft aligncenter alignright | ' +
                 'bullist numlist | link image media table | ' +
-                'fullscreen code'
-        });
-    </script>
-    <script>
+                'tgvMediaLibrary tgvVideo | fullscreen code',
 
-        document.addEventListener("DOMContentLoaded", function () {
+            setup: function (editor)
+            {
+                editor.ui.registry.addButton(
+                    'tgvMediaLibrary',
+                    {
+                        text: 'Photos',
 
-            const tags =
-                document.getElementById("tags-select");
+                        onAction: function ()
+                        {
+                            openEditorMediaPicker(
+                                editor);
+                        }
+                    });
 
-            if (tags) {
+                editor.ui.registry.addButton(
+                    'tgvVideo',
+                    {
+                        text: 'Video',
 
-                new TomSelect(tags, {
-                    plugins: ['remove_button']
-                });
-
+                        onAction: function ()
+                        {
+                            openVideoModal(
+                                editor);
+                        }
+                    });
             }
-
-            const games =
-                document.getElementById("games-select");
-
-            if (games) {
-
-                new TomSelect(games, {
-                    plugins: ['remove_button']
-                });
-
-            }
-
         });
 
     </script>
+   
+ 
     <script>
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -319,6 +449,54 @@
                 });
 
             }
+
+        });
+
+    </script>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const addVideoBtn =
+                document.getElementById(
+                    "add-video-btn");
+
+            const videoContainer =
+                document.getElementById(
+                    "video-container");
+
+            let videoIndex =
+                videoContainer
+                    .querySelectorAll(".video-item")
+                    .length;
+
+            addVideoBtn.addEventListener(
+                "click",
+                () =>
+                {
+                    const html = `
+                    <div class="video-item mb-4 rounded-xl border p-4">
+
+                        <input
+                            name="Videos[${videoIndex}].Title"
+                            placeholder="Video Title"
+                            class="mb-3 w-full rounded-lg border px-4 py-3" />
+
+                        <input
+                            name="Videos[${videoIndex}].VideoUrl"
+                            placeholder="https://youtube.com/..."
+                            class="w-full rounded-lg border px-4 py-3" />
+
+                    </div>
+                    `;
+
+                    videoContainer
+                        .insertAdjacentHTML(
+                            "beforeend",
+                            html);
+
+                    videoIndex++;
+                });
 
         });
 

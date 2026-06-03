@@ -87,6 +87,18 @@
 
                 </button>
 
+                @if (Model is TheGameVoice.Web.Areas.Admin.ViewModels.Articles.EditArticleViewModel editModel)
+                {
+                    <a asp-action="Preview"
+                       asp-route-id="@editModel.Id"
+                       target="_blank"
+                       class="block w-full rounded-xl border border-[#fa743e] px-4 py-3 text-center font-medium text-[#fa743e]">
+
+                        Preview Article
+
+                    </a>
+                }
+
                 <button type="button"
                         disabled
                         class="w-full cursor-not-allowed rounded-xl bg-slate-200 px-4 py-3 text-slate-500">
@@ -167,11 +179,21 @@
 
         <div class="rounded-2xl border border-default bg-white p-5">
 
-            <h3 class="mb-4 text-sm font-bold uppercase tracking-wide">
+            <div class="mb-4 flex items-center justify-between">
 
-                Tags
+                <h3 class="text-sm font-bold uppercase tracking-wide">
+                    Tags
+                </h3>
 
-            </h3>
+                <button type="button"
+                        id="open-tag-modal"
+                        class="rounded-lg bg-primary px-3 py-2 text-xs text-black">
+
+                    + Add
+
+                </button>
+
+            </div>
 
             <select asp-for="SelectedTagIds"
                     multiple
@@ -191,11 +213,21 @@
 
         <div class="rounded-2xl border border-default bg-white p-5">
 
-            <h3 class="mb-4 text-sm font-bold uppercase tracking-wide">
+            <div class="mb-4 flex items-center justify-between">
 
-                Games
+                <h3 class="text-sm font-bold uppercase tracking-wide">
+                    Games
+                </h3>
 
-            </h3>
+                <button type="button"
+                        id="open-game-modal"
+                        class="rounded-lg bg-primary px-3 py-2 text-xs text-black">
+
+                    + Add
+
+                </button>
+
+            </div>
             <select asp-for="SelectedGameIds"
                     multiple
                     id="games-select"
@@ -263,7 +295,82 @@
             </button>
 
         </div>
+        <div class="rounded-2xl border border-default bg-white p-5">
 
+            <div class="mb-4 flex items-center justify-between">
+
+                <h3 class="text-sm font-bold uppercase tracking-wide">
+
+                    Gallery Images
+
+                </h3>
+
+                <button type="button"
+                        id="open-gallery-picker"
+                        class="rounded-lg bg-primary px-3 py-2 text-sm text-black">
+
+                    Add Images
+
+                </button>
+
+            </div>
+
+            <div id="gallery-preview"
+                 class="grid grid-cols-2 gap-3">
+
+                @foreach (var image in Model.GalleryImages)
+                {
+                    <div class="overflow-hidden rounded-xl border">
+
+                        <img src="@image.FilePath"
+                             class="aspect-video w-full object-cover" />
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+        <div id="gallery-hidden-inputs">
+        </div>
+        <div class="rounded-2xl border border-default bg-white p-5">
+
+            <div class="mb-4 flex items-center justify-between">
+
+                <h3 class="text-sm font-bold uppercase tracking-wide">
+
+                    Videos
+
+                </h3>
+
+                <button type="button"
+                        id="add-video-btn"
+                        class="rounded-lg bg-primary px-3 py-2 text-sm text-white">
+
+                    Add Video
+
+                </button>
+
+            </div>
+
+            <div id="video-container">
+
+                @for (var i = 0; i < Model.Videos.Count; i++)
+                {
+                    <div class="video-item mb-4 rounded-xl border p-4">
+
+                        <input asp-for="Videos[i].Title"
+                               class="mb-3 w-full rounded-lg border px-4 py-3" />
+
+                        <input asp-for="Videos[i].VideoUrl"
+                               class="w-full rounded-lg border px-4 py-3" />
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
         <div class="rounded-2xl border border-default bg-white p-5">
 
             <h3 class="mb-4 text-sm font-bold uppercase tracking-wide">
@@ -351,6 +458,250 @@
 
                 </div>
             }
+
+        </div>
+
+    </div>
+
+</div>
+<div id="gallery-picker-modal"
+     class="fixed inset-0 z-50 hidden">
+
+    <div class="absolute inset-0 bg-black/50"></div>
+
+    <div class="absolute left-1/2 top-1/2 w-full max-w-6xl -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6 shadow-2xl">
+
+        <div class="mb-6 flex items-center justify-between">
+
+            <h2 class="text-2xl font-bold">
+
+                Select Gallery Images
+
+            </h2>
+
+            <button type="button"
+                    id="close-gallery-picker">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div class="grid max-h-[600px] grid-cols-2 gap-4 overflow-y-auto md:grid-cols-4">
+
+            @foreach (var media in Model.MediaItems)
+            {
+                <div class="gallery-media-item cursor-pointer overflow-hidden rounded-xl border-2 border-transparent transition hover:border-primary"
+                     data-id="@media.Id"
+                     data-image="@media.FilePath"
+                     data-name="@media.FileName">
+
+                    <img src="@media.FilePath"
+                         class="aspect-video w-full object-cover" />
+
+                    <div class="p-2 text-xs truncate">
+
+                        @media.FileName
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+        <div class="mt-6 flex justify-end">
+
+            <button type="button"
+                    id="done-gallery-selection"
+                    class="rounded-xl bg-primary px-6 py-3 text-white">
+
+                Done
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<div id="editor-media-modal"
+     class="fixed inset-0 z-50 hidden">
+
+    <div class="absolute inset-0 bg-black/50"></div>
+
+    <div class="absolute left-1/2 top-1/2 w-full max-w-6xl -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6 shadow-2xl">
+
+        <div class="mb-6 flex items-center justify-between">
+
+            <h2 class="text-2xl font-bold">
+
+                Insert Image
+
+            </h2>
+
+            <button type="button"
+                    onclick="document.getElementById('editor-media-modal').classList.add('hidden')">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div class="grid max-h-[600px] grid-cols-2 gap-4 overflow-y-auto md:grid-cols-4">
+
+            @foreach (var media in Model.MediaItems)
+            {
+                <div class="cursor-pointer overflow-hidden rounded-xl border hover:border-primary"
+                     onclick="insertImageIntoEditor('@media.FilePath')">
+
+                    <img src="@media.FilePath"
+                         class="aspect-video w-full object-cover" />
+
+                    <div class="p-2 text-xs truncate">
+
+                        @media.FileName
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+<div id="video-insert-modal"
+     class="fixed inset-0 z-50 hidden">
+
+    <div class="absolute inset-0 bg-black/50"></div>
+
+    <div class="absolute left-1/2 top-1/2 w-full max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6 shadow-2xl">
+
+        <div class="mb-6 flex items-center justify-between">
+
+            <h2 class="text-2xl font-bold">
+
+                Insert YouTube Video
+
+            </h2>
+
+            <button type="button"
+                    onclick="document.getElementById('video-insert-modal').classList.add('hidden')">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <input type="text"
+               id="video-url-input"
+               placeholder="https://www.youtube.com/watch?v=..."
+               class="mb-6 w-full rounded-xl border px-4 py-3" />
+
+        <div class="flex justify-end gap-3">
+
+            <button type="button"
+                    onclick="document.getElementById('video-insert-modal').classList.add('hidden')"
+                    class="rounded-xl border px-4 py-3">
+
+                Cancel
+
+            </button>
+
+            <button type="button"
+                    onclick="insertVideoIntoEditor()"
+                    class="rounded-xl bg-primary px-4 py-3 text-black">
+
+                Insert Video
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<div id="tag-modal"
+     class="fixed inset-0 z-50 hidden">
+
+    <div class="absolute inset-0 bg-black/50"></div>
+
+    <div class="absolute left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6">
+
+        <h2 class="mb-4 text-xl font-bold">
+
+            Create Tag
+
+        </h2>
+
+        <input type="text"
+               id="tag-name"
+               placeholder="Tag Name"
+               class="mb-4 w-full rounded-xl border px-4 py-3" />
+
+        <div class="flex justify-end gap-3">
+
+            <button type="button"
+                    id="close-tag-modal"
+                    class="rounded-xl border px-4 py-3">
+
+                Cancel
+
+            </button>
+
+            <button type="button"
+                    id="save-tag-btn"
+                    class="rounded-xl bg-primary px-4 py-3 text-black">
+
+                Save
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<div id="game-modal"
+     class="fixed inset-0 z-50 hidden">
+
+    <div class="absolute inset-0 bg-black/50"></div>
+
+    <div class="absolute left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6">
+
+        <h2 class="mb-4 text-xl font-bold">
+
+            Create Game
+
+        </h2>
+
+        <input type="text"
+               id="game-name"
+               placeholder="Game Name"
+               class="mb-4 w-full rounded-xl border px-4 py-3" />
+
+        <div class="flex justify-end gap-3">
+
+            <button type="button"
+                    id="close-game-modal"
+                    class="rounded-xl border px-4 py-3">
+
+                Cancel
+
+            </button>
+
+            <button type="button"
+                    id="save-game-btn"
+                    class="rounded-xl bg-primary px-4 py-3 text-black">
+
+                Save
+
+            </button>
 
         </div>
 

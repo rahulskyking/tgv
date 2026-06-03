@@ -1,22 +1,78 @@
 ﻿@model TheGameVoice.Web.Areas.Admin.ViewModels.Games.EditGameViewModel
 
-<div class="max-w-2xl space-y-6">
+<div class="max-w-3xl space-y-6">
 
     <h1 class="text-3xl font-bold">
-        Create Game
+
+        Edit Game
+
     </h1>
 
     <form method="post"
           class="space-y-6">
 
+        <input asp-for="Id"
+               type="hidden" />
+
         <div>
 
             <label class="mb-2 block font-medium">
+
                 Game Name
+
             </label>
 
             <input asp-for="Name"
                    class="w-full rounded-2xl border px-4 py-3" />
+
+        </div>
+
+        <div class="rounded-2xl border bg-white p-5">
+
+            <h3 class="mb-4 font-semibold">
+
+                Cover Image
+
+            </h3>
+
+            <input asp-for="CoverImageId"
+                   id="cover-image-select"
+                   type="hidden" />
+
+            <div class="overflow-hidden rounded-xl border">
+
+                @if (!string.IsNullOrWhiteSpace(Model.CoverImagePath))
+                {
+                    <img id="cover-preview-image"
+                         src="@Model.CoverImagePath"
+                         class="h-64 w-full object-cover" />
+
+                    <div id="cover-placeholder"
+                         class="hidden">
+                    </div>
+                }
+                else
+                {
+                    <img id="cover-preview-image"
+                         class="hidden h-64 w-full object-cover" />
+
+                    <div id="cover-placeholder"
+                         class="flex h-64 items-center justify-center text-gray-500">
+
+                        No cover image selected
+
+                    </div>
+                }
+
+            </div>
+
+            <button type="button"
+                    id="open-game-media-picker"
+                    class="mt-4 w-full rounded-xl border px-4 py-3">
+
+                Choose Cover Image
+
+            </button>
 
         </div>
 

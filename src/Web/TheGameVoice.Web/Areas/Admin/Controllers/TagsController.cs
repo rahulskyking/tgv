@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Entities;
+using TheGameVoice.Infrastructure.Identity;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Tags;
+using TheGameVoice.Web.ViewModels.Tags;
 
 namespace TheGameVoice.Web.Areas.Admin.Controllers;
 
@@ -59,4 +62,57 @@ public class TagsController : BaseAdminController
 
         return RedirectToAction(nameof(Index));
     }
+
+    #region Quick Tag add
+    [Authorize(
+Roles =
+$"{Roles.Author}," +
+$"{Roles.Editor}," +
+$"{Roles.Admin}," +
+$"{Roles.SuperAdmin}")]
+    [HttpPost]
+
+    public async Task<IActionResult> QuickCreate(
+    [FromBody] QuickCreateTagRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            return BadRequest();
+        }
+
+        var existingTags =
+            await _unitOfWork.Tags.GetAllAsync();
+
+        if (existingTags.Any(x =>
+            x.Name.ToLower() ==
+            request.Name.ToLower()))
+        {
+            return BadRequest(
+                "Tag already exists.");
+        }
+
+        var tag = new Tag
+        {
+            Name = request.Name.Trim(),
+
+            Slug =
+    await _slugService
+        .GenerateSlugAsync(
+            request.Name)
+        };
+
+        await _unitOfWork.Tags
+            .AddAsync(tag);
+
+        await _unitOfWork
+            .SaveChangesAsync();
+
+        return Json(
+            new
+            {
+                id = tag.Id,
+                name = tag.Name
+            });
+    }
+    #endregion
 }

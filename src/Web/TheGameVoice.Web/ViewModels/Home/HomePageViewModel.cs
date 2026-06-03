@@ -21,4 +21,8 @@ public class HomePageViewModel
 
     public Article? FeaturedReview
     { get; set; }
+
+    public List<Article> LatestReviews
+    { get; set; }
+= new();
 }

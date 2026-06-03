@@ -1,0 +1,59 @@
+﻿@model TheGameVoice.Domain.Entities.Article
+
+
+<div class="tgv-container py-12">
+
+    <article class="mx-auto max-w-5xl">
+
+        <div class="mb-6">
+
+            <span class="rounded-full bg-yellow-100 px-4 py-2 text-sm font-semibold text-yellow-700">
+
+                PREVIEW MODE
+
+            </span>
+
+        </div>
+
+        <h1 class="tgv-display text-4xl font-extrabold">
+
+            @Model.Title
+
+        </h1>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Summary))
+        {
+            <p class="mt-8 text-lg text-muted">
+
+                @Model.Summary
+
+            </p>
+        }
+
+        <div class="mt-8 border-b border-default pb-8 text-sm text-muted">
+
+            Status:
+            <strong>@Model.Status</strong>
+
+        </div>
+
+        @if (Model.FeaturedImage != null)
+        {
+            <div class="mt-10 overflow-hidden rounded-[32px] shadow-xl">
+
+                <img src="@Model.FeaturedImage.FilePath"
+                     alt="@Model.Title"
+                     class="w-full object-cover" />
+
+            </div>
+        }
+
+        <div class="article-content mt-12">
+
+            @Html.Raw(Model.Content)
+
+        </div>
+
+    </article>
+
+</div>

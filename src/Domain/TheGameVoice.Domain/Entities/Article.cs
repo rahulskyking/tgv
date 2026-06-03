@@ -37,4 +37,18 @@ public class Article : AuditableEntity
     public ICollection<ArticleGame> ArticleGames
     { get; set; }
     = new List<ArticleGame>();
+
+    public ICollection<ArticleMedia> ArticleMedia
+    {
+        get;
+        set;
+    }
+= new List<ArticleMedia>();
+
+    public ICollection<ArticleVideo> ArticleVideos
+    {
+        get;
+        set;
+    }
+    = new List<ArticleVideo>();
 }
