@@ -40,22 +40,66 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=home}/{action=Index}/{id?}");
 
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+
+//    var roleManager =
+//        services.GetRequiredService<
+//            RoleManager<IdentityRole<Guid>>>();
+
+//    var userManager =
+//        services.GetRequiredService<
+//            UserManager<ApplicationUser>>();
+
+//    await RoleSeeder.SeedAsync(roleManager);
+
+//    await DefaultAdminSeeder
+//        .SeedAsync(userManager);
+//}
+// ======================================================
+// DATABASE MIGRATION + SEEDING
+// ======================================================
+// This ensures Railway/PostgreSQL automatically:
+// 1. Creates database tables
+// 2. Applies pending migrations
+// 3. Seeds roles
+// 4. Seeds default admin
+// ======================================================
+
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
+    var services =
+        scope.ServiceProvider;
 
+    // --------------------------------------------------
+    // Apply EF Core migrations automatically
+    // --------------------------------------------------
+    var dbContext =
+        services.GetRequiredService<AppDbContext>();
+
+    await dbContext.Database.MigrateAsync();
+
+    // --------------------------------------------------
+    // Seed Identity Roles
+    // --------------------------------------------------
     var roleManager =
         services.GetRequiredService<
             RoleManager<IdentityRole<Guid>>>();
 
+    await RoleSeeder.SeedAsync(
+        roleManager);
+
+    // --------------------------------------------------
+    // Seed Default Admin User
+    // --------------------------------------------------
     var userManager =
         services.GetRequiredService<
             UserManager<ApplicationUser>>();
 
-    await RoleSeeder.SeedAsync(roleManager);
-
     await DefaultAdminSeeder
-        .SeedAsync(userManager);
+        .SeedAsync(
+            userManager);
 }
 
 app.Run();
