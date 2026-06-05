@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["dotnet-sdk_8"]
+
+[phases.build]
+cmds = [
+  "dotnet restore src/Web/TheGameVoice.Web/TheGameVoice.Web.csproj",
+  "dotnet publish src/Web/TheGameVoice.Web/TheGameVoice.Web.csproj -c Release -o out"
+]
+
+[start]
+cmd = "dotnet out/TheGameVoice.Web.dll"
