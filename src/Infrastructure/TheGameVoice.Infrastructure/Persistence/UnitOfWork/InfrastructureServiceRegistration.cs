@@ -20,10 +20,47 @@ public static class InfrastructureServiceRegistration
     {
         services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseNpgsql(
+            var connectionString =
                 configuration.GetConnectionString(
-                    "DefaultConnection"))
-            .UseSnakeCaseNamingConvention();
+                    "DefaultConnection");
+
+            var databaseUrl =
+                Environment.GetEnvironmentVariable(
+                    "DATABASE_URL");
+
+            if (!string.IsNullOrWhiteSpace(databaseUrl))
+            {
+                var uri =
+                    new Uri(databaseUrl);
+
+                var userInfo =
+                    uri.UserInfo.Split(':');
+
+                connectionString =
+                    $"Host={uri.Host};" +
+                    $"Port={uri.Port};" +
+                    $"Database={uri.AbsolutePath.TrimStart('/')};" +
+                    $"Username={userInfo[0]};" +
+                    $"Password={userInfo[1]};" +
+                    $"SSL Mode=Require;" +
+                    $"Trust Server Certificate=true";
+            }
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException(
+                    "Database connection string not configured.");
+            }
+
+            Console.WriteLine(
+                $"Database Source: " +
+                (string.IsNullOrWhiteSpace(databaseUrl)
+                    ? "DefaultConnection"
+                    : "DATABASE_URL"));
+
+            options
+                .UseNpgsql(connectionString)
+                .UseSnakeCaseNamingConvention();
         });
         services.AddIdentity<ApplicationUser,
     IdentityRole<Guid>>(options =>
