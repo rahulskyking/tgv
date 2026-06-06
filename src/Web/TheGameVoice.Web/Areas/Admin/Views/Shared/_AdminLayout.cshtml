@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+<!DOCTYPE html>
 <html>
 <head>
     <title>TheGameVoice Admin</title>
@@ -87,7 +88,7 @@
     <script src="~/js/article.js?v=1.0"></script>
     <script src="~/js/tomselect.js?v=1.0"></script>
     <script>
-
+            const tinyMceApiKey = '@Configuration["TinyMce:ApiKey"]';
         document.addEventListener("DOMContentLoaded", function () {
 
             const select =
@@ -264,9 +265,11 @@
                 .value = "";
         }
 
-        tinymce.init({
+                tinymce.init({
 
             selector: '#editor',
+
+            apiKey: 'YOUR_NEW_TINYMCE_API_KEY',
 
             height: 700,
 
@@ -298,8 +301,7 @@
 
                         onAction: function ()
                         {
-                            openEditorMediaPicker(
-                                editor);
+                            openEditorMediaPicker(editor);
                         }
                     });
 
@@ -310,8 +312,7 @@
 
                         onAction: function ()
                         {
-                            openVideoModal(
-                                editor);
+                            openVideoModal(editor);
                         }
                     });
             }
