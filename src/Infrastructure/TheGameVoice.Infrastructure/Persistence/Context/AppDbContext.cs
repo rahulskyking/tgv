@@ -80,7 +80,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     CancellationToken cancellationToken = default)
     {
         UpdateAuditFields();
-
+        
         return await base.SaveChangesAsync(cancellationToken);
     }
 

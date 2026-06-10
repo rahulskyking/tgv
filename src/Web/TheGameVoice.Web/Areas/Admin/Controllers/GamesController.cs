@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Entities;
@@ -11,12 +12,16 @@ public class GamesController : BaseAdminController
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISlugService _slugService;
+    private readonly ICacheService
+_cacheService;
     public GamesController(
         IUnitOfWork unitOfWork,
-        ISlugService slugService)
+        ISlugService slugService,
+        ICacheService cacheService)
     {
         _unitOfWork = unitOfWork;
         _slugService = slugService;
+        _cacheService = cacheService;
     }
 
     public async Task<IActionResult> Index()
@@ -28,10 +33,24 @@ public class GamesController : BaseAdminController
         return View(games);
     }
     [HttpGet]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        return View();
+        var model =
+            new CreateGameViewModel();
+
+        model.MediaItems =
+            (await _unitOfWork.Media.GetAllAsync())
+            .Select(x => new MediaPickerItemViewModel
+            {
+                Id = x.Id,
+                FileName = x.FileName,
+                FilePath = x.FilePath
+            })
+            .ToList();
+
+        return View(model);
     }
+
     [HttpPost]
     public async Task<IActionResult> Create(
     CreateGameViewModel model)
@@ -40,7 +59,30 @@ public class GamesController : BaseAdminController
         {
             return View(model);
         }
+        var existingGame =
+    (await _unitOfWork.Games.GetAllAsync())
+    .FirstOrDefault(x =>
+        x.Name.ToLower().Trim() ==
+        model.Name.ToLower().Trim());
 
+        if (existingGame != null)
+        {
+            ModelState.AddModelError(
+                nameof(model.Name),
+                "A game with this name already exists.");
+
+            model.MediaItems =
+                (await _unitOfWork.Media.GetAllAsync())
+                .Select(x => new MediaPickerItemViewModel
+                {
+                    Id = x.Id,
+                    FileName = x.FileName,
+                    FilePath = x.FilePath
+                })
+                .ToList();
+
+            return View(model);
+        }
         var game = new Game
         {
             Name = model.Name,
@@ -60,6 +102,7 @@ public class GamesController : BaseAdminController
             .AddAsync(game);
 
         await _unitOfWork.SaveChangesAsync();
+        _cacheService.RemoveMany(CacheKeys.HomePage);
 
         return RedirectToAction(nameof(Index));
     }
@@ -108,7 +151,31 @@ public class GamesController : BaseAdminController
         {
             return View(model);
         }
+        var existingGame =
+    (await _unitOfWork.Games.GetAllAsync())
+    .FirstOrDefault(x =>
+        x.Id != model.Id &&
+        x.Name.ToLower().Trim() ==
+        model.Name.ToLower().Trim());
 
+        if (existingGame != null)
+        {
+            ModelState.AddModelError(
+                nameof(model.Name),
+                "A game with this name already exists.");
+
+            model.MediaItems =
+                (await _unitOfWork.Media.GetAllAsync())
+                .Select(x => new MediaPickerItemViewModel
+                {
+                    Id = x.Id,
+                    FileName = x.FileName,
+                    FilePath = x.FilePath
+                })
+                .ToList();
+
+            return View(model);
+        }
         var game =
             await _unitOfWork.Games
                 .GetByIdAsync(model.Id);
@@ -133,10 +200,8 @@ public class GamesController : BaseAdminController
         game.Name =
     model.Name;
 
-        game.CoverImageId =
-            model.CoverImageId;
-        model.CoverImagePath =
-            game.CoverImage?.FilePath;
+        game.CoverImageId = model.CoverImageId;
+
         _unitOfWork.Games
             .Update(game);
 
@@ -184,6 +249,33 @@ public class GamesController : BaseAdminController
                 id = game.Id,
                 name = game.Name
             });
+    }
+    #endregion
+
+
+    #region Delete Game
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(
+    Guid id)
+    {
+        var game =
+            await _unitOfWork.Games
+                .GetByIdAsync(id);
+
+        if (game is null)
+        {
+            return NotFound();
+        }
+
+        _unitOfWork.Games
+            .Remove(game);
+
+        await _unitOfWork
+            .SaveChangesAsync();
+
+        return RedirectToAction(
+            nameof(Index));
     }
     #endregion
 }

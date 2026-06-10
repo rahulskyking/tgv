@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Entities;
@@ -18,7 +19,8 @@ public class ArticlesController
     : BaseAdminController
 {
     private readonly IUnitOfWork _unitOfWork;
-
+    private readonly ICacheService
+_cacheService;
     private readonly UserManager<ApplicationUser>
     _userManager;
     private readonly ISlugService _slugService;
@@ -26,11 +28,13 @@ public class ArticlesController
     public ArticlesController(
         IUnitOfWork unitOfWork,
         ISlugService slugService,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        ICacheService cacheService)
     {
         _unitOfWork = unitOfWork;
         _slugService = slugService;
         _userManager = userManager;
+        _cacheService = cacheService;
     }
 
     public async Task<IActionResult> Index()
@@ -165,6 +169,7 @@ public class ArticlesController
                 });
         }
         await _unitOfWork.SaveChangesAsync();
+        _cacheService.RemoveMany(CacheKeys.HomePage);
 
         return RedirectToAction(nameof(Index));
     }
@@ -340,7 +345,7 @@ public class ArticlesController
         }
         _unitOfWork.Articles.Update(article);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();_cacheService.RemoveMany(CacheKeys.HomePage);
 
         return RedirectToAction(nameof(Index));
     }
@@ -370,7 +375,7 @@ public class ArticlesController
 
         _unitOfWork.Articles.Update(article);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();_cacheService.RemoveMany(CacheKeys.HomePage);
 
         return RedirectToAction(nameof(Index));
     }
@@ -405,7 +410,7 @@ public class ArticlesController
 
         _unitOfWork.Articles.Update(article);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();_cacheService.RemoveMany(CacheKeys.HomePage);
 
         return RedirectToAction(nameof(Index));
     }
@@ -486,7 +491,7 @@ $"{Roles.SuperAdmin}")]
 
         _unitOfWork.Articles.Update(article);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();_cacheService.RemoveMany(CacheKeys.HomePage);
 
         return RedirectToAction(nameof(Index));
     }
@@ -512,7 +517,7 @@ $"{Roles.SuperAdmin}")]
 
         _unitOfWork.Articles.Update(article);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();_cacheService.RemoveMany(CacheKeys.HomePage);
 
         return RedirectToAction(nameof(Index));
     }
@@ -538,7 +543,7 @@ $"{Roles.SuperAdmin}")]
 
         _unitOfWork.Articles.Update(article);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();_cacheService.RemoveMany(CacheKeys.HomePage);
 
         return RedirectToAction(nameof(Index));
     }

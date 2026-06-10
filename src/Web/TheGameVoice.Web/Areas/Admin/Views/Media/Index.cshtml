@@ -37,24 +37,42 @@
                 <div class="p-4">
 
                     <p class="truncate text-sm font-semibold">
-
                         @item.FileName
-
                     </p>
 
                     <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
 
                         <span>
-
                             @item.ContentType.Replace("image/", "").ToUpper()
-
                         </span>
 
                         <span>
-
                             @(item.FileSize / 1024) KB
-
                         </span>
+
+                    </div>
+
+                    <div class="mt-4 flex gap-2">
+
+                        <a asp-action="Edit"
+                           asp-route-id="@item.Id"
+                           class="rounded-lg border px-3 py-1 text-xs">
+                            Edit
+                        </a>
+
+                        <form asp-action="Delete"
+                              asp-route-id="@item.Id"
+                              method="post"
+                              onsubmit="return confirm('Delete this media permanently?');">
+
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit"
+                                    class="rounded-lg bg-red-600 px-3 py-1 text-xs text-black">
+                                Delete
+                            </button>
+
+                        </form>
 
                     </div>
 

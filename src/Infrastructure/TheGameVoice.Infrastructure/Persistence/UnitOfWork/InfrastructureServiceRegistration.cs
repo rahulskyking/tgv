@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
+using TheGameVoice.Infrastructure.Configuration;
 using TheGameVoice.Infrastructure.Identity.Entities;
 using TheGameVoice.Infrastructure.Persistence.Context;
 using TheGameVoice.Infrastructure.Persistence.Repositories;
@@ -73,8 +74,7 @@ public static class InfrastructureServiceRegistration
 
         options.Password.RequiredLength = 6;
     })
-.AddEntityFrameworkStores<AppDbContext>()
-.AddDefaultTokenProviders();
+       .AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
         services.AddScoped<IArticleRepository,
             ArticleRepository>();
@@ -86,9 +86,19 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ISlugService,
     SlugService>();
 
-        services.AddScoped<IGameRepository,
-GameRepository>();
+        services.AddScoped<IGameRepository,GameRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
+
+        services.Configure<SupabaseStorageOptions>(configuration.GetSection("SupabaseStorage"));
+        services.AddHttpClient();
+
+
+        services.AddScoped<IStorageService,SupabaseStorageService>();
+
+        services.AddMemoryCache();
+
+        services.AddScoped<ICacheService,
+            MemoryCacheService>();
         return services;
 
     }

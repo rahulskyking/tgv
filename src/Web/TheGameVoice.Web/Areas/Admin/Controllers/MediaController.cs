@@ -1,22 +1,29 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Interfaces.Persistence;
+using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Entities;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Media;
 
 namespace TheGameVoice.Web.Areas.Admin.Controllers;
 
+[Area("Admin")]
 public class MediaController : BaseAdminController
 {
-    private readonly IWebHostEnvironment _environment;
+    private readonly IStorageService _storageService;
 
     private readonly IUnitOfWork _unitOfWork;
-
+    private readonly ICacheService
+_cacheService;
     public MediaController(
-        IWebHostEnvironment environment,
-        IUnitOfWork unitOfWork)
+        IStorageService storageService,
+        IUnitOfWork unitOfWork,
+        ICacheService cacheService)
     {
-        _environment = environment;
+        _storageService = storageService;
+
         _unitOfWork = unitOfWork;
+        _cacheService = cacheService;
     }
 
     public async Task<IActionResult> Index()
@@ -34,9 +41,9 @@ public class MediaController : BaseAdminController
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
+ 
     public async Task<IActionResult> Upload(
-        UploadMediaViewModel model)
+    UploadMediaViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -51,12 +58,13 @@ public class MediaController : BaseAdminController
 
             return View(model);
         }
+
         var allowedTypes = new[]
-{
-    "image/jpeg",
-    "image/png",
-    "image/webp"
-};
+        {
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    };
 
         if (!allowedTypes.Contains(
             model.File.ContentType))
@@ -76,51 +84,41 @@ public class MediaController : BaseAdminController
 
             return View(model);
         }
-        var uploadsFolder = Path.Combine(
-            _environment.WebRootPath,
-            "uploads");
 
-        if (!Directory.Exists(uploadsFolder))
+        try
         {
-            Directory.CreateDirectory(uploadsFolder);
+            Console.WriteLine("Upload started");
+
+            await using var stream = model.File.OpenReadStream();
+
+            var filePath = await _storageService.UploadAsync(
+                stream, model.File.FileName, model.File.ContentType);
+
+            var media = new Media
+            {
+                FileName = model.File.FileName,
+                FilePath = filePath,
+                ContentType = model.File.ContentType,
+                FileSize = model.File.Length,
+                IsImage = model.File.ContentType.StartsWith("image/")
+            };
+
+            await _unitOfWork.Media.AddAsync(media);     // ← Only once
+            await _unitOfWork.SaveChangesAsync();_cacheService.RemoveMany(CacheKeys.HomePage);        // ← Only once
+
+            Console.WriteLine($"Media saved with ID: {media.Id}");
+
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+            // Consider logging + showing a friendly error instead of re-throwing
+            throw;
         }
 
-        var uniqueFileName =
-            $"{Guid.NewGuid()}_{model.File.FileName}";
 
-        var physicalFilePath = Path.Combine(
-            uploadsFolder,
-            uniqueFileName);
-
-        await using (var stream = new FileStream(
-            physicalFilePath,
-            FileMode.Create))
-        {
-            await model.File.CopyToAsync(stream);
-        }
-
-        var media = new Media
-        {
-            FileName = model.File.FileName,
-
-            FilePath = $"/uploads/{uniqueFileName}",
-
-            ContentType = model.File.ContentType,
-
-            FileSize = model.File.Length,
-
-            IsImage = model.File.ContentType
-                .StartsWith("image/")
-        };
-
-        await _unitOfWork.Media
-            .AddAsync(media);
-
-        await _unitOfWork.SaveChangesAsync();
-
-        return RedirectToAction(nameof(Index));
     }
-
     [HttpGet]
     public async Task<IActionResult> Edit(Guid id)
     {
@@ -179,7 +177,32 @@ public class MediaController : BaseAdminController
         _unitOfWork.Media.Update(media);
 
         await _unitOfWork.SaveChangesAsync();
+        _cacheService.RemoveMany(CacheKeys.HomePage);
 
         return RedirectToAction(nameof(Index));
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(
+    Guid id)
+    {
+        var media =
+            await _unitOfWork.Media
+                .GetByIdAsync(id);
+
+        if (media is null)
+        {
+            return NotFound();
+        }
+
+        await _storageService.DeleteAsync(
+            media.FilePath);
+
+        _unitOfWork.Media.Remove(media);
+
+        await _unitOfWork.SaveChangesAsync();_cacheService.RemoveMany(CacheKeys.HomePage);
+
+        return RedirectToAction(
+            nameof(Index));
     }
 }

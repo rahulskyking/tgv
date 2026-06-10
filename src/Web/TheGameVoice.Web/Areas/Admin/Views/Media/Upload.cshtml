@@ -6,13 +6,17 @@
         Upload Media
     </h1>
 
-    <form method="post"
+    <form asp-area="Admin"
+          asp-controller="Media"
+          asp-action="Upload"
+          method="post"
           enctype="multipart/form-data"
           class="space-y-6">
 
-        <div>
+        @Html.AntiForgeryToken()
 
-            <label class="mb-2 block font-medium">
+        <div>
+            <label asp-for="File" class="mb-2 block font-medium">
                 Select File
             </label>
 
@@ -20,13 +24,12 @@
                    type="file"
                    class="block w-full rounded-lg border p-3" />
 
+            <span asp-validation-for="File" class="text-red-500"></span>
         </div>
 
         <button type="submit"
                 class="rounded-lg bg-[#fa743e] px-6 py-3 text-white">
             Upload
         </button>
-
     </form>
-
 </div>

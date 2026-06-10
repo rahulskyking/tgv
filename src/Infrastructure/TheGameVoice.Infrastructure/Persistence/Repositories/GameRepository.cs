@@ -66,4 +66,8 @@ public class GameRepository : IGameRepository
             .FirstOrDefaultAsync(x =>
                 x.Slug == slug);
     }
+    public void Remove(Game game)
+    {
+        _context.Games.Remove(game);
+    }
 }

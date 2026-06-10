@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Entities;
@@ -14,13 +15,16 @@ public class TagsController : BaseAdminController
     private readonly IUnitOfWork _unitOfWork;
 
     private readonly ISlugService _slugService;
-
+    private readonly ICacheService
+_cacheService;
     public TagsController(
         IUnitOfWork unitOfWork,
-        ISlugService slugService)
+        ISlugService slugService,
+        ICacheService cacheService)
     {
         _unitOfWork = unitOfWork;
         _slugService = slugService;
+        _cacheService = cacheService;
     }
 
     public async Task<IActionResult> Index()
@@ -59,6 +63,7 @@ public class TagsController : BaseAdminController
             .AddAsync(tag);
 
         await _unitOfWork.SaveChangesAsync();
+        _cacheService.RemoveMany(CacheKeys.HomePage);
 
         return RedirectToAction(nameof(Index));
     }

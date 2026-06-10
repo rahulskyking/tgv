@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using TheGameVoice.Infrastructure.Identity.Seed;
 using TheGameVoice.Infrastructure.Identity.Entities;
 
+
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services

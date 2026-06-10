@@ -5,13 +5,13 @@
     
     <!-- CATEGORY HERO -->
 
-    <section class="overflow-hidden rounded-[32px] bg-white shadow-xl">
+    <section class="py-10">
 
-        <div class="p-10 lg:p-14">
+        <div class="max-w-4xl">
 
-            <div class="mb-6">
+            <div class="mb-4">
 
-                <span class="rounded-full border-2 border-primary px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-primary">
+                <span class="text-sm font-black uppercase tracking-[0.3em] text-primary">
 
                     Category
 
@@ -19,13 +19,13 @@
 
             </div>
 
-            <h1 class="tgv-display text-5xl color: var(--tgv-text); lg:text-7xl">
+            <h1 class="tgv-display text-6xl lg:text-8xl">
 
                 @Model.Category.Name
 
             </h1>
 
-            <p class="mt-8 max-w-4xl text-xl leading-relaxed text-slate-600">
+            <p class="mt-6 max-w-3xl text-xl leading-relaxed text-muted">
 
                 Latest @Model.Category.Name coverage,
                 news, reviews, features and editorial content
@@ -33,17 +33,21 @@
 
             </p>
 
-            <div class="mt-10 border-t border-default pt-8">
+            <div class="mt-8 flex items-center gap-6">
 
-                <div class="text-xs font-black uppercase tracking-[0.2em] text-primary">
+                <div>
 
-                    Articles
+                    <div class="text-3xl font-black">
 
-                </div>
+                        @Model.Articles.Count
 
-                <div class="mt-2 text-lg font-semibold color: var(--tgv-text);">
+                    </div>
 
-                    @Model.Articles.Count
+                    <div class="text-sm uppercase tracking-wider text-muted">
+
+                        Articles
+
+                    </div>
 
                 </div>
 
@@ -63,7 +67,7 @@
 
             @foreach (var article in Model.Articles)
             {
-                <partial name="~/Views/Shared/Components/_ArticleCard.cshtml"
+                <partial name="~/Views/Shared/Components/_CategoryArticleCard.cshtml"
                          model="article" />
             }
 

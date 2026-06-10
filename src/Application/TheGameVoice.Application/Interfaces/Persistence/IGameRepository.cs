@@ -16,4 +16,5 @@ public interface IGameRepository
     void Update(Game game);
     Task<Game?> GetBySlugWithArticlesAsync(
     string slug);
+    void Remove(Game game);
 }

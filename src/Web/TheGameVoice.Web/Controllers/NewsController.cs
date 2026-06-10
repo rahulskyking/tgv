@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Interfaces.Persistence;
+using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Enums;
 using TheGameVoice.Web.ViewModels.News;
 
@@ -9,12 +11,14 @@ public class NewsController : Controller
 {
     private readonly IArticleRepository
         _articleRepository;
-
+    private readonly ICacheService
+_cacheService;
     public NewsController(
-        IArticleRepository articleRepository)
+        IArticleRepository articleRepository, ICacheService cacheService)
     {
         _articleRepository =
             articleRepository;
+        _cacheService = cacheService;
     }
 
     public async Task<IActionResult> Index()
@@ -28,36 +32,47 @@ public class NewsController : Controller
 
     [Route("news/{slug}")]
     public async Task<IActionResult> Details(
-       string slug)
+        string slug)
     {
-        var article =
-            await _articleRepository
-                .GetBySlugAsync(slug);
+        var model =
+            await _cacheService.GetOrCreateAsync(
+                $"article_{slug}",
+                async () =>
+                {
+                    var article =
+                        await _articleRepository
+                            .GetBySlugAsync(slug);
 
-        if (article == null
-            || article.Status != ArticleStatus.Published)
+                    if (article == null
+                        || article.Status != ArticleStatus.Published)
+                    {
+                        return null!;
+                    }
+
+                    var relatedArticles =
+                        await _articleRepository
+                            .GetRelatedArticlesAsync(
+                                article.CategoryId,
+                                article.Id);
+
+                    return new ArticleDetailsViewModel
+                    {
+                        Article = article,
+                        RelatedArticles = relatedArticles
+                    };
+                },
+                CacheDurations.Short);
+
+        if (model == null)
         {
             return NotFound();
         }
-
-        var relatedArticles =
-            await _articleRepository
-                .GetRelatedArticlesAsync(
-                    article.CategoryId,
-                    article.Id);
-
-        var model =
-            new ArticleDetailsViewModel
-            {
-                Article = article,
-                RelatedArticles = relatedArticles
-            };
 
         ViewData["CanonicalUrl"] =
             Url.Action(
                 "Details",
                 "News",
-                new { slug = article.Slug },
+                new { slug = model.Article.Slug },
                 Request.Scheme);
 
         return View(model);

@@ -14,13 +14,15 @@
         <div>
 
             <label class="mb-2 block font-medium">
-
                 Game Name
-
             </label>
 
             <input asp-for="Name"
                    class="w-full rounded-2xl border px-4 py-3" />
+
+            <span asp-validation-for="Name"
+                  class="text-sm text-red-600">
+            </span>
 
         </div>
 
@@ -71,3 +73,101 @@
     </form>
 
 </div>
+<div id="media-picker-modal"
+     class="fixed inset-0 z-50 hidden">
+
+    <div class="absolute inset-0 bg-black/50"></div>
+
+    <div class="absolute left-1/2 top-1/2 w-full max-w-6xl -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6 shadow-2xl">
+
+        <div class="mb-6 flex items-center justify-between">
+
+            <h2 class="text-2xl font-bold">
+                Media Library
+            </h2>
+
+            <button type="button"
+                    id="close-media-picker">
+                ✕
+            </button>
+
+        </div>
+
+        <div class="grid max-h-[600px] grid-cols-2 gap-4 overflow-y-auto md:grid-cols-4">
+
+            @foreach (var media in Model.MediaItems)
+            {
+                <div class="media-item cursor-pointer overflow-hidden rounded-xl border-2 border-transparent transition hover:border-primary"
+                     data-id="@media.Id"
+                     data-image="@media.FilePath">
+
+                    <img src="@media.FilePath"
+                         class="aspect-video w-full object-cover" />
+
+                    <div class="p-2 text-xs truncate">
+                        @media.FileName
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+
+    document
+        .getElementById("open-game-media-picker")
+        .addEventListener("click", function ()
+        {
+            document
+                .getElementById("media-picker-modal")
+                .classList.remove("hidden");
+        });
+
+    document
+        .getElementById("close-media-picker")
+        .addEventListener("click", function ()
+        {
+            document
+                .getElementById("media-picker-modal")
+                .classList.add("hidden");
+        });
+
+    document
+        .querySelectorAll(".media-item")
+        .forEach(item =>
+        {
+            item.addEventListener("click", function ()
+            {
+                const imageId =
+                    this.dataset.id;
+
+                const imageUrl =
+                    this.dataset.image;
+
+                document
+                    .getElementById("cover-image-select")
+                    .value = imageId;
+
+                const preview =
+                    document
+                        .getElementById("cover-preview-image");
+
+                preview.src = imageUrl;
+
+                preview.classList.remove("hidden");
+
+                document
+                    .getElementById("cover-placeholder")
+                    .classList.add("hidden");
+
+                document
+                    .getElementById("media-picker-modal")
+                    .classList.add("hidden");
+            });
+        });
+
+</script>

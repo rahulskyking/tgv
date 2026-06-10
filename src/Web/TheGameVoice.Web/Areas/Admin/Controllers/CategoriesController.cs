@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Entities;
@@ -12,15 +13,18 @@ public class CategoriesController
     private readonly IUnitOfWork _unitOfWork;
 
     private readonly ISlugService _slugService;
-
+    private readonly ICacheService
+_cacheService;
 
 
     public CategoriesController(
         IUnitOfWork unitOfWork,
-        ISlugService slugService)
+        ISlugService slugService,
+        ICacheService cacheService)
     {
         _unitOfWork = unitOfWork;
         _slugService = slugService;
+        _cacheService = cacheService;
     }
 
     public async Task<IActionResult> Index()
@@ -59,6 +63,7 @@ public class CategoriesController
             .AddAsync(category);
 
         await _unitOfWork.SaveChangesAsync();
+        _cacheService.RemoveMany(CacheKeys.HomePage);
 
         return RedirectToAction(nameof(Index));
     }

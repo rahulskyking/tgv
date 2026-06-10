@@ -26,7 +26,4 @@ public class Media : AuditableEntity
         set;
     }
 = new List<ArticleMedia>();
-    public Guid? CoverImageId { get; set; }
-
-    public Media? CoverImage { get; set; }
 }

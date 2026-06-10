@@ -1,4 +1,5 @@
 ﻿using TheGameVoice.Application.Interfaces.Persistence;
+using TheGameVoice.Domain.Common.Base;
 using TheGameVoice.Infrastructure.Persistence.Context;
 using TheGameVoice.Infrastructure.Persistence.Repositories;
 
@@ -27,7 +28,22 @@ public class UnitOfWork : IUnitOfWork
     public async Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default)
     {
-        return await _context
-            .SaveChangesAsync(cancellationToken);
+        foreach (var entry in _context.ChangeTracker.Entries())
+        {
+            Console.WriteLine(
+                $"Entity: {entry.Entity.GetType().Name}");
+
+            Console.WriteLine(
+                $"State: {entry.State}");
+
+            if (entry.Entity is BaseEntity baseEntity)
+            {
+                Console.WriteLine(
+                    $"Id: {baseEntity.Id}");
+            }
+        }
+
+        return await _context.SaveChangesAsync(
+            cancellationToken);
     }
 }
