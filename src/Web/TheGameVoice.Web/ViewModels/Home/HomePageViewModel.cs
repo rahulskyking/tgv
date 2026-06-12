@@ -25,4 +25,11 @@ public class HomePageViewModel
     public List<Article> LatestReviews
     { get; set; }
 = new();
+    public IReadOnlyList<Article>
+    TrendingArticles
+    {
+        get;
+        set;
+    }
+= new List<Article>();
 }

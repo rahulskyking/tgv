@@ -14,4 +14,5 @@ public interface IUnitOfWork
 
     ITagRepository Tags { get; }
     IGameRepository Games { get; }
+    IArticleViewRepository ArticleViews { get; }
 } 

@@ -180,3 +180,24 @@
    
 
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const key =
+            "article-view-@Model.Article.Id";
+
+        if (localStorage.getItem(key))
+            return;
+
+        fetch(
+            "/api/article-views/@Model.Article.Id",
+            {
+                method: "POST"
+            });
+
+        localStorage.setItem(
+            key,
+            new Date().toISOString());
+
+    });
+</script>

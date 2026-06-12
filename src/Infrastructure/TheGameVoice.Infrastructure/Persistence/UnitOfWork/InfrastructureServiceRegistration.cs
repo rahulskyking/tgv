@@ -99,6 +99,8 @@ public static class InfrastructureServiceRegistration
 
         services.AddScoped<ICacheService,
             MemoryCacheService>();
+        services.AddScoped<IArticleViewRepository,
+    ArticleViewRepository>();
         return services;
 
     }

@@ -38,6 +38,7 @@ public class ArticleRepository
     {
         return await _dbSet
             .Where(x => x.Status == ArticleStatus.Published)
+            .Include(x => x.Category)
             .OrderByDescending(x => x.PublishedAt)
             .Take(count)
             .ToListAsync();
@@ -160,6 +161,21 @@ public class ArticleRepository
                     t.Tag.Slug == slug))
             .OrderByDescending(x =>
                 x.PublishedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IReadOnlyList<Article>>
+        GetMostReadAsync(int count)
+    {
+        return await _context.Articles
+            .Include(x => x.FeaturedImage)
+            .Include(x => x.Category)
+            .Where(x =>
+                x.Status ==
+                ArticleStatus.Published)
+            .OrderByDescending(x =>
+                x.ViewCount)
+            .Take(count)
             .ToListAsync();
     }
 }

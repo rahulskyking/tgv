@@ -14,10 +14,13 @@ public class HomeController : Controller
     _gameRepository;
     private readonly ICacheService
     _cacheService;
+
+    private readonly IArticleViewRepository _articleViewRepository;
     public HomeController(
         IArticleRepository articleRepository,
         IGameRepository gameRepository,
-        ICacheService cacheService = null)
+        ICacheService cacheService,
+        IArticleViewRepository articleViewRepository)
     {
         _articleRepository =
             articleRepository;
@@ -25,6 +28,7 @@ public class HomeController : Controller
         _gameRepository =
             gameRepository;
         _cacheService = cacheService;
+        _articleViewRepository = articleViewRepository;
     }
 
     public async Task<IActionResult> Index()
@@ -49,7 +53,9 @@ public class HomeController : Controller
                                 &&
                                 x.Category.Name == "Reviews")
                             .ToList();
-
+                    var trendingArticles =
+                                await _articleViewRepository
+                                    .GetTrendingArticlesAsync(5);
                     return new HomePageViewModel
                     {
                         HeroArticle =
@@ -73,7 +79,8 @@ public class HomeController : Controller
                         LatestReviews =
                             reviews
                                 .Take(4)
-                                .ToList()
+                                .ToList(),
+                        TrendingArticles = trendingArticles
                     };
                 },
                 TimeSpan.FromMinutes(5));

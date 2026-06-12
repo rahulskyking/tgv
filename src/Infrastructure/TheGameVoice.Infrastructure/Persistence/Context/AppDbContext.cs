@@ -31,7 +31,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
 
     public DbSet<ArticleVideo> ArticleVideos
         => Set<ArticleVideo>();
-
+    public DbSet<ArticleView>
+    ArticleViews
+    {
+        get;
+        set;
+    }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

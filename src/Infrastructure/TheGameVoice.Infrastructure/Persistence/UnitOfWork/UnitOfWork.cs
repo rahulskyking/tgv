@@ -13,6 +13,7 @@ public class UnitOfWork : IUnitOfWork
     public IArticleRepository Articles { get; }
     public ICategoryRepository Categories { get; }
     public ITagRepository Tags { get; }
+    public IArticleViewRepository ArticleViews { get; }
 
     public IGameRepository Games { get; }
     public UnitOfWork(AppDbContext context)
@@ -23,6 +24,7 @@ public class UnitOfWork : IUnitOfWork
         Categories = new CategoryRepository(_context);
         Tags = new TagRepository(_context);
         Games = new GameRepository(_context);
+        ArticleViews = new ArticleViewRepository(_context);
     }
 
     public async Task<int> SaveChangesAsync(

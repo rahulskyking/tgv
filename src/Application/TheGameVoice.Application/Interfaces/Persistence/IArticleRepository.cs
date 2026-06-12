@@ -32,4 +32,6 @@ public interface IArticleRepository
     Task<IReadOnlyList<Article>>GetPublishedByTagAsync(string slug);
     void Update(Article article);
 
+    Task<IReadOnlyList<Article>>GetMostReadAsync(int count);
+
 }

@@ -34,9 +34,10 @@
             </div>
 
             @{
-                var trendingItems = Model.LatestNews
-                .Take(5)
-                .Select((article, index) => new { article, index })
+                var trendingItems =
+                Model.TrendingArticles
+                .Select((article, index) =>
+                new { article, index })
                 .ToList();
             }
 

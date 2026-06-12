@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TheGameVoice.Infrastructure.Persistence.Context;
@@ -11,9 +12,11 @@ using TheGameVoice.Infrastructure.Persistence.Context;
 namespace TheGameVoice.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260611123315_AddArticleViewCount")]
+    partial class AddArticleViewCount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,30 +24,6 @@ namespace TheGameVoice.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("ArticleView", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("ArticleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("article_id");
-
-                    b.Property<DateTime>("ViewedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("viewed_at");
-
-                    b.HasKey("Id")
-                        .HasName("pk_article_views");
-
-                    b.HasIndex("ArticleId")
-                        .HasDatabaseName("ix_article_views_article_id");
-
-                    b.ToTable("article_views", (string)null);
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
@@ -849,18 +828,6 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("ArticleView", b =>
-                {
-                    b.HasOne("TheGameVoice.Domain.Entities.Article", "Article")
-                        .WithMany("ArticleViews")
-                        .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_article_views_articles_article_id");
-
-                    b.Navigation("Article");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -1054,8 +1021,6 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.Navigation("ArticleTags");
 
                     b.Navigation("ArticleVideos");
-
-                    b.Navigation("ArticleViews");
                 });
 
             modelBuilder.Entity("TheGameVoice.Domain.Entities.Category", b =>

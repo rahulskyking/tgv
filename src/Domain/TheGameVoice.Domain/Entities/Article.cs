@@ -51,4 +51,13 @@ public class Article : AuditableEntity
         set;
     }
     = new List<ArticleVideo>();
+    public int ViewCount { get; set; }
+
+    public ICollection<ArticleView>
+        ArticleViews
+    {
+        get;
+        set;
+    }
+    = new List<ArticleView>();
 }
