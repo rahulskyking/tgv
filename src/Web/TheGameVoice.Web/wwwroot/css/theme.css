@@ -7,8 +7,8 @@
     --tgv-radius-xl: 16px;
     /* Brand */
 
-    --tgv-primary: #ff5a1f;
-    --tgv-primary-hover: #e64a19;
+    --tgv-primary: #7c3aed;
+    --tgv-primary-hover: #6d28d9;
     /* Backgrounds */
 
     --tgv-background: #f8fafc;
@@ -47,7 +47,7 @@
     line-height: 1;
 }
 .tgv-display {
-    font-weight: 500;
+    font-weight: 00;
     letter-spacing: -0.035em;
     line-height: 1.05;
 }
