@@ -3,4 +3,6 @@
 public interface ISlugService
 {
     Task<string> GenerateSlugAsync(string title);
+    Task<string> GenerateAuthorSlugAsync(
+    string fullName);
 }

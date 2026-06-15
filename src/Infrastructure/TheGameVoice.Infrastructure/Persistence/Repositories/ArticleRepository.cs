@@ -178,4 +178,20 @@ public class ArticleRepository
             .Take(count)
             .ToListAsync();
     }
+
+    public async Task<IReadOnlyList<Article>>
+    GetPublishedByAuthorAsync(
+        Guid authorId)
+    {
+        return await _context.Articles
+            .Include(x => x.FeaturedImage)
+            .Include(x => x.Category)
+            .Where(x =>
+                x.Status == ArticleStatus.Published
+                &&
+                x.AuthorId == authorId)
+            .OrderByDescending(x =>
+                x.PublishedAt)
+            .ToListAsync();
+    }
 }

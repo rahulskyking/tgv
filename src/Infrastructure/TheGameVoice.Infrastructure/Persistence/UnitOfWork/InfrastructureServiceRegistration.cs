@@ -101,6 +101,9 @@ public static class InfrastructureServiceRegistration
             MemoryCacheService>();
         services.AddScoped<IArticleViewRepository,
     ArticleViewRepository>();
+
+        services.AddScoped<IMediaRepository,
+    MediaRepository>();
         return services;
 
     }

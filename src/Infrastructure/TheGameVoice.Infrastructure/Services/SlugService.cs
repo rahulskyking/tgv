@@ -47,4 +47,26 @@ public class SlugService : ISlugService
 
         return str;
     }
+    public async Task<string>
+    GenerateAuthorSlugAsync(
+        string fullName)
+    {
+        var baseSlug =
+            GenerateSlug(fullName);
+
+        var slug =
+            baseSlug;
+
+        var counter = 2;
+
+        while (await _context.Users
+            .AnyAsync(x => x.Slug == slug))
+        {
+            slug = $"{baseSlug}-{counter}";
+
+            counter++;
+        }
+
+        return slug;
+    }
 }

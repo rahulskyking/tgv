@@ -3,12 +3,14 @@
 <div class="tgv-container space-y-20 py-10">
 
     <!-- HERO + TRENDING -->
+    <!-- HERO + TRENDING -->
 
     <div class="grid grid-cols-1 gap-10 lg:grid-cols-4">
 
+        
         <!-- HERO -->
 
-        <div class="lg:col-span-3">
+        <div class="lg:col-span-3 lg:border-r lg:border-slate-300 lg:pr-12">
 
             @if (Model.HeroArticle != null)
             {
@@ -21,11 +23,13 @@
 
         <!-- TRENDING -->
 
-        <aside>
+        <aside class="lg:pl-4">
 
-            <div class="mb-8">
+            <div class="mb-8 flex items-center gap-3">
 
-                <h2 class="text-2xl font-medium tracking-tight">
+                <div class="h-6 w-1 bg-primary"></div>
+
+                <h2 class="text-2xl font-bold tracking-tight text-slate-900">
 
                     Trending
 
@@ -41,49 +45,82 @@
                 .ToList();
             }
 
-            <div>
+            <div class="space-y-6">
 
-                @foreach (var item in trendingItems)
-                {
-                    <a asp-controller="News"
-                       asp-action="Details"
-                       asp-route-slug="@item.article.Slug"
-                       class="group block border-b border-default py-5">
+                <div class="space-y-6">
 
-                        <div class="flex gap-4">
+                   
+                    @foreach (var item in trendingItems)
+                    {
+                        <a asp-controller="News"
+                           asp-action="Details"
+                           asp-route-slug="@item.article.Slug"
+                           class="group block border-b border-slate-200 pb-6">
 
-                            <div class="shrink-0 text-4xl font-medium text-primary/40">
+                            <div class="flex items-center gap-4">
 
-                                @((item.index + 1).ToString("D2"))
+                                @if (item.article.FeaturedImage != null)
+                                {
+                                    <div class="h-20 w-32 shrink-0 overflow-hidden rounded-xl border border-slate-200">
 
-                            </div>
+                                        <img src="@item.article.FeaturedImage.FilePath"
+                                             alt="@item.article.Title"
+                                             class="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
 
-                            <div>
+                                    </div>
+                                }
 
-                                <div class="mb-2 text-xs font-medium uppercase tracking-[0.15em] text-primary">
+                                <div class="min-w-0 flex-1">
 
-                                    @item.article.Category.Name
+                                    <div class="mb-2 flex items-center gap-3">
+
+                                        <span class="text-2xl font-bold text-primary/40">
+
+                                            @((item.index + 1).ToString("D2"))
+
+                                        </span>
+
+                                        @if (item.article.Category != null)
+                                        {
+                                            <span class="text-[11px] font-bold uppercase tracking-[0.15em] text-primary">
+
+                                                @item.article.Category.Name
+
+                                            </span>
+                                        }
 
                                 </div>
 
-                                <h3 class="text-base font-medium leading-snug text-slate-900 transition group-hover:text-primary">
+                                <h3 class="line-clamp-3 text-sm font-semibold leading-snug text-slate-900 transition group-hover:text-primary">
 
                                     @item.article.Title
 
                                 </h3>
 
+                                <div class="mt-2 text-xs text-slate-500">
+
+                                    @(item.article.PublishedAt?
+                                                                        .ToLocalTime()
+                                                                        .ToString("dd MMM yyyy"))
+
+                                </div>
+
+                                </div>
+
                             </div>
 
-                        </div>
+                        </a>
+                    }
+                    
 
-                    </a>
-                }
+                </div>
 
             </div>
 
         </aside>
 
     </div>
+
 
     <!-- LATEST NEWS -->
 
@@ -119,7 +156,7 @@
 
     <!-- TRENDING GAMES -->
 
-    <section>
+   @*  <section>
 
         @await Html.PartialAsync(
         "~/Views/Shared/Components/_SectionHeader.cshtml",
@@ -137,9 +174,9 @@
         </div>
 
     </section>
-
+ *@
     <!-- FEATURED REVIEW -->
-    @if (Model.FeaturedReview != null)
+   @*  @if (Model.FeaturedReview != null)
     {
         <section>
 
@@ -156,6 +193,6 @@
         </div>
 
     </section>
-        }
+        } *@
 
 </div>

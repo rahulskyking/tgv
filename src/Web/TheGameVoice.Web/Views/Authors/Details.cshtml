@@ -1,0 +1,102 @@
+﻿@model TheGameVoice.Web.ViewModels.Authors.AuthorDetailsViewModel
+
+<div class="tgv-container py-12">
+
+    <div class="mx-auto max-w-6xl">
+
+        <div class="rounded-3xl border bg-white p-8 shadow-sm">
+
+            <div class="flex flex-col gap-8 md:flex-row md:items-center">
+
+                @if (!string.IsNullOrWhiteSpace(
+                                Model.AvatarImagePath))
+                {
+                    <img src="@Model.AvatarImagePath"
+                         alt="@Model.FullName"
+                         class="h-32 w-32 rounded-full object-cover" />
+                }
+
+                <div>
+
+                    <h1 class="text-4xl font-bold">
+
+                        @Model.FullName
+
+                    </h1>
+
+                    @if (!string.IsNullOrWhiteSpace(
+                                        Model.Bio))
+                    {
+                        <p class="mt-4 max-w-3xl text-lg text-slate-600">
+
+                            @Model.Bio
+
+                        </p>
+                    }
+
+                    <div class="mt-6 flex flex-wrap gap-4">
+
+                        @if (!string.IsNullOrWhiteSpace(Model.TwitterUrl))
+                        {
+                            <a href="@Model.TwitterUrl"
+                               target="_blank"
+                               class="text-primary">
+
+                                Twitter/X
+
+                            </a>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.YouTubeUrl))
+                        {
+                            <a href="@Model.YouTubeUrl"
+                               target="_blank"
+                               class="text-primary">
+
+                                YouTube
+
+                            </a>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.WebsiteUrl))
+                        {
+                            <a href="@Model.WebsiteUrl"
+                               target="_blank"
+                               class="text-primary">
+
+                                Website
+
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="mt-16">
+
+            <h2 class="mb-8 text-3xl font-bold">
+
+                Latest Articles
+
+            </h2>
+
+            <div class="space-y-6">
+
+                @foreach (var article in Model.Articles)
+                {
+                    <partial name="~/Views/Shared/Components/_RelatedArticleCard.cshtml"
+                             model="article" />
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

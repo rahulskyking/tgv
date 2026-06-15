@@ -60,4 +60,5 @@ public class Article : AuditableEntity
         set;
     }
     = new List<ArticleView>();
+ 
 }

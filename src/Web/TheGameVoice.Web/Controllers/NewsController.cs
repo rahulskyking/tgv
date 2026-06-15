@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Enums;
+using TheGameVoice.Infrastructure.Identity.Entities;
 using TheGameVoice.Web.ViewModels.News;
 
 namespace TheGameVoice.Web.Controllers;
@@ -13,12 +16,15 @@ public class NewsController : Controller
         _articleRepository;
     private readonly ICacheService
 _cacheService;
+    private readonly UserManager<ApplicationUser>
+    _userManager;
     public NewsController(
-        IArticleRepository articleRepository, ICacheService cacheService)
+        IArticleRepository articleRepository, ICacheService cacheService, UserManager<ApplicationUser> userManager)
     {
         _articleRepository =
             articleRepository;
         _cacheService = cacheService;
+        _userManager = userManager;
     }
 
     public async Task<IActionResult> Index()
@@ -54,12 +60,30 @@ _cacheService;
                             .GetRelatedArticlesAsync(
                                 article.CategoryId,
                                 article.Id);
+                    var author =
+                         await _userManager
+                             .Users
+                             .Include(x => x.AvatarImage)
+                             .FirstOrDefaultAsync(x =>
+                                 x.Id == article.AuthorId);
 
                     return new ArticleDetailsViewModel
                     {
                         Article = article,
-                        RelatedArticles = relatedArticles
+
+                        RelatedArticles = relatedArticles,
+
+                        AuthorName =
+                        author?.FullName
+                        ?? "TheGameVoice Editorial Team",
+
+                        AuthorAvatarUrl =
+                        author?.AvatarImage?.FilePath
+
+
                     };
+
+
                 },
                 CacheDurations.Short);
 

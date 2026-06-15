@@ -34,4 +34,7 @@ public interface IArticleRepository
 
     Task<IReadOnlyList<Article>>GetMostReadAsync(int count);
 
+    Task<IReadOnlyList<Article>>
+    GetPublishedByAuthorAsync(
+        Guid authorId);
 }

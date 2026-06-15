@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using TheGameVoice.Application.Interfaces.Persistence;
+using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Infrastructure.Identity;
 using TheGameVoice.Infrastructure.Identity.Entities;
-
+using TheGameVoice.Web.Areas.Admin.ViewModels.Media;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Users;
 
 namespace TheGameVoice.Web.Areas.Admin.Controllers;
@@ -20,13 +22,19 @@ public class UsersController : BaseAdminController
 
     private readonly RoleManager<IdentityRole<Guid>>
         _roleManager;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ISlugService _slugService;
 
     public UsersController(
         UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole<Guid>> roleManager)
+        RoleManager<IdentityRole<Guid>> roleManager,
+        IUnitOfWork unitOfWork,
+        ISlugService slugService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _unitOfWork = unitOfWork;
+        _slugService = slugService;
     }
 
     [HttpGet]
@@ -181,6 +189,16 @@ public class UsersController : BaseAdminController
         var roles =
             await _userManager.GetRolesAsync(user);
 
+        var mediaItems =
+                 (await _unitOfWork.Media.GetAllAsync())
+                 .Select(x => new MediaPickerItemViewModel
+                 {
+                     Id = x.Id,
+                     FileName = x.FileName,
+                     FilePath = x.FilePath
+                 })
+                 .ToList();
+
         var model =
             new EditUserViewModel
             {
@@ -195,6 +213,20 @@ public class UsersController : BaseAdminController
                 Email = user.Email ?? "",
 
                 IsActive = user.IsActive,
+
+                Slug = user.Slug,
+
+                Bio = user.Bio,
+
+                AvatarImageId = user.AvatarImageId,
+
+                MediaItems = mediaItems,
+
+                TwitterUrl = user.TwitterUrl,
+
+                YouTubeUrl = user.YouTubeUrl,
+
+                WebsiteUrl = user.WebsiteUrl,
 
                 Role = roles.FirstOrDefault() ?? ""
             };
@@ -214,6 +246,10 @@ public class UsersController : BaseAdminController
             Roles.Admin)
              ];
 
+
+  
+
+        
         return View(model);
     }
 
@@ -254,6 +290,23 @@ public class UsersController : BaseAdminController
         user.FullName =
             model.FullName;
 
+        if (string.IsNullOrWhiteSpace(model.Slug))
+        {
+            await _slugService
+          .GenerateAuthorSlugAsync(
+              model.FullName);
+        }
+      
+
+        user.Bio = model.Bio;
+
+        user.AvatarImageId = model.AvatarImageId;
+
+        user.TwitterUrl = model.TwitterUrl;
+
+        user.YouTubeUrl = model.YouTubeUrl;
+
+        user.WebsiteUrl = model.WebsiteUrl;
         user.UserName =
             model.UserName;
 
@@ -379,4 +432,6 @@ public class UsersController : BaseAdminController
         return RedirectToAction(
             nameof(Index));
     }
+
+
 }

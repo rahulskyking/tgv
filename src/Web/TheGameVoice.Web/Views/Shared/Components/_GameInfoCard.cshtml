@@ -1,0 +1,36 @@
+﻿@model TheGameVoice.Domain.Entities.Game
+
+<div class="border border-default p-5">
+
+    <div class="tgv-kicker mb-3">
+
+        Featured Game
+
+    </div>
+
+    <h3 class="text-xl font-bold">
+
+        @Model.Name
+
+    </h3>
+
+    @if (!string.IsNullOrWhiteSpace(
+        Model.Summary))
+    {
+        <p class="mt-3 text-sm text-muted">
+
+            @Model.Summary
+
+        </p>
+    }
+
+    <a asp-controller="Games"
+       asp-action="Details"
+       asp-route-slug="@Model.Slug"
+       class="mt-4 inline-block text-primary font-semibold">
+
+        View Game →
+
+    </a>
+
+</div>

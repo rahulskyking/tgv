@@ -1,14 +1,19 @@
 ﻿using TheGameVoice.Domain.Entities;
-
-namespace TheGameVoice.Web.ViewModels.News;
-
-public class ArticleDetailsViewModel
-{
+namespace TheGameVoice.Web.ViewModels.News; 
+public class ArticleDetailsViewModel {
     public Article Article { get; set; }
-        = default!;
+ = default!;
 
     public IReadOnlyList<Article>
         RelatedArticles
-    { get; set; }
+    {
+        get;
+        set;
+    }
         = new List<Article>();
+
+    public string AuthorName { get; set; }
+        = string.Empty;
+
+    public string? AuthorAvatarUrl { get; set; }
 }

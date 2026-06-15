@@ -505,5 +505,52 @@
         });
 
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const select =
+                document.getElementById(
+                    "avatar-image-select");
+
+            const image =
+                document.getElementById(
+                    "avatar-preview-image");
+
+            const placeholder =
+                document.getElementById(
+                    "avatar-preview-placeholder");
+
+            function updatePreview() {
+
+                const option =
+                    select.options[
+                        select.selectedIndex];
+
+                const imagePath =
+                    option.dataset.image;
+
+                if (!imagePath) {
+
+                    image.classList.add("hidden");
+                    placeholder.classList.remove("hidden");
+
+                    return;
+                }
+
+                image.src = imagePath;
+
+                image.classList.remove("hidden");
+
+                placeholder.classList.add("hidden");
+            }
+
+            select.addEventListener(
+                "change",
+                updatePreview);
+
+            updatePreview();
+
+        });
+    </script>
 </body>
 </html>
