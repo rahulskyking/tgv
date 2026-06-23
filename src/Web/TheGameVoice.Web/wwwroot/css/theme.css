@@ -29,6 +29,9 @@
 }
 
 /* Layout */
+body {
+    font-family: 'Inter', sans-serif;
+}
 
 .tgv-container {
     width: 100%;
@@ -47,9 +50,10 @@
     line-height: 1;
 }
 .tgv-display {
-    font-weight: 00;
-    letter-spacing: -0.035em;
-    line-height: 1.05;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
 }
 
 .tgv-title {
@@ -70,7 +74,13 @@
         font-size: 3rem;
     }
 }
-
+.tgv-title,
+.tgv-card-title,
+.article-hero-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
 /* ARTICLE CONTENT */
 
 .article-content {
@@ -227,16 +237,28 @@
 }
 
 .tgv-section-title {
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 1.75rem;
-    font-weight: 800;
-    letter-spacing: -.02em;
+    font-weight: 700;
+    letter-spacing: -0.03em;
     color: var(--tgv-text);
 }
 .tgv-sidebar {
     border-left: 1px solid var(--tgv-border);
     padding-left: 2rem;
 }
-
+.tgv-nav-link {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+}
+.tgv-kicker {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .18em;
+    color: var(--tgv-primary);
+}
 
 
 /*Reding Progress bar*/

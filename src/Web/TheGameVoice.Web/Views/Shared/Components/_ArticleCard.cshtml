@@ -3,57 +3,57 @@
 <a asp-controller="News"
    asp-action="Details"
    asp-route-slug="@Model.Slug"
-   class="group block border-b border-default py-6">
+   class="group block border-b border-slate-200 py-5 transition-colors hover:bg-slate-50/50 md:py-6">
 
-    <div class="flex items-start gap-5">
+    <div class="flex items-start gap-3 md:gap-5">
 
         @if (Model.FeaturedImage != null)
         {
-            <div class="w-60 h-32 shrink-0 overflow-hidden rounded-lg">
-
+            <div class="relative h-20 w-28 shrink-0 overflow-hidden rounded-2xl md:h-24 md:w-40 lg:h-28 lg:w-48">
                 <img src="@Model.FeaturedImage.FilePath"
                      alt="@Model.Title"
-                     class="h-full w-full object-cover object-center transition duration-300 group-hover:scale-105" />
-
+                     class="h-full w-full object-cover transition-all duration-500 group-hover:scale-105" />
             </div>
         }
 
-        <div class="min-w-0 flex-1">
+        <div class="min-w-0 flex-1 pt-0.5">
 
-            <div class="mb-2 flex items-center gap-2">
-
+            <!-- Meta -->
+            <div class="mb-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
                 @if (Model.Category != null)
                 {
-                    <span class="text-xs font-medium uppercase tracking-[0.12em] text-primary">
+                    <span class="font-bold uppercase tracking-[0.5px] text-primary">
                         @Model.Category.Name
                     </span>
                 }
 
-                <span class="text-xs text-muted">|</span>
+                @if (Model.Category != null && Model.PublishedAt.HasValue)
+                {
+                    <span class="text-slate-300">•</span>
+                }
 
-                <span class="text-xs text-muted">
-                    @(Model.PublishedAt?.ToLocalTime().ToString("dd MMM yyyy"))
-                </span>
-
+                @if (Model.PublishedAt.HasValue)
+                {
+                    <span class="text-slate-500">
+                        @(Model.PublishedAt.Value.ToLocalTime().ToString("dd MMM yyyy"))
+                    </span>
+                }
             </div>
 
-            <h3 class="text-xl font-medium leading-tight text-slate-900 transition group-hover:text-primary">
-
+            <!-- Title -->
+            <h3 class="line-clamp-3 text-[15px] font-semibold leading-tight text-slate-900 transition-colors group-hover:text-primary md:text-lg lg:text-xl">
                 @Model.Title
-
             </h3>
 
+            <!-- Summary -->
             @if (!string.IsNullOrWhiteSpace(Model.Summary))
             {
-                <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">
-
+                <p class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-slate-600 md:mt-2 md:text-[15px]">
                     @Model.Summary
-
                 </p>
             }
 
         </div>
 
     </div>
-
 </a>

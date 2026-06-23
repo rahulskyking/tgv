@@ -1,7 +1,6 @@
 ﻿@model TheGameVoice.Web.ViewModels.Home.HomePageViewModel
 
-<div class="tgv-container space-y-20 py-10">
-
+<div class="tgv-container space-y-12 py-6 md:space-y-16 md:py-10 lg:space-y-20">
     <!-- HERO + TRENDING -->
     <!-- HERO + TRENDING -->
 
@@ -9,15 +8,149 @@
 
         
         <!-- HERO -->
+        <!-- HERO -->
 
         <div class="lg:col-span-3 lg:border-r lg:border-slate-300 lg:pr-12">
 
-            @if (Model.HeroArticle != null)
+            @{
+                var hero = Model.HeroArticle;
+
+                var secondary =
+                Model.LatestNews
+                .Where(x => hero == null || x.Id != hero.Id)
+                .Take(5)
+                .ToList();
+            }
+
+            @if (hero != null)
             {
-                @await Html.PartialAsync(
-                "~/Views/Shared/Components/_HeroCard.cshtml",
-                        Model.HeroArticle)
+                <div class="grid gap-4 lg:grid-cols-3">
+
+                    <!-- MAIN HERO -->
+
+                    <div class="lg:col-span-2">
+
+                        <a asp-controller="News"
+                           asp-action="Details"
+                           asp-route-slug="@hero.Slug"
+                           class="group block">
+
+                            <div class="relative overflow-hidden rounded-2xl">
+
+                                @if (hero.FeaturedImage != null)
+                                {
+                                    <img src="@hero.FeaturedImage.FilePath"
+                                         alt="@hero.Title"
+                                         class="h-[420px] w-full object-cover transition duration-700 group-hover:scale-105" />
+                                }
+
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+
+                                <div class="absolute bottom-0 left-0 p-8">
+
+                                    @if (hero.Category != null)
+                                    {
+                                        <div class="mb-3 text-xs font-bold uppercase tracking-[0.15em] text-primary">
+
+                                            @hero.Category.Name
+
+                                        </div>
+                                    }
+
+                                    <h1 class="max-w-3xl text-3xl font-bold leading-tight text-white md:text-5xl">
+
+                                        @hero.Title
+
+                                    </h1>
+
+                                </div>
+
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                    <!-- RIGHT COLUMN -->
+
+                    <div class="space-y-4">
+
+                        @foreach (var article in secondary.Take(2))
+                        {
+                            <a asp-controller="News"
+                               asp-action="Details"
+                               asp-route-slug="@article.Slug"
+                               class="group block">
+
+                                <div class="relative overflow-hidden rounded-2xl">
+
+                                    @if (article.FeaturedImage != null)
+                                    {
+                                        <img src="@article.FeaturedImage.FilePath"
+                                             alt="@article.Title"
+                                             class="h-[202px] w-full object-cover transition duration-500 group-hover:scale-105" />
+                                    }
+
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+
+                                    <div class="absolute bottom-0 left-0 p-4">
+
+                                        <h3 class="line-clamp-2 text-lg font-semibold text-white">
+
+                                            @article.Title
+
+                                        </h3>
+
+                                    </div>
+
+                                </div>
+
+                            </a>
                         }
+
+                    </div>
+
+                </div>
+
+                <!-- BOTTOM ROW -->
+
+                <div class="mt-4 grid gap-4 md:grid-cols-3">
+
+                    @foreach (var article in secondary.Skip(2).Take(3))
+                    {
+                        <a asp-controller="News"
+                           asp-action="Details"
+                           asp-route-slug="@article.Slug"
+                           class="group block">
+
+                            <div class="relative overflow-hidden rounded-2xl">
+
+                                @if (article.FeaturedImage != null)
+                                {
+                                    <img src="@article.FeaturedImage.FilePath"
+                                         alt="@article.Title"
+                                         class="h-[180px] w-full object-cover transition duration-500 group-hover:scale-105" />
+                                }
+
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+
+                                <div class="absolute bottom-0 left-0 p-4">
+
+                                    <h3 class="line-clamp-2 text-base font-semibold text-white">
+
+                                        @article.Title
+
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                        </a>
+                    }
+
+                </div>
+            }
 
         </div>
 
