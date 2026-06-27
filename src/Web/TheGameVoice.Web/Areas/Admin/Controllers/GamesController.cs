@@ -57,6 +57,16 @@ _cacheService;
     {
         if (!ModelState.IsValid)
         {
+            model.MediaItems =
+                (await _unitOfWork.Media.GetAllAsync())
+                .Select(x => new MediaPickerItemViewModel
+                {
+                    Id = x.Id,
+                    FileName = x.FileName,
+                    FilePath = x.FilePath
+                })
+                .ToList();
+
             return View(model);
         }
         var existingGame =
@@ -87,15 +97,51 @@ _cacheService;
         {
             Name = model.Name,
 
-            Slug = await _slugService
-         .GenerateSlugAsync(model.Name),
+            Slug =
+             await _slugService.GenerateSlugAsync(
+                 model.Name),
 
-            Summary = model.Summary,
+            Summary = model.Summary ?? string.Empty,
 
-            ReleaseDate = model.ReleaseDate,
+            Description =
+             model.Description ?? string.Empty,
+
+            ReleaseDate =
+    model.ReleaseDate.HasValue
+        ? DateTime.SpecifyKind(
+            model.ReleaseDate.Value,
+            DateTimeKind.Utc)
+        : null,
+
+            Developer =
+             model.Developer,
+
+            Publisher =
+             model.Publisher,
+
+            Platforms =
+             model.Platforms,
+
+            Genres =
+             model.Genres,
+
+            OfficialWebsite =
+             model.OfficialWebsite,
+
+            SteamUrl =
+             model.SteamUrl,
+
+            SteamAppId =
+             model.SteamAppId,
+
             CoverImageId =
-                model.CoverImageId
+             model.CoverImageId,
 
+            BannerImageId =
+             model.BannerImageId,
+
+            DataSource =
+             GameDataSource.Manual
         };
 
         await _unitOfWork.Games
@@ -106,6 +152,8 @@ _cacheService;
 
         return RedirectToAction(nameof(Index));
     }
+
+
     [HttpGet]
     public async Task<IActionResult> Edit(Guid id)
     {
@@ -122,25 +170,48 @@ _cacheService;
             new EditGameViewModel
             {
                 Id = game.Id,
+
                 Name = game.Name,
+
                 Summary = game.Summary,
-                ReleaseDate = game.ReleaseDate
+
+                Description = game.Description,
+
+                ReleaseDate = game.ReleaseDate,
+
+                Developer = game.Developer,
+
+                Publisher = game.Publisher,
+
+                Platforms = game.Platforms,
+
+                Genres = game.Genres,
+
+                OfficialWebsite = game.OfficialWebsite,
+
+                SteamUrl = game.SteamUrl,
+
+                SteamAppId = game.SteamAppId,
+
+                CoverImageId = game.CoverImageId,
+
+                BannerImageId = game.BannerImageId,
+
+                CoverImagePath = game.CoverImage?.FilePath,
+
+                BannerImagePath = game.BannerImage?.FilePath,
+
+                MediaItems =
+                    (await _unitOfWork.Media.GetAllAsync())
+                    .Select(x => new MediaPickerItemViewModel
+                    {
+                        Id = x.Id,
+                        FileName = x.FileName,
+                        FilePath = x.FilePath
+                    })
+                    .ToList()
             };
-        model.CoverImageId =
-    game.CoverImageId;
 
-        model.CoverImagePath =
-            game.CoverImage?.FilePath;
-
-        model.MediaItems =
-            (await _unitOfWork.Media.GetAllAsync())
-            .Select(x => new MediaPickerItemViewModel
-            {
-                Id = x.Id,
-                FileName = x.FileName,
-                FilePath = x.FilePath
-            })
-            .ToList();
         return View(model);
     }
     [HttpPost]
@@ -149,6 +220,16 @@ _cacheService;
     {
         if (!ModelState.IsValid)
         {
+            model.MediaItems =
+                (await _unitOfWork.Media.GetAllAsync())
+                .Select(x => new MediaPickerItemViewModel
+                {
+                    Id = x.Id,
+                    FileName = x.FileName,
+                    FilePath = x.FilePath
+                })
+                .ToList();
+
             return View(model);
         }
         var existingGame =
@@ -189,18 +270,48 @@ _cacheService;
 
         game.Slug =
             await _slugService
-                .GenerateSlugAsync(model.Name);
+                .GenerateSlugAsync(
+                    model.Name);
 
-        game.Summary = model.Summary;
+        game.Summary =
+            model.Summary ?? string.Empty;
+
+        game.Description =
+            model.Description ?? string.Empty;
 
         game.ReleaseDate =
-            model.ReleaseDate;
-        model.CoverImageId =
-    game.CoverImageId;
-        game.Name =
-    model.Name;
+     model.ReleaseDate.HasValue
+         ? DateTime.SpecifyKind(
+             model.ReleaseDate.Value,
+             DateTimeKind.Utc)
+         : null;
 
-        game.CoverImageId = model.CoverImageId;
+        game.Developer =
+            model.Developer;
+
+        game.Publisher =
+            model.Publisher;
+
+        game.Platforms =
+            model.Platforms;
+
+        game.Genres =
+            model.Genres;
+
+        game.OfficialWebsite =
+            model.OfficialWebsite;
+
+        game.SteamUrl =
+            model.SteamUrl;
+
+        game.SteamAppId =
+            model.SteamAppId;
+
+        game.CoverImageId =
+            model.CoverImageId;
+
+        game.BannerImageId =
+            model.BannerImageId;
 
         _unitOfWork.Games
             .Update(game);
@@ -234,7 +345,19 @@ _cacheService;
 
         var game = new Game
         {
-            Name = request.Name.Trim()
+            Name =
+         request.Name.Trim(),
+
+            Slug =
+         await _slugService.GenerateSlugAsync(
+             request.Name),
+
+            Summary = string.Empty,
+
+            Description = string.Empty,
+
+            DataSource =
+         GameDataSource.Manual
         };
 
         await _unitOfWork.Games

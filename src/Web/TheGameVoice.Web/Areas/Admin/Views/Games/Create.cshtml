@@ -25,7 +25,107 @@
             </span>
 
         </div>
+        <div>
+            <label class="mb-2 block font-medium">
+                Summary
+            </label>
 
+            <textarea asp-for="Summary"
+                      rows="3"
+                      class="w-full rounded-2xl border px-4 py-3"></textarea>
+        </div>
+
+        <div>
+            <label class="mb-2 block font-medium">
+                Description
+            </label>
+
+            <textarea asp-for="Description"
+                      rows="8"
+                      class="w-full rounded-2xl border px-4 py-3"></textarea>
+        </div>
+        <div>
+            <label class="mb-2 block font-medium">
+                Release Date
+            </label>
+
+            <input asp-for="ReleaseDate"
+                   type="date"
+                   class="w-full rounded-2xl border px-4 py-3" />
+        </div>
+        <div class="grid gap-6 md:grid-cols-2">
+
+            <div>
+                <label class="mb-2 block font-medium">
+                    Developer
+                </label>
+
+                <input asp-for="Developer"
+                       class="w-full rounded-2xl border px-4 py-3" />
+            </div>
+
+            <div>
+                <label class="mb-2 block font-medium">
+                    Publisher
+                </label>
+
+                <input asp-for="Publisher"
+                       class="w-full rounded-2xl border px-4 py-3" />
+            </div>
+
+        </div>
+        <div class="grid gap-6 md:grid-cols-2">
+
+            <div>
+                <label class="mb-2 block font-medium">
+                    Platforms
+                </label>
+
+                <input asp-for="Platforms"
+                       placeholder="PC, PS5, Xbox Series X"
+                       class="w-full rounded-2xl border px-4 py-3" />
+            </div>
+
+            <div>
+                <label class="mb-2 block font-medium">
+                    Genres
+                </label>
+
+                <input asp-for="Genres"
+                       placeholder="Action RPG, Open World"
+                       class="w-full rounded-2xl border px-4 py-3" />
+            </div>
+
+        </div>
+        <div>
+            <label class="mb-2 block font-medium">
+                Official Website
+            </label>
+
+            <input asp-for="OfficialWebsite"
+                   class="w-full rounded-2xl border px-4 py-3" />
+        </div>
+        <div class="grid gap-6 md:grid-cols-2">
+
+            <div>
+                <label class="mb-2 block font-medium">
+                    Steam URL
+                </label>
+
+                <input asp-for="SteamUrl"
+                       class="w-full rounded-2xl border px-4 py-3" />
+            </div>
+
+            <div>
+                <label class="mb-2 block font-medium">
+                    Steam App ID
+                </label>
+
+                <input asp-for="SteamAppId"
+                       class="w-full rounded-2xl border px-4 py-3" />
+            </div>
+
+        </div>
         <div class="rounded-2xl border bg-white p-5">
 
             <h3 class="mb-4 font-semibold">

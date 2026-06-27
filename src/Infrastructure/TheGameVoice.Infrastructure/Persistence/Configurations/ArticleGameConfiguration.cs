@@ -26,5 +26,7 @@ public class ArticleGameConfiguration
             .HasOne(x => x.Game)
             .WithMany(x => x.ArticleGames)
             .HasForeignKey(x => x.GameId);
+
+
     }
 }

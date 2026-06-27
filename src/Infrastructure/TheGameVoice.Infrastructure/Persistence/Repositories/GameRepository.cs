@@ -53,16 +53,20 @@ public class GameRepository : IGameRepository
     }
 
     public async Task<Game?> GetBySlugWithArticlesAsync(
-    string slug)
+       string slug)
     {
         return await _context.Games
             .Include(x => x.CoverImage)
+            .Include(x => x.BannerImage)
+
             .Include(x => x.ArticleGames)
                 .ThenInclude(x => x.Article)
                     .ThenInclude(x => x.FeaturedImage)
+
             .Include(x => x.ArticleGames)
                 .ThenInclude(x => x.Article)
                     .ThenInclude(x => x.Category)
+
             .FirstOrDefaultAsync(x =>
                 x.Slug == slug);
     }
