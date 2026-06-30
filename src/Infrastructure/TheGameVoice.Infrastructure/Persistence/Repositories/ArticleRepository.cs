@@ -30,6 +30,7 @@ public class ArticleRepository
 
             .Include(x => x.ArticleVideos)
 
+            .Include(x => x.ReviewPoints)
             .FirstOrDefaultAsync(x =>
                 x.Id == id);
     }
@@ -71,11 +72,22 @@ public class ArticleRepository
     {
         return await _context.Articles
             .Include(x => x.FeaturedImage)
+
             .Include(x => x.Category)
+
             .Include(x => x.ArticleTags)
                 .ThenInclude(x => x.Tag)
+
             .Include(x => x.ArticleGames)
                 .ThenInclude(x => x.Game)
+
+            .Include(x => x.ArticleMedia)
+                .ThenInclude(x => x.Media)
+
+            .Include(x => x.ArticleVideos)
+
+            .Include(x => x.ReviewPoints)
+
             .FirstOrDefaultAsync(x =>
                 x.Slug == slug);
     }
@@ -194,4 +206,28 @@ public class ArticleRepository
                 x.PublishedAt)
             .ToListAsync();
     }
+    public async Task DeleteReviewPointsAsync(Guid articleId)
+    {
+        var existing = await _context.ArticleReviewPoints
+            .Where(x => x.ArticleId == articleId)
+            .ToListAsync();
+
+        _context.ArticleReviewPoints.RemoveRange(existing);
+    }
+
+    public async Task AddReviewPointsAsync(
+        IEnumerable<ArticleReviewPoint> reviewPoints)
+    {
+        await _context.ArticleReviewPoints.AddRangeAsync(reviewPoints);
+    }
+
+    public async Task<List<ArticleReviewPoint>> GetReviewPointsAsync(Guid articleId)
+    {
+        return await _context.ArticleReviewPoints
+            .Where(x => x.ArticleId == articleId)
+            .OrderBy(x => x.DisplayOrder)
+            .ToListAsync();
+    }
+
+
 }

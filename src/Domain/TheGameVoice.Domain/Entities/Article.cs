@@ -61,13 +61,22 @@ public class Article : AuditableEntity
     }
     = new List<ArticleView>();
 
+    #region Review
+
     public bool IsReview { get; set; }
 
     public decimal? ReviewScore { get; set; }
 
     public ReviewVerdict? ReviewVerdict { get; set; }
 
+    public string? ReviewSummary { get; set; }
+
     public ICollection<ArticleReviewPoint> ReviewPoints
-    { get; set; }
-        = new List<ArticleReviewPoint>();
+    {
+        get;
+        set;
+    }
+    = new List<ArticleReviewPoint>();
+
+    #endregion
 }

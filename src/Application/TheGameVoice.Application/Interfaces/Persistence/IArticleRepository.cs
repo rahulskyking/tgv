@@ -37,4 +37,10 @@ public interface IArticleRepository
     Task<IReadOnlyList<Article>>
     GetPublishedByAuthorAsync(
         Guid authorId);
+    Task DeleteReviewPointsAsync(Guid articleId);
+    
+
+    Task AddReviewPointsAsync(IEnumerable<ArticleReviewPoint> reviewPoints);
+
+    Task<List<ArticleReviewPoint>> GetReviewPointsAsync(Guid articleId);
 }

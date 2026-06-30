@@ -25,6 +25,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<ArticleTag> ArticleTags => Set<ArticleTag>();
     public DbSet<Media> Media => Set<Media>();
+    public DbSet<ArticleReviewPoint> ArticleReviewPoints
+    => Set<ArticleReviewPoint>();
     public DbSet<ArticleGame> ArticleGames => Set<ArticleGame>();
     public DbSet<ArticleMedia> ArticleMedia
         => Set<ArticleMedia>();

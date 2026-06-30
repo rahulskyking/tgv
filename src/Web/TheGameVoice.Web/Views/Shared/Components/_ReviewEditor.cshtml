@@ -1,0 +1,234 @@
+﻿@model TheGameVoice.Web.Areas.Admin.ViewModels.Articles.ArticleFormViewModel
+
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <!-- Header -->
+    <div class="border-b border-slate-200 bg-slate-50/50 px-6 py-5 sm:px-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-slate-900">
+                    Review Configuration
+                </h2>
+                <p class="mt-1 text-sm text-slate-500">
+                    Enable to add a review score, verdict, and pros/cons list.
+                </p>
+            </div>
+            <!-- Modern Toggle Switch -->
+            <label class="relative inline-flex cursor-pointer items-center">
+                <input asp-for="IsReview" type="checkbox" id="is-review-checkbox" class="peer sr-only" />
+                <div class="h-6 w-11 rounded-full bg-slate-200 transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-slate-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#7c3aed] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#7c3aed]/20"></div>
+            </label>
+        </div>
+    </div>
+
+    <div id="review-editor" class="@(Model.IsReview ? "" : "hidden") space-y-8 p-6 sm:p-8">
+
+        <!-- Top Grid: Score & Verdict -->
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <!-- Review Score -->
+            <div>
+                <label asp-for="ReviewScore" class="mb-1.5 block text-sm font-semibold text-slate-700">
+                    Review Score
+                </label>
+                <div class="relative">
+                    <input asp-for="ReviewScore"
+                           type="number"
+                           step="0.1"
+                           min="0"
+                           max="10"
+                           placeholder="e.g. 8.5"
+                           class="block w-full rounded-lg border-0 py-2.5 pl-4 pr-12 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-[#7c3aed] sm:text-sm sm:leading-6" />
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                        <span class="text-slate-400 sm:text-sm font-medium">/ 10</span>
+                    </div>
+                </div>
+                <span asp-validation-for="ReviewScore" class="mt-1.5 flex text-xs font-medium text-red-500"></span>
+            </div>
+
+            <!-- Verdict -->
+            <div>
+                <label asp-for="ReviewVerdict" class="mb-1.5 block text-sm font-semibold text-slate-700">
+                    Verdict
+                </label>
+                <select asp-for="ReviewVerdict"
+                        asp-items="Html.GetEnumSelectList<TheGameVoice.Domain.Enums.ReviewVerdict>()"
+                        class="block w-full rounded-lg border-0 py-2.5 pl-4 pr-10 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-[#7c3aed] sm:text-sm sm:leading-6">
+                    <option value="">Select Verdict...</option>
+                </select>
+                <span asp-validation-for="ReviewVerdict" class="mt-1.5 flex text-xs font-medium text-red-500"></span>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div>
+            <div class="mb-1.5 flex items-end justify-between">
+                <label asp-for="ReviewSummary" class="block text-sm font-semibold text-slate-700">
+                    Review Summary
+                </label>
+                <span class="text-xs font-medium text-slate-400" id="summary-counter">0 / 500</span>
+            </div>
+            <textarea asp-for="ReviewSummary"
+                      id="review-summary"
+                      rows="4"
+                      maxlength="500"
+                      placeholder="Briefly summarize the final thoughts..."
+                      class="block w-full rounded-lg border-0 px-4 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-[#7c3aed] sm:text-sm sm:leading-6"></textarea>
+            <span asp-validation-for="ReviewSummary" class="mt-1.5 flex text-xs font-medium text-red-500"></span>
+        </div>
+
+        <!-- Pros & Cons Grids -->
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <!-- Pros (Good Points) -->
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                <div class="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-800">The Good</h3>
+                    </div>
+                    <button type="button"
+                            id="add-good-point"
+                            class="inline-flex items-center gap-1 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm ring-1 ring-inset ring-slate-300 transition-colors hover:bg-slate-50 hover:text-emerald-600">
+                        Add Pro
+                    </button>
+                </div>
+                <div id="good-points" class="space-y-3">
+                    @for (var i = 0; i < Model.GoodReviewPoints.Count; i++)
+                    {
+                        <div class="list-item-row flex items-center gap-2">
+                            <input asp-for="GoodReviewPoints[i]"
+                                   placeholder="e.g. Stunning graphics"
+                                   class="block w-full rounded-lg border-0 px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm" />
+                            <button type="button"
+                                    class="remove-row flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                                    data-list="good">
+                                <svg class="pointer-events-none h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Cons (Bad Points) -->
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                <div class="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-red-100 text-red-600">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" /></svg>
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-800">The Bad</h3>
+                    </div>
+                    <button type="button"
+                            id="add-bad-point"
+                            class="inline-flex items-center gap-1 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm ring-1 ring-inset ring-slate-300 transition-colors hover:bg-slate-50 hover:text-red-600">
+                        Add Con
+                    </button>
+                </div>
+                <div id="bad-points" class="space-y-3">
+                    @for (var i = 0; i < Model.BadReviewPoints.Count; i++)
+                    {
+                        <div class="list-item-row flex items-center gap-2">
+                            <input asp-for="BadReviewPoints[i]"
+                                   placeholder="e.g. Frame rate drops"
+                                   class="block w-full rounded-lg border-0 px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-red-500 sm:text-sm" />
+                            <button type="button"
+                                    class="remove-row flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                                    data-list="bad">
+                                <svg class="pointer-events-none h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // --- 1. Toggle Editor Visibility ---
+        const reviewCheckbox = document.getElementById("is-review-checkbox");
+        const reviewEditor = document.getElementById("review-editor");
+
+        function toggleReviewEditor() {
+            if(reviewCheckbox.checked) {
+                reviewEditor.classList.remove("hidden");
+            } else {
+                reviewEditor.classList.add("hidden");
+            }
+        }
+        reviewCheckbox.addEventListener("change", toggleReviewEditor);
+
+        // --- 2. Live Character Counter ---
+        const summaryInput = document.getElementById("review-summary");
+        const summaryCounter = document.getElementById("summary-counter");
+
+        if (summaryInput && summaryCounter) {
+            const updateCounter = () => {
+                summaryCounter.textContent = `${summaryInput.value.length} / 500`;
+            };
+            summaryInput.addEventListener("input", updateCounter);
+            updateCounter(); // Init on load
+        }
+
+        // --- 3. Dynamic Form Lists (ASP.NET Core Safe) ---
+
+        // This prevents ASP.NET model binding from breaking when a middle item is deleted
+        function reindexList(containerId, listPrefix) {
+            const container = document.getElementById(containerId);
+            const inputs = container.querySelectorAll("input");
+            inputs.forEach((input, index) => {
+                input.name = `${listPrefix}[${index}]`;
+                input.id = `${listPrefix}_${index}_`;
+            });
+        }
+
+        function addRow(containerId, listPrefix, placeholder, focusColor, dataListType) {
+            const container = document.getElementById(containerId);
+            const index = container.querySelectorAll("input").length;
+
+            const html = `
+                <div class="list-item-row flex items-center gap-2">
+                    <input name="${listPrefix}[${index}]"
+                           id="${listPrefix}_${index}_"
+                           placeholder="${placeholder}"
+                           class="block w-full rounded-lg border-0 px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-${focusColor}-500 sm:text-sm" />
+                    <button type="button"
+                            class="remove-row flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                            data-list="${dataListType}">
+                        <svg class="pointer-events-none h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>`;
+
+            container.insertAdjacentHTML("beforeend", html);
+            container.lastElementChild.querySelector('input').focus();
+        }
+
+        document.getElementById("add-good-point").addEventListener("click", () => {
+            addRow("good-points", "GoodReviewPoints", "e.g. Stunning graphics", "emerald", "good");
+        });
+
+        document.getElementById("add-bad-point").addEventListener("click", () => {
+            addRow("bad-points", "BadReviewPoints", "e.g. Frame rate drops", "red", "bad");
+        });
+
+        // Event delegation for deleting rows
+        document.addEventListener("click", function (e) {
+            const btn = e.target.closest('.remove-row');
+            if (!btn) return;
+
+            const row = btn.closest('.list-item-row');
+            const listType = btn.getAttribute('data-list');
+
+            if (row) {
+                row.remove();
+                // Re-index the specific list so C# doesn't lose data on POST
+                if (listType === "good") {
+                    reindexList("good-points", "GoodReviewPoints");
+                } else if (listType === "bad") {
+                    reindexList("bad-points", "BadReviewPoints");
+                }
+            }
+        });
+    });
+</script>

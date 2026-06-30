@@ -324,6 +324,10 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("featured_image_id");
 
+                    b.Property<bool>("IsReview")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_review");
+
                     b.Property<DateTime?>("PublishedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("published_at");
@@ -331,6 +335,18 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.Property<Guid?>("PublishedById")
                         .HasColumnType("uuid")
                         .HasColumnName("published_by_id");
+
+                    b.Property<decimal?>("ReviewScore")
+                        .HasColumnType("numeric")
+                        .HasColumnName("review_score");
+
+                    b.Property<string>("ReviewSummary")
+                        .HasColumnType("text")
+                        .HasColumnName("review_summary");
+
+                    b.Property<int?>("ReviewVerdict")
+                        .HasColumnType("integer")
+                        .HasColumnName("review_verdict");
 
                     b.Property<string>("SeoDescription")
                         .HasColumnType("text")
@@ -423,6 +439,63 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasDatabaseName("ix_article_media_media_id");
 
                     b.ToTable("article_media", (string)null);
+                });
+
+            modelBuilder.Entity("TheGameVoice.Domain.Entities.ArticleReviewPoint", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("ArticleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("article_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("display_order");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("published_at");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_article_review_points");
+
+                    b.HasIndex("ArticleId")
+                        .HasDatabaseName("ix_article_review_points_article_id");
+
+                    b.ToTable("article_review_points", (string)null);
                 });
 
             modelBuilder.Entity("TheGameVoice.Domain.Entities.ArticleTag", b =>
@@ -1040,6 +1113,18 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.Navigation("Media");
                 });
 
+            modelBuilder.Entity("TheGameVoice.Domain.Entities.ArticleReviewPoint", b =>
+                {
+                    b.HasOne("TheGameVoice.Domain.Entities.Article", "Article")
+                        .WithMany("ReviewPoints")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_article_review_points_articles_article_id");
+
+                    b.Navigation("Article");
+                });
+
             modelBuilder.Entity("TheGameVoice.Domain.Entities.ArticleTag", b =>
                 {
                     b.HasOne("TheGameVoice.Domain.Entities.Article", "Article")
@@ -1112,6 +1197,8 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.Navigation("ArticleVideos");
 
                     b.Navigation("ArticleViews");
+
+                    b.Navigation("ReviewPoints");
                 });
 
             modelBuilder.Entity("TheGameVoice.Domain.Entities.Category", b =>

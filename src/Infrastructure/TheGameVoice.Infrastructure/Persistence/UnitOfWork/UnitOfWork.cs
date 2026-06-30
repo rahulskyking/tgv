@@ -28,24 +28,20 @@ public class UnitOfWork : IUnitOfWork
     }
 
     public async Task<int> SaveChangesAsync(
-        CancellationToken cancellationToken = default)
+     CancellationToken cancellationToken = default)
     {
         foreach (var entry in _context.ChangeTracker.Entries())
         {
-            Console.WriteLine(
-                $"Entity: {entry.Entity.GetType().Name}");
+            Console.WriteLine("----------------------------------");
+            Console.WriteLine($"Entity : {entry.Entity.GetType().Name}");
+            Console.WriteLine($"State  : {entry.State}");
 
-            Console.WriteLine(
-                $"State: {entry.State}");
+            var values = entry.Properties
+                .Select(p => $"{p.Metadata.Name} = {p.CurrentValue}");
 
-            if (entry.Entity is BaseEntity baseEntity)
-            {
-                Console.WriteLine(
-                    $"Id: {baseEntity.Id}");
-            }
+            Console.WriteLine(string.Join(", ", values));
         }
 
-        return await _context.SaveChangesAsync(
-            cancellationToken);
+        return await _context.SaveChangesAsync(cancellationToken);
     }
 }

@@ -1,0 +1,195 @@
+﻿@model TheGameVoice.Domain.Entities.Article
+
+@if (Model.IsReview)
+{
+    var goodPoints = Model.ReviewPoints
+        .Where(x => x.Type == TheGameVoice.Domain.Enums.ReviewPointType.Good)
+        .OrderBy(x => x.DisplayOrder)
+        .ToList();
+
+    var badPoints = Model.ReviewPoints
+        .Where(x => x.Type == TheGameVoice.Domain.Enums.ReviewPointType.Bad)
+        .OrderBy(x => x.DisplayOrder)
+        .ToList();
+
+    <section class="mt-10 overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-xl shadow-[#7c3aed]/5">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-[#7c3aed]/10 bg-gradient-to-r from-[#7c3aed]/5 to-white px-6 py-5 sm:px-8">
+            <div class="flex items-center gap-4">
+                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#7c3aed]/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#7c3aed]" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7 6h10a5 5 0 015 5v2a3 3 0 01-3 3h-1l-2 2H8l-2-2H5a3 3 0 01-3-3v-2a5 5 0 015-5z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="text-[10px] font-black uppercase tracking-[0.28em] text-[#7c3aed]">
+                        TheGameVoice Review
+                    </div>
+                    <h2 class="mt-1 text-2xl font-black text-slate-900 sm:text-3xl">
+                        Verdict
+                    </h2>
+                </div>
+            </div>
+            <div class="hidden rounded-full border border-[#7c3aed]/20 bg-[#7c3aed]/5 px-5 py-2 text-xs font-bold text-[#7c3aed] lg:block">
+                Reviewed by TheGameVoice
+            </div>
+        </div>
+
+        <!-- Pros & Cons + Score Panel -->
+        <div class="grid lg:grid-cols-3">
+
+            <!-- LEFT (Pros/Cons) -->
+            <div class="bg-slate-50 lg:col-span-2">
+                <div class="grid md:grid-cols-2">
+
+                    <!-- GOOD -->
+                    <div class="border-b border-slate-200 p-6 sm:p-8 md:border-b-0 md:border-r">
+                        <div class="mb-6 flex items-center gap-3">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 9V5a3 3 0 00-6 0v4H5v11h14V9h-5z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-xs font-black uppercase tracking-[0.25em] text-emerald-600">
+                                    GOOD
+                                </div>
+                                <div class="mt-1 h-1 w-8 rounded-full bg-emerald-500"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            @foreach (var point in goodPoints)
+                            {
+                                <div class="group flex items-start gap-3">
+                                    <div class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 transition-transform duration-300 group-hover:scale-110">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-emerald-600" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-medium leading-relaxed text-slate-700">
+                                        @point.Text
+                                    </p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- BAD -->
+                    <div class="p-6 sm:p-8">
+                        <div class="mb-6 flex items-center gap-3">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 15V19a3 3 0 006 0v-4h3V4H5v11h5z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-xs font-black uppercase tracking-[0.25em] text-red-500">
+                                    BAD
+                                </div>
+                                <div class="mt-1 h-1 w-8 rounded-full bg-red-500"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            @foreach (var point in badPoints)
+                            {
+                                <div class="group flex items-start gap-3">
+                                    <div class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-100 transition-transform duration-300 group-hover:scale-110">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-red-500" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-medium leading-relaxed text-slate-700">
+                                        @point.Text
+                                    </p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- RIGHT (Score Panel) -->
+            <div class="relative overflow-hidden bg-gradient-to-br from-[#7c3aed] via-[#6d28d9] to-[#5b21b6] text-white">
+                <!-- Background Decoration -->
+                <div class="absolute -right-16 -top-16 h-52 w-52 rounded-full bg-white/10 blur-3xl"></div>
+                <div class="absolute -bottom-20 -left-20 h-56 w-56 rounded-full bg-black/20 blur-3xl"></div>
+
+                <div class="relative flex h-full flex-col justify-between p-8">
+                    <!-- Top -->
+                    <div>
+                        <div class="inline-flex rounded-full bg-white/15 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.25em]">
+                            TheGameVoice Score
+                        </div>
+                        <div class="mt-6 text-center">
+                            <div class="text-8xl font-black leading-none drop-shadow-lg">
+                                @(Model.ReviewScore?.ToString("0.0"))
+                            </div>
+                            <div class="mt-4 text-lg font-black uppercase tracking-[0.35em] text-white/90">
+                                @Model.ReviewVerdict
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="my-6 border-t border-white/20"></div>
+
+                    <!-- Summary -->
+                    @if (!string.IsNullOrWhiteSpace(Model.ReviewSummary))
+                    {
+                        <div>
+                            <div class="mb-2 text-[10px] font-bold uppercase tracking-[0.25em] text-white/70">
+                                Verdict Summary
+                            </div>
+                            <p class="text-sm font-medium leading-relaxed text-white/90">
+                                @Model.ReviewSummary
+                            </p>
+                        </div>
+                    }
+
+                    <!-- Bottom Hub Link -->
+                    @if (Model.ArticleGames != null && Model.ArticleGames.Any())
+                    {
+                        var game = Model.ArticleGames.First().Game;
+                        <div class="mt-8">
+                            <a asp-controller="Games"
+                               asp-action="Details"
+                               asp-route-slug="@game.Slug"
+                               class="flex items-center justify-center rounded-xl bg-white px-5 py-3.5 text-xs font-bold uppercase tracking-wide text-[#7c3aed] shadow-lg transition-transform duration-300 hover:-translate-y-0.5 hover:bg-slate-50">
+                                View Game Hub
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="border-t border-slate-200 bg-white px-6 py-5 sm:px-8">
+            <div class="flex flex-wrap items-center justify-between gap-6">
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-[0.25em] text-[#7c3aed]">
+                        Overall Verdict
+                    </div>
+                    <h3 class="mt-1 text-xl font-black text-slate-900">
+                        @Model.ReviewVerdict
+                    </h3>
+                </div>
+                <div class="text-right">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                        Final Rating
+                    </div>
+                    <div class="text-3xl font-black text-[#7c3aed]">
+                        @(Model.ReviewScore?.ToString("0.0"))<span class="text-xl text-slate-400">/10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+}

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using TheGameVoice.Domain.Enums;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Media;
 
 namespace TheGameVoice.Web.Areas.Admin.ViewModels.Articles;
@@ -73,4 +74,32 @@ public class ArticleFormViewModel
         set;
     }
 = new();
+
+    #region Review
+
+    public bool IsReview { get; set; }
+
+    [Range(0, 10)]
+    public decimal? ReviewScore { get; set; }
+
+    public ReviewVerdict? ReviewVerdict { get; set; }
+
+    [MaxLength(500)]
+    public string? ReviewSummary { get; set; }
+
+    public List<string> GoodReviewPoints
+    {
+        get;
+        set;
+    }
+    = new();
+
+    public List<string> BadReviewPoints
+    {
+        get;
+        set;
+    }
+    = new();
+
+    #endregion
 }

@@ -131,7 +131,7 @@
 
                     </div>
                 }
-
+               
                 <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-10">
                     <div class="article-content">
 
@@ -140,7 +140,11 @@
                     </div>
 
                 </div>
-
+                @if (Model.Article.IsReview)
+                {
+                    <partial name="~/Views/Shared/Components/_ReviewSummaryCard.cshtml"
+                             model="Model.Article" />
+                }
             </main>
 
             <aside class="lg:col-span-4">
@@ -151,7 +155,7 @@
             </aside>
 
         </div>
-
+       
         <!-- CONTINUE READING -->
         @if (Model.RelatedArticles.Any())
         {
