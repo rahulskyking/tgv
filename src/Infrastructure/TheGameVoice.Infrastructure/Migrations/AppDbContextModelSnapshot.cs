@@ -474,7 +474,8 @@ namespace TheGameVoice.Infrastructure.Migrations
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("text");
 
                     b.Property<int>("Type")
@@ -492,8 +493,8 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_article_review_points");
 
-                    b.HasIndex("ArticleId")
-                        .HasDatabaseName("ix_article_review_points_article_id");
+                    b.HasIndex("ArticleId", "Type", "DisplayOrder")
+                        .HasDatabaseName("ix_article_review_points_article_id_type_display_order");
 
                     b.ToTable("article_review_points", (string)null);
                 });
@@ -571,6 +572,10 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("display_order");
 
                     b.Property<string>("Name")
                         .IsRequired()

@@ -41,20 +41,20 @@ _cacheService;
     }
 
     [HttpPost]
- 
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Upload(
-    UploadMediaViewModel model)
+        UploadMediaViewModel model)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        if (model.File == null || model.File.Length == 0)
+        if (model.Files == null || !model.Files.Any())
         {
             ModelState.AddModelError(
-                "File",
-                "Please select a valid file.");
+                "Files",
+                "Please select at least one image.");
 
             return View(model);
         }
@@ -66,58 +66,72 @@ _cacheService;
         "image/webp"
     };
 
-        if (!allowedTypes.Contains(
-            model.File.ContentType))
+        foreach (var file in model.Files)
         {
-            ModelState.AddModelError(
-                "File",
-                "Only JPG, PNG, and WEBP images are allowed.");
+            if (file == null || file.Length == 0)
+                continue;
 
-            return View(model);
-        }
+            if (!allowedTypes.Contains(file.ContentType))
+            {
+                ModelState.AddModelError(
+                    "Files",
+                    $"{file.FileName} is not a supported image.");
 
-        if (model.File.Length > 5 * 1024 * 1024)
-        {
-            ModelState.AddModelError(
-                "File",
-                "Maximum file size is 5MB.");
+                return View(model);
+            }
 
-            return View(model);
+            if (file.Length > 5 * 1024 * 1024)
+            {
+                ModelState.AddModelError(
+                    "Files",
+                    $"{file.FileName} exceeds the 5MB limit.");
+
+                return View(model);
+            }
         }
 
         try
         {
-            Console.WriteLine("Upload started");
-
-            await using var stream = model.File.OpenReadStream();
-
-            var filePath = await _storageService.UploadAsync(
-                stream, model.File.FileName, model.File.ContentType);
-
-            var media = new Media
+            foreach (var file in model.Files)
             {
-                FileName = model.File.FileName,
-                FilePath = filePath,
-                ContentType = model.File.ContentType,
-                FileSize = model.File.Length,
-                IsImage = model.File.ContentType.StartsWith("image/")
-            };
+                await using var stream = file.OpenReadStream();
 
-            await _unitOfWork.Media.AddAsync(media);     // ← Only once
-            await _unitOfWork.SaveChangesAsync();_cacheService.RemoveMany(CacheKeys.HomePage);        // ← Only once
+                var filePath = await _storageService.UploadAsync(
+                    stream,
+                    file.FileName,
+                    file.ContentType);
 
-            Console.WriteLine($"Media saved with ID: {media.Id}");
+                var media = new Media
+                {
+                    FileName = file.FileName,
+                    FilePath = filePath,
+                    ContentType = file.ContentType,
+                    FileSize = file.Length,
+                    IsImage = file.ContentType.StartsWith("image/")
+                };
+
+                await _unitOfWork.Media.AddAsync(media);
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+
+            _cacheService.RemoveMany(CacheKeys.HomePage);
+
+            TempData["Success"] =
+                $"{model.Files.Count} image(s) uploaded successfully.";
 
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.ToString());
-            // Consider logging + showing a friendly error instead of re-throwing
-            throw;
+            Console.WriteLine(ex);
+
+            ModelState.AddModelError(
+                "",
+                "An error occurred while uploading the images.");
+
+            return View(model);
         }
-
-
     }
     [HttpGet]
     public async Task<IActionResult> Edit(Guid id)

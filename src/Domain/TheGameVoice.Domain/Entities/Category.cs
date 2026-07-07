@@ -10,7 +10,13 @@ public class Category : AuditableEntity
     public string Slug { get; set; }
         = default!;
 
+    // Controls the order in navigation, homepage, etc.
+    public int DisplayOrder { get; set; }
+
     public ICollection<Article> Articles
-    { get; set; }
+    {
+        get;
+        set;
+    }
         = new List<Article>();
 }

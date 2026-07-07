@@ -1,78 +1,135 @@
 ﻿@model IReadOnlyList<TheGameVoice.Domain.Entities.Category>
 
-<div class="space-y-6">
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<div class="space-y-8">
 
     <div class="flex items-center justify-between">
 
-        <h1 class="text-3xl font-bold">
-            Categories
-        </h1>
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900">
+                Categories
+            </h1>
 
-        <a asp-action="Create"
-           class="rounded-lg bg-[#fa743e] px-4 py-2 text-white">
-            Create Category
-        </a>
+            <p class="mt-1 text-sm text-slate-500">
+                Drag and drop categories to control their order across the website.
+            </p>
+        </div>
+
+        <div class="flex gap-3">
+
+            <a asp-action="Create"
+               class="rounded-xl bg-[#fa743e] px-5 py-3 font-medium text-white shadow transition hover:opacity-90">
+
+                + Create Category
+
+            </a>
+
+            <button id="saveOrder"
+                    class="rounded-xl bg-[#7c3aed] px-5 py-3 font-medium text-white shadow transition hover:bg-[#6d28d9]">
+
+                Save Order
+
+            </button>
+
+        </div>
 
     </div>
 
-    <div class="rounded-xl bg-white shadow-sm">
+    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
 
-        <table class="min-w-full">
+        <ul id="categoryList">
 
-            <thead class="border-b bg-gray-50">
+            @foreach (var category in Model)
+            {
+                <li data-id="@category.Id"
+                    class="flex cursor-move items-center justify-between border-b border-slate-100 px-6 py-5 transition hover:bg-violet-50">
 
-                <tr>
+                    <div class="flex items-center gap-4">
 
-                    <th class="px-6 py-4 text-left">
-                        Name
-                    </th>
+                        <div class="text-2xl text-slate-400">
+                            ☰
+                        </div>
 
-                    <th class="px-6 py-4 text-left">
-                        Slug
-                    </th>
+                        <div>
 
-                    <th class="px-6 py-4 text-left">
-                        Created
-                    </th>
+                            <div class="font-semibold text-slate-900">
+                                @category.Name
+                            </div>
 
-                </tr>
+                            <div class="text-sm text-slate-500">
+                                @category.Slug
+                            </div>
 
-            </thead>
+                        </div>
 
-            <tbody>
+                    </div>
 
-                @foreach (var category in Model)
-                {
-                    <tr class="border-b">
+                    <div class="text-sm text-slate-400">
 
-                        <td class="px-6 py-4">
-                            @category.Name
-                        </td>
+                        @category.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
 
-                        <td class="px-6 py-4 text-gray-500">
-                            @category.Slug
-                        </td>
+                    </div>
 
-                        <td class="px-6 py-4">
+                </li>
+            }
 
-                            @{
-                                var createdDate =
-                                category.CreatedAt
-                                .ToLocalTime()
-                                .ToString("dd MMM yyyy");
-                            }
-
-                            @createdDate
-
-                        </td>
-
-                    </tr>
-                }
-
-            </tbody>
-
-        </table>
+        </ul>
 
     </div>
 
 </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+    <script>
+
+        new Sortable(document.getElementById("categoryList"),{
+
+            animation:200,
+
+            ghostClass:"bg-violet-100"
+
+        });
+
+        document
+        .getElementById("saveOrder")
+        .addEventListener("click",async()=>{
+
+            const ids=[...document.querySelectorAll("#categoryList li")]
+                .map(x=>x.dataset.id);
+
+            const token=document.querySelector("input[name='__RequestVerificationToken']")?.value;
+
+            const response=await fetch("@Url.Action("Reorder")",{
+
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"application/json",
+                    "RequestVerificationToken":token
+                },
+
+                body:JSON.stringify(ids)
+
+            });
+
+            if(response.ok){
+
+                location.reload();
+
+            }else{
+
+                alert("Unable to save order.");
+
+            }
+
+        });
+
+    </script>
+
+    @Html.AntiForgeryToken()

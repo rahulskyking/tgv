@@ -67,4 +67,28 @@ _cacheService;
 
         return RedirectToAction(nameof(Index));
     }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reorder([FromBody] List<Guid> ids)
+    {
+        var categories =
+            (await _unitOfWork.Categories.GetAllAsync())
+            .ToDictionary(x => x.Id);
+
+        var order = 1;
+
+        foreach (var id in ids)
+        {
+            if (categories.TryGetValue(id, out var category))
+            {
+                category.DisplayOrder = order++;
+            }
+        }
+
+        await _unitOfWork.SaveChangesAsync();
+
+        _cacheService.RemoveMany(CacheKeys.HomePage);
+
+        return Ok();
+    }
 }

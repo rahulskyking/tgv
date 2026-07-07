@@ -17,10 +17,11 @@ public class CategoryRepository
     }
 
     public async Task<IReadOnlyList<Category>>
-        GetAllAsync()
+    GetAllAsync()
     {
         return await _context.Categories
-            .OrderBy(x => x.Name)
+            .OrderBy(x => x.DisplayOrder)
+            .ThenBy(x => x.Name)
             .ToListAsync();
     }
 

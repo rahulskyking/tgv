@@ -86,14 +86,14 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ISlugService,
     SlugService>();
 
-        services.AddScoped<IGameRepository,GameRepository>();
+        services.AddScoped<IGameRepository, GameRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
 
         services.Configure<SupabaseStorageOptions>(configuration.GetSection("SupabaseStorage"));
         services.AddHttpClient();
 
 
-        services.AddScoped<IStorageService,SupabaseStorageService>();
+        services.AddScoped<IStorageService, SupabaseStorageService>();
 
         services.AddMemoryCache();
 
