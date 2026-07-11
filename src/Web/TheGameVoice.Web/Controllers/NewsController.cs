@@ -36,7 +36,8 @@ _cacheService;
         return View(articles);
     }
 
-    [Route("news/{slug}")]
+    // [Route("news/{slug}")]
+    [Route("article/{slug}")]
     public async Task<IActionResult> Details(
         string slug)
     {

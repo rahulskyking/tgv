@@ -31,13 +31,14 @@
                 </label>
                 <div class="relative">
                     <input asp-for="ReviewScore"
+                           id="review-score"
                            type="number"
                            step="0.1"
-                           min="0"
+                           min="1"
                            max="10"
                            placeholder="e.g. 8.5"
                            class="block w-full rounded-lg border-0 py-2.5 pl-4 pr-12 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-[#7c3aed] sm:text-sm sm:leading-6" />
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
                         <span class="text-slate-400 sm:text-sm font-medium">/ 10</span>
                     </div>
                 </div>
@@ -49,11 +50,22 @@
                 <label asp-for="ReviewVerdict" class="mb-1.5 block text-sm font-semibold text-slate-700">
                     Verdict
                 </label>
-                <select asp-for="ReviewVerdict"
-                        asp-items="Html.GetEnumSelectList<TheGameVoice.Domain.Enums.ReviewVerdict>()"
-                        class="block w-full rounded-lg border-0 py-2.5 pl-4 pr-10 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-[#7c3aed] sm:text-sm sm:leading-6">
-                    <option value="">Select Verdict...</option>
-                </select>
+                <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+
+                        Review Verdict
+
+                    </p>
+
+                    <p id="review-verdict"
+                       class="mt-2 text-xl font-bold text-[#7c3aed]">
+
+                        @(Model.ReviewVerdict?.ToString() ?? "-")
+
+                    </p>
+
+                </div>
                 <span asp-validation-for="ReviewVerdict" class="mt-1.5 flex text-xs font-medium text-red-500"></span>
             </div>
         </div>
@@ -231,4 +243,65 @@
             }
         });
     });
+        // --- Review Verdict ---
+
+    const scoreInput =
+        document.getElementById("review-score");
+
+    const verdict =
+        document.getElementById("review-verdict");
+
+    function updateVerdict() {
+
+        if (!scoreInput || !verdict)
+            return;
+
+        const score =
+            parseFloat(scoreInput.value);
+
+        if (isNaN(score)) {
+
+            verdict.innerText = "-";
+            return;
+        }
+
+        if (score >= 9.5)
+            verdict.innerText = "Masterpiece";
+
+        else if (score >= 8.5)
+            verdict.innerText = "Amazing";
+
+        else if (score >= 7.5)
+            verdict.innerText = "Great";
+
+        else if (score >= 6.5)
+            verdict.innerText = "Good";
+
+        else if (score >= 5.5)
+            verdict.innerText = "Fair";
+
+        else if (score >= 4.5)
+            verdict.innerText = "Average";
+
+        else if (score >= 3.5)
+            verdict.innerText = "Bad";
+
+        else if (score >= 2.5)
+            verdict.innerText = "Poor";
+
+        else if (score >= 1.5)
+            verdict.innerText = "Awful";
+
+        else
+            verdict.innerText = "Worst";
+    }
+
+    if (scoreInput) {
+
+        scoreInput.addEventListener(
+            "input",
+            updateVerdict);
+
+        updateVerdict();
+    }
 </script>

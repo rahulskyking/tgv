@@ -1,19 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TheGameVoice.Domain.Enums;
-
-
+﻿namespace TheGameVoice.Domain.Enums;
 
 public enum ReviewVerdict
 {
-    Poor = 1,
-    Fair = 2,
-    Good = 3,
-    Great = 4,
-    Excellent = 5,
-    Masterpiece = 6
+    Worst = 1,
+
+    Awful = 2,
+
+    Poor = 3,
+
+    Bad = 4,
+
+    Average = 5,
+
+    Fair = 6,
+
+    Good = 7,
+
+    Great = 8,
+
+    Amazing = 9,
+
+    Masterpiece = 10
 }

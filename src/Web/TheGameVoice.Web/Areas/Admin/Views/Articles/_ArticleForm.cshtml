@@ -1,7 +1,22 @@
 ﻿@using TheGameVoice.Infrastructure.Identity
 @model TheGameVoice.Web.Areas.Admin.ViewModels.Articles.ArticleFormViewModel
 
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-5">
 
+        <div class="mb-3 font-semibold text-red-700">
+
+            Please fix the following errors:
+
+        </div>
+
+        <div asp-validation-summary="All"
+             class="text-sm text-red-600">
+        </div>
+
+    </div>
+}
 <div class="grid grid-cols-1 gap-8 xl:grid-cols-[1fr_350px]">
 
     <!-- MAIN CONTENT -->
@@ -120,7 +135,7 @@
                 </h3>
 
                 @if (User.IsInRole(Roles.Author))
-                {
+                { 
                     <input asp-for="AuthorId"
                            type="hidden" />
 
@@ -297,7 +312,7 @@
             </button>
 
         </div>
-        <div class="rounded-2xl border border-default bg-white p-5">
+    @*     <div class="rounded-2xl border border-default bg-white p-5">
 
             <div class="mb-4 flex items-center justify-between">
 
@@ -337,7 +352,7 @@
         </div>
         <div class="rounded-2xl border border-default bg-white p-5">
 
-            <div class="mb-4 flex items-center justify-between">
+             <div class="mb-4 flex items-center justify-between">
 
                 <h3 class="text-sm font-bold uppercase tracking-wide">
 
@@ -353,7 +368,7 @@
 
                 </button>
 
-            </div>
+            </div> 
 
             <div id="video-container">
 
@@ -372,7 +387,7 @@
 
             </div>
 
-        </div>
+        </div> *@
         <div class="rounded-2xl border border-default bg-white p-5">
 
             <h3 class="mb-4 text-sm font-bold uppercase tracking-wide">
@@ -385,11 +400,11 @@
                    placeholder="SEO Title"
                    class="mb-3 w-full rounded-xl border border-default px-4 py-3" />
 
-            <textarea asp-for="SeoDescription"
+         @*    <textarea asp-for="SeoDescription"
                       rows="4"
                       placeholder="SEO Description"
                       class="w-full rounded-xl border border-default px-4 py-3">
-            </textarea>
+            </textarea> *@
 
         </div>
 

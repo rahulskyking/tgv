@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TheGameVoice.Application.Constants;
+using TheGameVoice.Application.Helpers;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Entities;
@@ -271,9 +272,10 @@ public class ArticlesController : BaseAdminController
             ? model.ReviewScore
             : null;
 
-        article.ReviewVerdict = model.IsReview
-            ? model.ReviewVerdict
-            : null;
+        article.ReviewVerdict =
+          model.ReviewScore.HasValue
+              ? ReviewHelper.GetVerdict(model.ReviewScore.Value)
+              : null;
 
         article.ReviewSummary = model.IsReview
             ? model.ReviewSummary
