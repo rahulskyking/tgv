@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
+using TheGameVoice.Application.Settings;
 using TheGameVoice.Infrastructure.Configuration;
 using TheGameVoice.Infrastructure.Identity.Entities;
 using TheGameVoice.Infrastructure.Persistence.Context;
@@ -62,6 +63,7 @@ public static class InfrastructureServiceRegistration
             options
                 .UseNpgsql(connectionString)
                 .UseSnakeCaseNamingConvention();
+
         });
         services.AddIdentity<ApplicationUser,
     IdentityRole<Guid>>(options =>
@@ -104,6 +106,11 @@ public static class InfrastructureServiceRegistration
 
         services.AddScoped<IMediaRepository,
     MediaRepository>();
+
+        services.Configure<EmailSettings>(
+    configuration.GetSection("EmailSettings"));
+
+        services.AddScoped<IEmailService, EmailService>();
         return services;
 
     }

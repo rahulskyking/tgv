@@ -1,0 +1,208 @@
+﻿@model TheGameVoice.Web.ViewModels.Pages.ContactViewModel
+
+<div class="tgv-container py-16">
+
+    <!-- HERO -->
+
+    <div class="mx-auto mb-14 max-w-3xl text-center">
+
+        <span class="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
+            Contact TheGameVoice
+        </span>
+
+        <h1 class="mt-6 text-5xl font-black tracking-tight text-slate-900">
+
+            We'd Love to Hear From You
+
+        </h1>
+
+        <p class="mt-5 text-lg leading-8 text-slate-600">
+
+            Whether you have a news tip, business inquiry, feedback,
+            correction request, or simply want to say hello,
+            we're always happy to hear from our readers.
+
+        </p>
+
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="mx-auto mb-8 max-w-5xl rounded-2xl border border-green-200 bg-green-50 px-6 py-4 text-green-700">
+
+            @TempData["Success"]
+
+        </div>
+    }
+
+    <div class="grid gap-10 lg:grid-cols-3">
+
+        <!-- LEFT SIDE -->
+
+        <div class="space-y-6">
+
+            <div class="rounded-3xl border border-default bg-white p-8 shadow-sm">
+
+                <h2 class="text-xl font-bold">
+                    Contact Information
+                </h2>
+
+                <div class="mt-8 space-y-6">
+
+                    <div>
+
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            Email
+                        </p>
+
+                        <a href="mailto:@Model.ContactEmail"
+                           class="font-medium text-primary hover:underline">
+
+                            @Model.ContactEmail
+
+                        </a>
+
+                    </div>
+
+                    <div>
+
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            Response Time
+                        </p>
+
+                        <p class="mt-2 text-slate-700">
+                            Usually within 24–48 hours.
+                        </p>
+
+                    </div>
+
+                    <div>
+
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            Topics
+                        </p>
+
+                        <ul class="mt-2 space-y-2 text-slate-700">
+
+                            <li>• Editorial Feedback</li>
+
+                            <li>• News Tips</li>
+
+                            <li>• Business Partnerships</li>
+
+                            <li>• Corrections</li>
+
+                            <li>• General Questions</li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- FORM -->
+
+        <div class="lg:col-span-2">
+
+            <div class="rounded-3xl border border-default bg-white p-10 shadow-sm">
+
+                <form asp-action="Contact"
+                      method="post"
+                      class="space-y-6">
+
+                    @Html.AntiForgeryToken()
+
+                    <!-- Honeypot -->
+
+                    <div class="hidden">
+
+                        <input asp-for="Website" autocomplete="off" />
+
+                    </div>
+
+                    <div class="grid gap-6 md:grid-cols-2">
+
+                        <div>
+
+                            <label asp-for="Name"
+                                   class="mb-2 block text-sm font-semibold">
+                            </label>
+
+                            <input asp-for="Name"
+                                   class="w-full rounded-xl border border-default px-4 py-3 focus:border-primary focus:outline-none" />
+
+                            <span asp-validation-for="Name"
+                                  class="text-sm text-red-500"></span>
+
+                        </div>
+
+                        <div>
+
+                            <label asp-for="Email"
+                                   class="mb-2 block text-sm font-semibold">
+                            </label>
+
+                            <input asp-for="Email"
+                                   class="w-full rounded-xl border border-default px-4 py-3 focus:border-primary focus:outline-none" />
+
+                            <span asp-validation-for="Email"
+                                  class="text-sm text-red-500"></span>
+
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <label asp-for="Subject"
+                               class="mb-2 block text-sm font-semibold">
+                        </label>
+
+                        <input asp-for="Subject"
+                               class="w-full rounded-xl border border-default px-4 py-3 focus:border-primary focus:outline-none" />
+
+                        <span asp-validation-for="Subject"
+                              class="text-sm text-red-500"></span>
+
+                    </div>
+
+                    <div>
+
+                        <label asp-for="Message"
+                               class="mb-2 block text-sm font-semibold">
+                        </label>
+
+                        <textarea asp-for="Message"
+                                  rows="8"
+                                  class="w-full rounded-xl border border-default px-4 py-3 focus:border-primary focus:outline-none"></textarea>
+
+                        <span asp-validation-for="Message"
+                              class="text-sm text-red-500"></span>
+
+                    </div>
+
+                    <button type="submit"
+                            class="rounded-2xl bg-primary px-8 py-4 font-semibold text-white transition hover:opacity-90">
+
+                        Send Message
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

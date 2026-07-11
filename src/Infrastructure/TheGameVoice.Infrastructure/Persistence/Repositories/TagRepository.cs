@@ -44,4 +44,15 @@ public class TagRepository : ITagRepository
         await _context.Tags
             .AddAsync(tag);
     }
+
+    public async Task<bool> IsInUseAsync(Guid id)
+    {
+        return await _context.ArticleTags
+            .AnyAsync(x => x.TagId == id);
+    }
+
+    public void Remove(Tag tag)
+    {
+        _context.Tags.Remove(tag);
+    }
 }

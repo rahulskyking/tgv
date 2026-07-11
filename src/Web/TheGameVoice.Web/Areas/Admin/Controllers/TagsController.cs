@@ -67,7 +67,31 @@ _cacheService;
 
         return RedirectToAction(nameof(Index));
     }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var tag = await _unitOfWork.Tags.GetByIdAsync(id);
 
+        if (tag == null)
+            return NotFound();
+
+        if (await _unitOfWork.Tags.IsInUseAsync(id))
+        {
+            TempData["Error"] =
+                $"Cannot delete '{tag.Name}' because it is assigned to one or more articles.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        _unitOfWork.Tags.Remove(tag);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        TempData["Success"] = "Tag deleted successfully.";
+
+        return RedirectToAction(nameof(Index));
+    }
     #region Quick Tag add
     [Authorize(
 Roles =
@@ -120,4 +144,6 @@ $"{Roles.SuperAdmin}")]
             });
     }
     #endregion
+
+
 }
