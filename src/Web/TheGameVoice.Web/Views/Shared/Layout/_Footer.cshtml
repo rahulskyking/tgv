@@ -14,40 +14,50 @@
 
                 </h2>
 
-              
+                <p class="mt-4 max-w-sm text-sm leading-7 text-muted">
+
+                    Honest gaming news, reviews, features and guides
+                    for players who want more than just headlines.
+
+                </p>
 
             </div>
 
-            <!-- CONTENT -->
+            <!-- EXPLORE -->
 
             <div>
 
+                <h3 class="mb-5 text-sm font-bold uppercase tracking-[0.18em]">
 
-                <div class="flex flex-col gap-2">
+                    Explore
+
+                </h3>
+
+                <div class="flex flex-col gap-3">
+
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="text-muted transition hover:text-primary">
+
+                        Home
+
+                    </a>
 
                     <a asp-controller="News"
                        asp-action="Index"
                        class="text-muted transition hover:text-primary">
-                        News
+
+                        Articles
+
                     </a>
 
-                    <a asp-controller="Reviews"
+                @*     <a asp-controller="Games"
                        asp-action="Index"
                        class="text-muted transition hover:text-primary">
-                        Reviews
-                    </a>
 
-                    <a asp-controller="Features"
-                       asp-action="Index"
-                       class="text-muted transition hover:text-primary">
-                        Features
-                    </a>
-
-                    <a asp-controller="Games"
-                       asp-action="Index"
-                       class="text-muted transition hover:text-primary">
                         Games
-                    </a>
+
+                    </a> *@
 
                 </div>
 
@@ -57,26 +67,36 @@
 
             <div>
 
-               
+                <h3 class="mb-5 text-sm font-bold uppercase tracking-[0.18em]">
 
-                <div class="flex flex-col gap-2">
+                    Company
+
+                </h3>
+
+                <div class="flex flex-col gap-3">
 
                     <a asp-controller="Pages"
                        asp-action="About"
                        class="text-muted transition hover:text-primary">
+
                         About
+
                     </a>
 
                     <a asp-controller="Pages"
                        asp-action="Contact"
                        class="text-muted transition hover:text-primary">
+
                         Contact
+
                     </a>
 
                     <a asp-controller="Pages"
                        asp-action="ReviewPolicy"
                        class="text-muted transition hover:text-primary">
+
                         Review Policy
+
                     </a>
 
                 </div>
@@ -89,11 +109,10 @@
 
             <p>
 
-                © @DateTime.UtcNow.Year TheGameVoice. All rights reserved.
+                © @DateTime.UtcNow.Year TheGameVoice.
+                All rights reserved.
 
             </p>
-
-         
 
         </div>
 

@@ -3,12 +3,12 @@
 @{
     var primaryCategories =
         Model.Categories
-            .Take(5)
+            .Take(7)
             .ToList();
 
     var secondaryCategories =
         Model.Categories
-            .Skip(5)
+            .Skip(7)
             .ToList();
 }
 
@@ -42,13 +42,13 @@
 
                 <nav class="flex items-center gap-6">
 
-                    <a asp-controller="Home"
+                   @*  <a asp-controller="Home"
                        asp-action="Index"
                        class="text-sm font-bold uppercase tracking-[0.12em] text-slate-900 transition hover:text-primary">
 
                         Home
 
-                    </a>
+                    </a> *@
 
                     @foreach (var category in primaryCategories)
                     {
