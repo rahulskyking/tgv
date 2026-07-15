@@ -18,7 +18,7 @@
                 var secondary =
                 Model.LatestNews
                 .Where(x => hero == null || x.Id != hero.Id)
-                .Take(5)
+                .Take(8)
                 .ToList();
             }
 
@@ -150,6 +150,57 @@
                     }
 
                 </div>
+
+
+                <!-- BOTTOM ROW 2 -->
+                @if (secondary.Count > 5)
+                {
+                    <div class="mt-4 grid gap-4 md:grid-cols-3">
+
+                        @foreach (var article in secondary.Skip(5).Take(3))
+                        {
+                            <a asp-controller="News"
+                               asp-action="Details"
+                               asp-route-slug="@article.Slug"
+                               class="group block">
+
+                                <div class="relative overflow-hidden rounded-2xl">
+
+                                    @if (article.FeaturedImage != null)
+                                    {
+                                        <img src="@article.FeaturedImage.FilePath"
+                                             alt="@article.Title"
+                                             class="h-[180px] w-full object-cover transition duration-500 group-hover:scale-105" />
+                                    }
+
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+
+                                    <div class="absolute bottom-0 left-0 p-4">
+
+                                        @if (article.Category != null)
+                                        {
+                                            <div class="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-primary">
+
+                                                @article.Category.Name
+
+                                            </div>
+                                        }
+
+                                        <h3 class="line-clamp-2 text-base font-semibold text-white">
+
+                                            @article.Title
+
+                                        </h3>
+
+                                    </div>
+
+                                </div>
+
+                            </a>
+                        }
+
+                    </div>
+                }
             }
 
         </div>

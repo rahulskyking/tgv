@@ -62,7 +62,7 @@ public class HomeController : Controller
                             latestNews.FirstOrDefault(),
 
                         LatestNews =
-                            latestNews.Take(6).ToList(),
+                            latestNews.Take(9).ToList(),
 
                         FeaturedReview =
                             reviews.FirstOrDefault(),
