@@ -29,7 +29,7 @@ public class SupabaseStorageService
         CancellationToken cancellationToken = default)
     {
         var uniqueFileName =
-            $"{Guid.NewGuid()}_{fileName}";
+            $"{Guid.NewGuid()}_{fileName}";         
 
         var objectPath =
             $"uploads/{uniqueFileName}";

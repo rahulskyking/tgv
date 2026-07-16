@@ -40,7 +40,6 @@ public class PagesController : Controller
     [Route("contact")]
     public async Task<IActionResult> Contact(ContactViewModel model)
     {
-        // Honeypot
         if (!string.IsNullOrWhiteSpace(model.Website))
         {
             return RedirectToAction(nameof(Contact));
@@ -54,24 +53,27 @@ public class PagesController : Controller
 
         var body = $@"
 <h2>New Contact Message</h2>
-
 <p><strong>Name:</strong> {model.Name}</p>
-
 <p><strong>Email:</strong> {model.Email}</p>
-
 <p><strong>Subject:</strong> {model.Subject}</p>
-
 <hr>
-
 <p>{model.Message}</p>";
 
-        await _emailService.SendAsync(
-            _emailSettings.Email,
-            $"TheGameVoice Contact - {model.Subject}",
-            body);
+        try
+        {
+            await _emailService.SendAsync(
+                _emailSettings.Email,
+                $"TheGameVoice Contact - {model.Subject}",
+                body,
+                replyTo: model.Email);
 
-        TempData["Success"] =
-            "Thank you! Your message has been sent successfully.";
+            TempData["Success"] = "Thank you! Your message has been sent successfully.";
+        }
+        catch (Exception ex)
+        {
+            // TODO: inject ILogger<PagesController> and log ex here
+            TempData["Error"] = "Sorry, something went wrong sending your message. Please try again shortly.";
+        }
 
         return RedirectToAction(nameof(Contact));
     }
