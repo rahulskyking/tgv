@@ -2,290 +2,293 @@
     ViewData["Title"] = "About";
 }
 
-<div class="bg-gradient-to-b from-[#f8f5ff] to-white">
+<div class="overflow-hidden bg-white">
 
-    <div class="tgv-container py-24">
-
-        <div class="mx-auto max-w-5xl text-center">
-
-            <span class="inline-flex rounded-full bg-primary/10 px-5 py-2 text-sm font-semibold uppercase tracking-wider text-primary">
-
-                About TheGameVoice
-
-            </span>
-
-            <h1 class="mt-8 text-5xl font-black tracking-tight text-slate-900 md:text-6xl">
-
-                Honest Gaming Journalism,
-                Built for Players.
-
-            </h1>
-
-            <p class="mx-auto mt-8 max-w-3xl text-xl leading-9 text-slate-600">
-
-                TheGameVoice is an independent gaming publication focused on
-                delivering trustworthy reviews, breaking news, thoughtful
-                features and comprehensive game coverage for players across
-                every platform.
-
-            </p>
-
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-b from-[#f8f5ff] via-white to-white">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl md:h-96 md:w-96"></div>
         </div>
 
-    </div>
+        <div class="tgv-container relative py-16 sm:py-20 lg:py-28">
+            <div class="mx-auto max-w-5xl text-center">
+                <span class="inline-flex rounded-full bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-primary sm:px-5 sm:text-sm">
+                    About TheGameVoice
+                </span>
 
-</div>
-<div class="tgv-container py-20">
+                <h1 class="mx-auto mt-7 max-w-4xl text-4xl font-black tracking-tight text-slate-900 sm:text-5xl md:text-6xl lg:text-7xl">
+                    Honest Gaming Journalism,
+                    <span class="text-primary">Built for Players.</span>
+                </h1>
 
-    <div class="grid gap-16 lg:grid-cols-2">
-
-        <div>
-
-            <span class="text-sm font-bold uppercase tracking-[0.2em] text-primary">
-
-                WHO WE ARE
-
-            </span>
-
-            <h2 class="mt-4 text-4xl font-black text-slate-900">
-
-                Passionate About Games.
-                Serious About Journalism.
-
-            </h2>
-
-            <p class="mt-8 text-lg leading-8 text-slate-600">
-
-                TheGameVoice was created with one simple goal:
-                to provide gamers with honest, reliable and engaging
-                editorial content.
-
-            </p>
-
-            <p class="mt-6 text-lg leading-8 text-slate-600">
-
-                We believe readers deserve transparent reviews,
-                timely news coverage and thoughtful analysis free
-                from unnecessary hype or outside influence.
-
-            </p>
-
+                <p class="mx-auto mt-6 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg md:mt-8 md:text-xl md:leading-9">
+                    TheGameVoice is an independent gaming publication focused on delivering
+                    trustworthy reviews, breaking news, thoughtful features and comprehensive
+                    game coverage for players across every platform.
+                </p>
+            </div>
         </div>
+    </section>
 
-        <div class="grid gap-6 sm:grid-cols-2">
+    <!-- Who We Are Section -->
+    <section class="tgv-container py-14 sm:py-16 lg:py-24">
+        <div class="grid gap-12 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:gap-16">
 
-            <div class="rounded-3xl border border-default bg-white p-8 shadow-sm">
+            <div class="max-w-2xl">
+                <span class="text-xs font-bold uppercase tracking-[0.22em] text-primary sm:text-sm">
+                    Who We Are
+                </span>
 
-                <div class="text-4xl">📰</div>
+                <h2 class="mt-4 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+                    Passionate About Games.
+                    Serious About Journalism.
+                </h2>
 
-                <h3 class="mt-5 text-xl font-bold">
-
-                    News
-
-                </h3>
-
-                <p class="mt-3 text-slate-600">
-
-                    Breaking announcements,
-                    updates and industry news.
-
+                <p class="mt-6 text-base leading-8 text-slate-600 sm:mt-8 sm:text-lg">
+                    TheGameVoice was created with one simple goal: to provide gamers with
+                    honest, reliable and engaging editorial content.
                 </p>
 
-            </div>
-
-            <div class="rounded-3xl border border-default bg-white p-8 shadow-sm">
-
-                <div class="text-4xl">⭐</div>
-
-                <h3 class="mt-5 text-xl font-bold">
-
-                    Reviews
-
-                </h3>
-
-                <p class="mt-3 text-slate-600">
-
-                    Honest reviews with transparent scoring.
-
+                <p class="mt-5 text-base leading-8 text-slate-600 sm:text-lg">
+                    We believe readers deserve transparent reviews, timely news coverage and
+                    thoughtful analysis free from unnecessary hype or outside influence.
                 </p>
-
             </div>
 
-            <div class="rounded-3xl border border-default bg-white p-8 shadow-sm">
+            <div class="grid gap-5 sm:grid-cols-2 sm:gap-6">
 
-                <div class="text-4xl">🎮</div>
+                <!-- News -->
+                <div class="group rounded-3xl border border-default bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl sm:p-7 lg:p-8">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl transition-all duration-300 group-hover:scale-110">
+                        📰
+                    </div>
 
-                <h3 class="mt-5 text-xl font-bold">
+                    <h3 class="mt-5 text-xl font-bold text-slate-900">
+                        News
+                    </h3>
 
-                    Games
-
-                </h3>
-
-                <p class="mt-3 text-slate-600">
-
-                    Dedicated game hubs with complete information.
-
-                </p>
-
-            </div>
-
-            <div class="rounded-3xl border border-default bg-white p-8 shadow-sm">
-
-                <div class="text-4xl">📖</div>
-
-                <h3 class="mt-5 text-xl font-bold">
-
-                    Features
-
-                </h3>
-
-                <p class="mt-3 text-slate-600">
-
-                    Deep dives, editorials,
-                    interviews and analysis.
-
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-<div class="bg-slate-50">
-
-    <div class="tgv-container py-24">
-
-        <div class="mx-auto max-w-3xl text-center">
-
-            <span class="text-sm font-bold uppercase tracking-[0.2em] text-primary">
-
-                OUR MISSION
-
-            </span>
-
-            <h2 class="mt-5 text-4xl font-black text-slate-900 md:text-5xl">
-
-                Building Trust Through
-                Honest Gaming Coverage
-
-            </h2>
-
-            <p class="mt-6 text-lg leading-8 text-slate-600">
-
-                We believe gaming journalism should inform, educate and help
-                players make better decisions. Every article is written with
-                accuracy, transparency and respect for our readers.
-
-            </p>
-
-        </div>
-
-        <div class="mt-16 grid gap-8 md:grid-cols-2 xl:grid-cols-4">
-
-            <!-- Accuracy -->
-
-            <div class="rounded-3xl border border-default bg-white p-8 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl">
-
-                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl">
-
-                    🎯
-
+                    <p class="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
+                        Breaking announcements, updates and industry news.
+                    </p>
                 </div>
 
-                <h3 class="mt-6 text-2xl font-bold text-slate-900">
+                <!-- Reviews -->
+                <div class="group rounded-3xl border border-default bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl sm:p-7 lg:p-8">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl transition-all duration-300 group-hover:scale-110">
+                        ⭐
+                    </div>
 
-                    Accuracy
+                    <h3 class="mt-5 text-xl font-bold text-slate-900">
+                        Reviews
+                    </h3>
 
-                </h3>
+                    <p class="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
+                        Honest reviews with transparent scoring.
+                    </p>
+                </div>
 
-                <p class="mt-4 leading-7 text-slate-600">
+                <!-- Games -->
+                <div class="group rounded-3xl border border-default bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl sm:p-7 lg:p-8">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl transition-all duration-300 group-hover:scale-110">
+                        🎮
+                    </div>
 
-                    We verify facts, confirm sources and prioritize accuracy
-                    before publishing.
+                    <h3 class="mt-5 text-xl font-bold text-slate-900">
+                        Games
+                    </h3>
 
+                    <p class="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
+                        Dedicated game hubs with complete information.
+                    </p>
+                </div>
+
+                <!-- Features -->
+                <div class="group rounded-3xl border border-default bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl sm:p-7 lg:p-8">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl transition-all duration-300 group-hover:scale-110">
+                        📖
+                    </div>
+
+                    <h3 class="mt-5 text-xl font-bold text-slate-900">
+                        Features
+                    </h3>
+
+                    <p class="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
+                        Deep dives, editorials, interviews and analysis.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Socials Section -->
+    <section class="bg-slate-50">
+        <div class="tgv-container py-16 sm:py-20 lg:py-24">
+
+            <div class="mx-auto max-w-3xl text-center">
+                <span class="text-xs font-bold uppercase tracking-[0.22em] text-primary sm:text-sm">
+                    Our Socials
+                </span>
+
+                <h2 class="mt-4 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
+                    Follow TheGameVoice Across Platforms
+                </h2>
+
+                <p class="mt-5 text-base leading-8 text-slate-600 sm:text-lg">
+                    Stay connected with us for gaming news, reviews, videos, updates,
+                    partnerships and community conversations.
                 </p>
+            </div>
+
+            <!-- Social Cards -->
+            <div class="mt-12 grid gap-5 sm:mt-14 sm:grid-cols-2 lg:gap-6 xl:grid-cols-4">
+
+                <!-- YouTube -->
+                <a href="https://www.youtube.com/%40The_GameVoice"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Visit TheGameVoice on YouTube"
+                   class="group flex h-full min-w-0 flex-col rounded-3xl border border-default bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-red-500 hover:bg-red-50 hover:shadow-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-red-500/20">
+
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-100 text-red-600 transition-colors duration-300 group-hover:bg-red-600 group-hover:text-white">
+                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.2 31.2 0 0 0 0 12a31.2 31.2 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.2 31.2 0 0 0 24 12a31.2 31.2 0 0 0-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z" />
+                        </svg>
+                    </div>
+
+                    <h3 class="mt-6 text-xl font-bold text-slate-900 transition-colors duration-300 group-hover:text-red-600">
+                        YouTube
+                    </h3>
+
+                    <p class="mt-2 break-words text-sm font-semibold text-slate-700">
+                        &#64;The_GameVoice
+                    </p>
+
+                    <p class="mt-4 text-sm leading-6 text-slate-600">
+                        Videos, reviews, updates and gaming content.
+                    </p>
+                </a>
+
+                <!-- Instagram -->
+                <a href="https://www.instagram.com/thegamevoice/"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Visit TheGameVoice on Instagram"
+                   class="group flex h-full min-w-0 flex-col rounded-3xl border border-default bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-pink-500 hover:bg-pink-50 hover:shadow-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-pink-500/20">
+
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-pink-100 text-pink-600 transition-colors duration-300 group-hover:bg-pink-600 group-hover:text-white">
+                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 2A3.76 3.76 0 0 0 4 7.75v8.5A3.76 3.76 0 0 0 7.75 20h8.5A3.76 3.76 0 0 0 20 16.25v-8.5A3.76 3.76 0 0 0 16.25 4h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm5.25-2.35a1.15 1.15 0 1 1 0 2.3 1.15 1.15 0 0 1 0-2.3Z" />
+                        </svg>
+                    </div>
+
+                    <h3 class="mt-6 text-xl font-bold text-slate-900 transition-colors duration-300 group-hover:text-pink-600">
+                        Instagram
+                    </h3>
+
+                    <p class="mt-2 break-words text-sm font-semibold text-slate-700">
+                        &#64;thegamevoice
+                    </p>
+
+                    <p class="mt-4 text-sm leading-6 text-slate-600">
+                        Reels, highlights, posts and announcements.
+                    </p>
+                </a>
+
+                <!-- X / Twitter -->
+                <a href="https://x.com/_TheGameVoice"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Visit TheGameVoice on X"
+                   class="group flex h-full min-w-0 flex-col rounded-3xl border border-default bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-slate-900 hover:bg-slate-900 hover:shadow-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-slate-900/20">
+
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-900 transition-colors duration-300 group-hover:bg-white group-hover:text-slate-900">
+                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M18.9 2h3.4l-7.4 8.5L23.6 22h-6.8l-5.3-7-6.1 7H2l7.9-9.1L1.6 2h7l4.8 6.4L18.9 2Zm-1.2 18h1.9L7.6 3.9h-2L17.7 20Z" />
+                        </svg>
+                    </div>
+
+                    <h3 class="mt-6 text-xl font-bold text-slate-900 transition-colors duration-300 group-hover:text-white">
+                        X / Twitter
+                    </h3>
+
+                    <p class="mt-2 break-words text-sm font-semibold text-slate-700 transition-colors duration-300 group-hover:text-slate-200">
+                        &#64;_TheGameVoice
+                    </p>
+
+                    <p class="mt-4 text-sm leading-6 text-slate-600 transition-colors duration-300 group-hover:text-slate-300">
+                        Quick news, opinions and conversations.
+                    </p>
+                </a>
+
+                <!-- LinkedIn -->
+                <a href="https://www.linkedin.com/company/thegamevoice"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Visit TheGameVoice on LinkedIn"
+                   class="group flex h-full min-w-0 flex-col rounded-3xl border border-default bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-blue-600 hover:bg-blue-50 hover:shadow-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-600/20">
+
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-blue-700 transition-colors duration-300 group-hover:bg-blue-700 group-hover:text-white">
+                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5.001 2.5 2.5 0 0 1 0-5ZM3 9.75h4v11.5H3V9.75Zm6.25 0h3.84v1.57h.05c.54-1.02 1.85-2.1 3.81-2.1 4.08 0 4.83 2.69 4.83 6.18v5.85h-4v-5.19c0-1.24-.02-2.84-1.73-2.84-1.73 0-2 1.35-2 2.75v5.28h-4V9.75Z" />
+                        </svg>
+                    </div>
+
+                    <h3 class="mt-6 text-xl font-bold text-slate-900 transition-colors duration-300 group-hover:text-blue-700">
+                        LinkedIn
+                    </h3>
+
+                    <p class="mt-2 break-words text-sm font-semibold text-slate-700">
+                        TheGameVoice
+                    </p>
+
+                    <p class="mt-4 text-sm leading-6 text-slate-600">
+                        Business updates, partnerships and media work.
+                    </p>
+                </a>
 
             </div>
 
-            <!-- Integrity -->
+            <!-- Contact CTA -->
+            <div class="mt-12 overflow-hidden rounded-3xl bg-gradient-to-br from-[#7c3aed] via-[#6d28d9] to-[#4f46e5] p-1 shadow-xl sm:mt-14">
+                <div class="rounded-[1.35rem] bg-white/10 p-6 backdrop-blur sm:p-8 lg:p-10">
+                    <div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
 
-            <div class="rounded-3xl border border-default bg-white p-8 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl">
+                        <div class="flex flex-col gap-5 sm:flex-row sm:items-start">
+                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-primary shadow-sm">
+                                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5A2.25 2.25 0 0 1 19.5 19.5h-15a2.25 2.25 0 0 1-2.25-2.25V6.75" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m3 7.5 8.1 6.075a1.5 1.5 0 0 0 1.8 0L21 7.5" />
+                                </svg>
+                            </div>
 
-                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl">
+                            <div class="min-w-0">
+                                <span class="text-xs font-bold uppercase tracking-[0.22em] text-white/70 sm:text-sm">
+                                    Contact
+                                </span>
 
-                    🛡️
+                                <h3 class="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl lg:text-4xl">
+                                    Want to work with TheGameVoice?
+                                </h3>
 
+                                <p class="mt-3 max-w-2xl text-sm leading-7 text-white/80 sm:text-base">
+                                    For collaborations, press releases, review opportunities,
+                                    business enquiries or general questions, contact us directly.
+                                </p>
+                            </div>
+                        </div>
+
+                        <a href="mailto:contact&#64;thegamevoice.com"
+                           aria-label="Email TheGameVoice"
+                           class="inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-primary shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-slate-100 hover:shadow-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-white/40 sm:w-auto sm:px-6">
+                            contact&#64;thegamevoice.com
+                        </a>
+
+                    </div>
                 </div>
-
-                <h3 class="mt-6 text-2xl font-bold text-slate-900">
-
-                    Integrity
-
-                </h3>
-
-                <p class="mt-4 leading-7 text-slate-600">
-
-                    Reviews and opinions reflect our genuine experience,
-                    never outside influence.
-
-                </p>
-
-            </div>
-
-            <!-- Independence -->
-
-            <div class="rounded-3xl border border-default bg-white p-8 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl">
-
-                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl">
-
-                    ⚖️
-
-                </div>
-
-                <h3 class="mt-6 text-2xl font-bold text-slate-900">
-
-                    Independence
-
-                </h3>
-
-                <p class="mt-4 leading-7 text-slate-600">
-
-                    Editorial decisions are made independently without
-                    pressure from publishers or advertisers.
-
-                </p>
-
-            </div>
-
-            <!-- Community -->
-
-            <div class="rounded-3xl border border-default bg-white p-8 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl">
-
-                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl">
-
-                    ❤️
-
-                </div>
-
-                <h3 class="mt-6 text-2xl font-bold text-slate-900">
-
-                    Community
-
-                </h3>
-
-                <p class="mt-4 leading-7 text-slate-600">
-
-                    Our readers are at the center of everything we publish,
-                    and their trust is our greatest responsibility.
-
-                </p>
-
             </div>
 
         </div>
-
-    </div>
+    </section>
 
 </div>

@@ -8,11 +8,14 @@
 
             <div>
 
-                <h2 class="text-2xl font-black text-primary">
+                <a asp-controller ="Home"
+                                  asp-action="Index"
+                                  class="text-muted transition hover:text-primary">
+                    class="text-2xl font-black text-primary">
 
                     TheGameVoice
 
-                </h2>
+                </a>
 
                 <p class="mt-4 max-w-sm text-sm leading-7 text-muted">
 
@@ -34,14 +37,7 @@
 
                 <div class="flex flex-col gap-3">
 
-                    <a asp-controller="Home"
-                       asp-action="Index"
-                       class="text-muted transition hover:text-primary">
-
-                        Home
-
-                    </a>
-
+                 
                     <a asp-controller="News"
                        asp-action="Index"
                        class="text-muted transition hover:text-primary">
