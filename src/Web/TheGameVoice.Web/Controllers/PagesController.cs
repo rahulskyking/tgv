@@ -19,7 +19,7 @@ public class PagesController : Controller
         _emailSettings = emailSettings.Value;
     }
 
-    [Route("about")]
+    [Route("socials")]
     public IActionResult About()
     {
         return View();
