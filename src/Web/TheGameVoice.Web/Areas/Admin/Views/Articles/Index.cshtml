@@ -1,22 +1,162 @@
 ﻿@using TheGameVoice.Domain.Enums
 @using TheGameVoice.Infrastructure.Identity
-@model IReadOnlyList<TheGameVoice.Domain.Entities.Article>
+@model TheGameVoice.Web.Areas.Admin.ViewModels.Articles.ArticleIndexViewModel
 
 <div class="space-y-6">
 
-    <div class="flex items-center justify-between">
+    <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
-        <h1 class="text-3xl font-bold">
-            Articles
-        </h1>
+        <div>
+
+            <h1 class="text-3xl font-bold text-slate-900">
+
+                Articles
+
+            </h1>
+
+            <p class="mt-1 text-sm text-slate-500">
+
+                Manage articles, reviews and editorial workflow.
+
+            </p>
+
+        </div>
 
         <a asp-action="Create"
-           class="rounded-lg bg-[#fa743e] px-4 py-2 text-white">
-            Create Article
+           class="inline-flex items-center gap-2 rounded-xl bg-[#fa743e] px-5 py-3 font-semibold text-white transition hover:bg-[#e56734]">
+
+            <i data-lucide="plus" class="h-5 w-5"></i>
+
+            <span>New Article</span>
+
         </a>
 
     </div>
 
+    <div class="mb-6 rounded-2xl border border-default bg-white p-5 shadow-sm">
+
+        <form method="get">
+
+            <div class="flex flex-wrap items-end gap-4">
+
+                <!-- Search -->
+
+                <div class="min-w-[300px] flex-1">
+
+                    <label class="mb-2 block text-sm font-medium">
+
+                        Search
+
+                    </label>
+
+                    <input asp-for="Filter.Search"
+                           placeholder="Search articles..."
+                           class="w-full rounded-xl border border-default px-4 py-3" />
+
+                </div>
+
+                <!-- Status -->
+
+                <div class="w-44">
+
+                    <label class="mb-2 block text-sm font-medium">
+
+                        Status
+
+                    </label>
+
+                    <select asp-for="Filter.Status"
+                            asp-items="Model.Statuses"
+                            class="w-full rounded-xl border border-default px-4 py-3">
+
+                        <option value="">All Status</option>
+
+                    </select>
+
+                </div>
+
+                <!-- Category -->
+
+                <div class="w-52">
+
+                    <label class="mb-2 block text-sm font-medium">
+
+                        Category
+
+                    </label>
+
+                    <select asp-for="Filter.CategoryId"
+                            asp-items="Model.Categories"
+                            class="w-full rounded-xl border border-default px-4 py-3">
+
+                        <option value="">All Categories</option>
+
+                    </select>
+
+                </div>
+
+                @if (!User.IsInRole(Roles.Author))
+                {
+                    <div class="w-52">
+
+                        <label class="mb-2 block text-sm font-medium">
+
+                            Author
+
+                        </label>
+
+                        <select asp-for="Filter.AuthorId"
+                                asp-items="Model.Authors"
+                                class="w-full rounded-xl border border-default px-4 py-3">
+
+                            <option value="">All Authors</option>
+
+                        </select>
+
+                    </div>
+                }
+
+                <!-- Sort -->
+
+                <div class="w-44">
+
+                    <label class="mb-2 block text-sm font-medium">
+
+                        Sort
+
+                    </label>
+
+                    <select asp-for="Filter.SortBy"
+                            asp-items="Model.SortOptions"
+                            class="w-full rounded-xl border border-default px-4 py-3">
+                    </select>
+
+                </div>
+
+                <!-- Buttons -->
+
+                <div class="ml-auto flex gap-2">
+
+                    <a asp-action="Index"
+                       class="rounded-xl border border-default px-5 py-3">
+
+                        Reset
+
+                    </a>
+
+                    <button class="rounded-xl bg-primary px-6 py-3 font-semibold text-black">
+
+                        Apply
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
     <div class="rounded-xl bg-white shadow-sm">
 
         <table class="min-w-full">
@@ -30,6 +170,9 @@
                     </th>
                     <th class="px-6 py-4 text-left">
                         Title
+                    </th>
+                    <th class="px-6 py-4 text-left">
+                        Author
                     </th>
                     <th class="px-6 py-4 text-left">
                         Category
@@ -56,7 +199,7 @@
 
             <tbody>
 
-                @foreach (var article in Model)
+                @foreach (var article in Model.Articles.Items)
                 {
                     <tr class="border-b">
                         <td class="px-6 py-4">
@@ -71,6 +214,13 @@
                         <td class="px-6 py-4">
                             @article.Title
                         </td>
+                    <td class="px-6 py-4 text-slate-600">
+
+                        @(Model.AuthorNames.TryGetValue(article.AuthorId, out var author)
+                                                ? author
+                                                : "Unknown")
+
+                    </td>
                         <td class="px-6 py-4">
                             @article.Category.Name
                         </td>
@@ -94,6 +244,8 @@
 
                                     ArticleStatus.Archived =>
                                                     "bg-gray-200 text-gray-700",
+                                    ArticleStatus.Scheduled =>
+                                                    "bg-blue-100 text-blue-800",
 
                                     _ =>
                                                     "bg-slate-100 text-slate-700"
@@ -104,6 +256,9 @@
                                 {
                                     ArticleStatus.ReviewPending =>
                                                     "In Review",
+
+                                    ArticleStatus.Scheduled =>
+                                                    "Scheduled",
 
                                     _ =>
                                                     article.Status.ToString()
@@ -121,145 +276,26 @@
                         </td>
 
                         <td class="px-6 py-4">
-                            @article.PublishedAt
+
+                            @if (article.Status == ArticleStatus.Scheduled)
+                            {
+                                <span class="font-medium text-blue-600">
+
+                                    @article.ScheduledPublishAt?.ToLocalTime().ToString("dd MMM yyyy hh:mm tt")
+
+                                </span>
+                            }
+                            else
+                            {
+                                @(article.PublishedAt?.ToLocalTime().ToString("dd MMM yyyy hh:mm tt") ?? "-")
+                            }
+
                         </td>
 
                         <td class="px-6 py-4">
 
-                            <div class="flex flex-wrap items-center gap-3">
-
-                                <a asp-action="Edit"
-                                   asp-route-id="@article.Id"
-                                   class="font-medium text-[#fa743e]">
-
-                                    Edit
-
-                                </a>
-                                @if (
-                                User.IsInRole(Roles.Author) ||
-                                User.IsInRole(Roles.Editor) ||
-                                User.IsInRole(Roles.Admin) ||
-                                User.IsInRole(Roles.SuperAdmin))
-    {
-                                @if (article.Status == ArticleStatus.Draft)
-                                {
-                                    <form asp-action="SubmitForReview"
-                                          asp-route-id="@article.Id"
-                                          method="post">
-
-                                        @Html.AntiForgeryToken()
-
-                                        <button type="submit"
-                                                class="font-medium text-blue-600">
-
-                                            Submit Review
-
-                                        </button>
-
-                                    </form>
-                                }
-                                }
-                                @if (
-                                User.IsInRole(Roles.Editor) ||
-                                User.IsInRole(Roles.Admin) ||
-                                User.IsInRole(Roles.SuperAdmin))
-    {
-                                @if (article.Status == ArticleStatus.ReviewPending)
-                                {
-                                    <form asp-action="Publish"
-                                          asp-route-id="@article.Id"
-                                          method="post">
-
-                                        @Html.AntiForgeryToken()
-
-                                        <button type="submit"
-                                                class="font-medium text-green-600">
-
-                                            Publish
-
-                                        </button>
-
-                                    </form>
-
-                                    <form asp-action="Reject"
-                                          asp-route-id="@article.Id"
-                                          method="post">
-
-                                        @Html.AntiForgeryToken()
-
-                                        <button type="submit"
-                                                class="font-medium text-red-600">
-
-                                            Reject
-
-                                        </button>
-
-                                    </form>
-                                     }
-                                }
-
-                                @if (
-                                User.IsInRole(Roles.Admin) ||
-                                User.IsInRole(Roles.SuperAdmin))
-                                {
-                                @if (article.Status == ArticleStatus.Published)
-                                {
-                                    <form asp-action="Archive"
-                                          asp-route-id="@article.Id"
-                                          method="post">
-
-                                        @Html.AntiForgeryToken()
-
-                                        <button type="submit"
-                                                class="font-medium text-gray-600">
-
-                                            Archive
-
-                                        </button>
-
-                                    </form>
-                                }
-                                }
-                                @if (article.Status == ArticleStatus.Rejected)
-                                {
-                                    <form asp-action="Restore"
-                                          asp-route-id="@article.Id"
-                                          method="post">
-
-                                        @Html.AntiForgeryToken()
-
-                                        <button type="submit"
-                                                class="font-medium text-blue-600">
-
-                                            Return To Draft
-
-                                        </button>
-
-                                    </form>
-                                }
-                                @if (
-                                User.IsInRole(Roles.Admin) ||
-                                User.IsInRole(Roles.SuperAdmin))
-                                {
-                                @if (article.Status == ArticleStatus.Archived)
-                                {
-                                    <form asp-action="Restore"
-                                          asp-route-id="@article.Id"
-                                          method="post">
-
-                                        @Html.AntiForgeryToken()
-
-                                        <button type="submit"
-                                                class="font-medium text-green-600">
-
-                                            Restore
-
-                                        </button>
-
-                                    </form>
-                                }
-                            }
-                            </div>
+                            <partial name="_ArticleActions"
+                                     model="article" />
 
                         </td>
 
@@ -269,7 +305,357 @@
             </tbody>
 
         </table>
+        <div class="mt-6 flex items-center justify-between text-sm text-slate-500">
+
+            <span>
+
+                Total Articles:
+                <strong>@Model.Articles.TotalCount</strong>
+
+            </span>
+
+            @if (Model.Articles.HasMultiplePages)
+            {
+                <div class="mt-8 flex items-center justify-between">
+
+                    <div class="text-sm text-slate-500">
+
+                        Showing
+                        <strong>@Model.Articles.StartItem</strong>
+                        -
+                        <strong>@Model.Articles.EndItem</strong>
+                        of
+                        <strong>@Model.Articles.TotalCount</strong>
+
+                    </div>
+
+                    <div class="flex items-center gap-2">
+
+                        @if (Model.Articles.HasPreviousPage)
+                        {
+                            <a asp-action="Index"
+                               asp-route-page="@(Model.Articles.CurrentPage - 1)"
+                               asp-route-search="@Model.Filter.Search"
+                               asp-route-status="@Model.Filter.Status"
+                               asp-route-categoryId="@Model.Filter.CategoryId"
+                               asp-route-authorId="@Model.Filter.AuthorId"
+                               asp-route-sortBy="@Model.Filter.SortBy"
+                               class="rounded-lg border border-default px-4 py-2 hover:bg-slate-50">
+
+                                ← Previous
+
+                            </a>
+                        }
+
+                        @{
+                            var start = Math.Max(1, Model.Articles.CurrentPage - 2);
+                            var end = Math.Min(Model.Articles.TotalPages, Model.Articles.CurrentPage + 2);
+                        }
+
+                        @if (start > 1)
+                        {
+                            <a asp-action="Index"
+                               asp-route-page="1"
+                               asp-route-search="@Model.Filter.Search"
+                               asp-route-status="@Model.Filter.Status"
+                               asp-route-categoryId="@Model.Filter.CategoryId"
+                               asp-route-authorId="@Model.Filter.AuthorId"
+                               asp-route-sortBy="@Model.Filter.SortBy"
+                               class="rounded-lg border border-default px-4 py-2">
+
+                                1
+
+                            </a>
+
+                            @if (start > 2)
+                            {
+                                <span class="px-2">...</span>
+                            }
+                        }
+
+                        @for (var i = start; i <= end; i++)
+                        {
+                            if (i == Model.Articles.CurrentPage)
+                            {
+                                <span class="rounded-lg bg-primary px-4 py-2 font-semibold text-black">
+
+                                    @i
+
+                                </span>
+                            }
+                            else
+                            {
+                                <a asp-action="Index"
+                                   asp-route-page="@i"
+                                   asp-route-search="@Model.Filter.Search"
+                                   asp-route-status="@Model.Filter.Status"
+                                   asp-route-categoryId="@Model.Filter.CategoryId"
+                                   asp-route-authorId="@Model.Filter.AuthorId"
+                                   asp-route-sortBy="@Model.Filter.SortBy"
+                                   class="rounded-lg border border-default px-4 py-2 hover:bg-slate-50">
+
+                                    @i
+
+                                </a>
+                            }
+                        }
+
+                        @if (end < Model.Articles.TotalPages)
+                        {
+                            @if (end < Model.Articles.TotalPages - 1)
+                            {
+                                <span class="px-2">...</span>
+                            }
+
+                            <a asp-action="Index"
+                               asp-route-page="@Model.Articles.TotalPages"
+                               asp-route-search="@Model.Filter.Search"
+                               asp-route-status="@Model.Filter.Status"
+                               asp-route-categoryId="@Model.Filter.CategoryId"
+                               asp-route-authorId="@Model.Filter.AuthorId"
+                               asp-route-sortBy="@Model.Filter.SortBy"
+                               class="rounded-lg border border-default px-4 py-2">
+
+                                @Model.Articles.TotalPages
+
+                            </a>
+                        }
+
+                        @if (Model.Articles.HasNextPage)
+                        {
+                            <a asp-action="Index"
+                               asp-route-page="@(Model.Articles.CurrentPage + 1)"
+                               asp-route-search="@Model.Filter.Search"
+                               asp-route-status="@Model.Filter.Status"
+                               asp-route-categoryId="@Model.Filter.CategoryId"
+                               asp-route-authorId="@Model.Filter.AuthorId"
+                               asp-route-sortBy="@Model.Filter.SortBy"
+                               class="rounded-lg border border-default px-4 py-2 hover:bg-slate-50">
+
+                                Next →
+
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    </div>
+    <div id="scheduleModal"
+         class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+
+        <div class="w-full max-w-md rounded-2xl bg-white p-6">
+
+            <h2 class="mb-5 text-xl font-bold">
+
+                Schedule Publication
+
+            </h2>
+
+            <form asp-action="Schedule"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+                <input id="scheduleArticleId"
+                       type="hidden"
+                       name="id" />
+
+                <label class="mb-2 block">
+
+                    Publish Date & Time
+
+                </label>
+
+                <input id="scheduledPublishAt"
+                       name="scheduledPublishAt"
+                       type="datetime-local"
+                       class="w-full rounded-xl border border-default px-4 py-3"
+                       required />
+
+                <div class="flex justify-end gap-3">
+
+                    <button id="closeScheduleModal"
+                            type="button"
+                            class="rounded-lg p-2 hover:bg-slate-100">
+
+                        <i data-lucide="x"
+                           class="h-5 w-5"></i>
+
+                    </button>
+
+                    <button type="submit"
+                            class="rounded-lg bg-[#fa743e] px-5 py-2 text-white">
+
+                        Schedule
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
 
     </div>
-
 </div>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const modal =
+            document.getElementById("scheduleModal");
+
+        const articleId =
+            document.getElementById("scheduleArticleId");
+
+        document.querySelectorAll(".openScheduleModal")
+            .forEach(button => {
+
+                button.addEventListener("click", function () {
+
+                    articleId.value =
+                        this.dataset.articleId;
+
+                    modal.classList.remove("hidden");
+                    modal.classList.add("flex");
+
+                });
+
+            });
+
+        document
+            .getElementById("closeScheduleModal")
+            ?.addEventListener("click", function () {
+
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+
+            });
+
+    });
+
+</script>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        /* -----------------------------
+           Action Menu
+        ------------------------------*/
+
+        document.querySelectorAll(".actionMenuButton").forEach(button => {
+
+            button.addEventListener("click", function (e) {
+
+                e.stopPropagation();
+
+                document.querySelectorAll(".actionMenu").forEach(menu => {
+
+                    if (menu !== this.parentElement.nextElementSibling) {
+
+                        menu.classList.add("hidden");
+
+                    }
+
+                });
+
+                this.parentElement
+                    .nextElementSibling
+                    .classList
+                    .toggle("hidden");
+
+            });
+
+        });
+
+        document.addEventListener("click", () => {
+
+            document.querySelectorAll(".actionMenu")
+                .forEach(menu => menu.classList.add("hidden"));
+
+        });
+
+
+        /* -----------------------------
+           Schedule Modal
+        ------------------------------*/
+
+        const scheduleModal =
+            document.getElementById("scheduleModal");
+
+        const articleId =
+            document.getElementById("scheduleArticleId");
+
+        const publishAt =
+            document.getElementById("scheduledPublishAt");
+
+        document.querySelectorAll(".openScheduleModal")
+            .forEach(button => {
+
+                button.addEventListener("click", function () {
+
+                    articleId.value =
+                        this.dataset.articleId;
+
+                    publishAt.value =
+                        this.dataset.publish ?? "";
+
+                    scheduleModal.classList.remove("hidden");
+
+                });
+
+            });
+
+
+        /* -----------------------------
+           Close Modal
+        ------------------------------*/
+
+        document
+            .getElementById("closeScheduleModal")
+            ?.addEventListener("click", () => {
+
+                scheduleModal.classList.add("hidden");
+
+            });
+
+        scheduleModal?.addEventListener("click", function (e) {
+
+            if (e.target === this) {
+
+                this.classList.add("hidden");
+
+            }
+
+        });
+
+        document.addEventListener("keydown", function (e) {
+
+            if (e.key === "Escape") {
+
+                scheduleModal?.classList.add("hidden");
+
+            }
+
+        });
+
+
+        /* -----------------------------
+           Lucide Refresh
+        ------------------------------*/
+
+        if (window.lucide) {
+
+            lucide.createIcons();
+
+        }
+
+    });
+
+</script>

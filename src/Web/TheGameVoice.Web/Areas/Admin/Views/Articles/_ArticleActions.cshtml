@@ -1,0 +1,335 @@
+﻿@using TheGameVoice.Domain.Enums
+@using TheGameVoice.Infrastructure.Identity
+@model TheGameVoice.Domain.Entities.Article
+
+<div class="relative inline-block">
+
+    <!-- Action Buttons -->
+
+    <div class="flex items-center justify-center gap-1">
+
+        <a asp-action="Edit"
+           asp-route-id="@Model.Id"
+           title="Edit Article"
+           class="rounded-lg p-2 text-slate-500 transition-all duration-200 hover:bg-orange-50 hover:text-[#fa743e]">
+
+            <i data-lucide="square-pen"
+               class="h-5 w-5"></i>
+
+        </a>
+
+        <button type="button"
+                title="More Actions"
+                class="actionMenuButton rounded-lg p-2 text-slate-500 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900">
+
+            <i data-lucide="ellipsis-vertical"
+               class="h-5 w-5"></i>
+
+        </button>
+
+    </div>
+
+    <!-- Dropdown -->
+
+    <div class="actionMenu absolute right-0 z-50 mt-2 hidden w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+
+        <div class="border-b border-slate-100 bg-slate-50 px-5 py-4">
+
+            <p class="text-xs font-bold uppercase tracking-[0.15em] text-slate-500">
+
+                Editorial Actions
+
+            </p>
+
+        </div>
+
+        <!-- ================================================= -->
+        <!-- DRAFT -->
+        <!-- ================================================= -->
+@if ((User.IsInRole(Roles.Author) ||
+        User.IsInRole(Roles.Editor) ||
+        User.IsInRole(Roles.Admin) ||
+        User.IsInRole(Roles.SuperAdmin))
+        && Model.Status == ArticleStatus.Draft)
+{
+            <form asp-action="SubmitForReview"
+                  asp-route-id="@Model.Id"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-slate-700 transition-all hover:bg-blue-50">
+
+                    <i data-lucide="send"
+                       class="h-4 w-4 text-blue-600"></i>
+
+                    Submit For Review
+
+                </button>
+
+            </form>
+}
+
+        <!-- ================================================= -->
+        <!-- REVIEW PENDING -->
+        <!-- ================================================= -->
+@if ((User.IsInRole(Roles.Editor) ||
+        User.IsInRole(Roles.Admin) ||
+        User.IsInRole(Roles.SuperAdmin))
+        && Model.Status == ArticleStatus.ReviewPending)
+{
+            <!-- Publish -->
+
+            <form asp-action="Publish"
+                  asp-route-id="@Model.Id"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-slate-700 transition-all hover:bg-green-50">
+
+                    <i data-lucide="rocket"
+                       class="h-4 w-4 text-green-600"></i>
+
+                    Publish Now
+
+                </button>
+
+            </form>
+
+            <!-- Schedule -->
+
+            <button type="button"
+                    class="openScheduleModal flex w-full items-center gap-3 px-5 py-3.5 text-left text-sm font-medium text-slate-700 transition-all hover:bg-amber-50"
+                    data-article-id="@Model.Id">
+
+                <i data-lucide="calendar-clock"
+                   class="h-4 w-4 text-amber-600"></i>
+
+                Schedule Publication
+
+            </button>
+
+            <!-- Divider -->
+
+            <div class="mx-5 border-t border-slate-100"></div>
+
+            <!-- Reject -->
+
+            <form asp-action="Reject"
+                  asp-route-id="@Model.Id"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-red-600 transition-all hover:bg-red-50">
+
+                    <i data-lucide="circle-x"
+                       class="h-4 w-4"></i>
+
+                    Reject Article
+
+                </button>
+
+            </form>
+}
+        <!-- ================================================= -->
+        <!-- SCHEDULED -->
+        <!-- ================================================= -->
+@if ((User.IsInRole(Roles.Editor) ||
+        User.IsInRole(Roles.Admin) ||
+        User.IsInRole(Roles.SuperAdmin))
+        && Model.Status == ArticleStatus.Scheduled)
+{
+            <!-- Scheduled Info -->
+
+            <div class="border-b border-slate-100 bg-blue-50 px-5 py-4">
+
+                <div class="flex items-start gap-3">
+
+                    <div class="rounded-lg bg-blue-100 p-2">
+
+                        <i data-lucide="calendar-check-2"
+                           class="h-4 w-4 text-blue-600"></i>
+
+                    </div>
+
+                    <div>
+
+                        <p class="text-sm font-semibold text-slate-800">
+
+                            Scheduled Publication
+
+                        </p>
+
+                        <p class="mt-1 text-xs text-slate-500">
+
+                            @(Model.ScheduledPublishAt?
+                                                    .ToLocalTime()
+                                                    .ToString("dd MMM yyyy • hh:mm tt"))
+
+                    </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Publish Now -->
+
+            <form asp-action="Publish"
+                  asp-route-id="@Model.Id"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-slate-700 transition-all hover:bg-green-50">
+
+                    <i data-lucide="rocket"
+                       class="h-4 w-4 text-green-600"></i>
+
+                    Publish Now
+
+                </button>
+
+            </form>
+
+            <!-- Reschedule -->
+
+            <button type="button"
+                    class="openScheduleModal flex w-full items-center gap-3 px-5 py-3.5 text-left text-sm font-medium text-slate-700 transition-all hover:bg-amber-50"
+                    data-article-id="@Model.Id"
+                    data-publish="@Model.ScheduledPublishAt?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")">
+
+                <i data-lucide="calendar-sync"
+                   class="h-4 w-4 text-amber-600"></i>
+
+                Reschedule
+
+            </button>
+
+            <!-- Divider -->
+
+            <div class="mx-5 border-t border-slate-100"></div>
+
+            <!-- Cancel Schedule -->
+
+            <form asp-action="CancelSchedule"
+                  asp-route-id="@Model.Id"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-red-600 transition-all hover:bg-red-50">
+
+                    <i data-lucide="calendar-x-2"
+                       class="h-4 w-4"></i>
+
+                    Cancel Schedule
+
+                </button>
+
+            </form>
+        }
+        <!-- ================================================= -->
+        <!-- PUBLISHED -->
+        <!-- ================================================= -->
+        @if ((User.IsInRole(Roles.Admin) ||
+                User.IsInRole(Roles.SuperAdmin))
+                && Model.Status == ArticleStatus.Published)
+        {
+            <form asp-action="Archive"
+                  asp-route-id="@Model.Id"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50">
+
+                    <i data-lucide="archive"
+                       class="h-4 w-4 text-slate-600"></i>
+
+                    Archive Article
+
+                </button>
+
+            </form>
+        }
+
+        <!-- ================================================= -->
+        <!-- REJECTED -->
+        <!-- ================================================= -->
+        @if (Model.Status == ArticleStatus.Rejected)
+        {
+            <form asp-action="Restore"
+                  asp-route-id="@Model.Id"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-blue-700 transition-all hover:bg-blue-50">
+
+                    <i data-lucide="rotate-ccw"
+                       class="h-4 w-4"></i>
+
+                    Return To Draft
+
+                </button>
+
+            </form>
+        }
+
+        <!-- ================================================= -->
+        <!-- ARCHIVED -->
+        <!-- ================================================= -->
+        @if ((User.IsInRole(Roles.Admin) ||
+                User.IsInRole(Roles.SuperAdmin))
+                && Model.Status == ArticleStatus.Archived)
+        {
+            <form asp-action="Restore"
+                  asp-route-id="@Model.Id"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-emerald-700 transition-all hover:bg-emerald-50">
+
+                    <i data-lucide="refresh-ccw"
+                       class="h-4 w-4"></i>
+
+                    Restore Article
+
+                </button>
+
+            </form>
+        }
+
+        <!-- ================================================= -->
+        <!-- PREVIEW -->
+        <!-- ================================================= -->
+
+        <div class="mx-5 border-t border-slate-100"></div>
+
+        <a asp-action="Preview"
+           asp-route-id="@Model.Id"
+           class="flex items-center gap-3 px-5 py-3.5 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50">
+
+            <i data-lucide="eye"
+               class="h-4 w-4 text-slate-500"></i>
+
+            Preview Article
+
+        </a>
+
+    </div>
+
+</div>

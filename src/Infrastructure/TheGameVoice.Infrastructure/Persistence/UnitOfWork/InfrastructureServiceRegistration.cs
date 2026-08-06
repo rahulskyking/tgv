@@ -4,7 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
+
 using TheGameVoice.Application.Settings;
+using TheGameVoice.Infrastructure.BackgroundServices;
 using TheGameVoice.Infrastructure.Configuration;
 using TheGameVoice.Infrastructure.Identity.Entities;
 using TheGameVoice.Infrastructure.Persistence.Context;
@@ -87,6 +89,7 @@ public static class InfrastructureServiceRegistration
             UnitOfWork>();
         services.AddScoped<ISlugService,
     SlugService>();
+        
 
         services.AddScoped<IGameRepository, GameRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
@@ -110,6 +113,7 @@ public static class InfrastructureServiceRegistration
         services.Configure<EmailSettings>(
     configuration.GetSection("EmailSettings"));
 
+        services.AddHostedService<ScheduledArticlePublisher>();
         services.AddScoped<IEmailService, EmailService>();
         return services;
 

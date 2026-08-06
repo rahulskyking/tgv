@@ -1,4 +1,6 @@
-﻿using TheGameVoice.Domain.Entities;
+﻿using TheGameVoice.Application.Common.Pagination;
+using TheGameVoice.Application.Modules.Articles.Filters;
+using TheGameVoice.Domain.Entities;
 
 namespace TheGameVoice.Application.Interfaces.Persistence;
 
@@ -43,4 +45,7 @@ public interface IArticleRepository
     Task AddReviewPointsAsync(IEnumerable<ArticleReviewPoint> reviewPoints);
 
     Task<List<ArticleReviewPoint>> GetReviewPointsAsync(Guid articleId);
+    Task<PagedResult<Article>> GetPagedAsync(
+    ArticleFilter filter);
+
 }

@@ -9,9 +9,15 @@ namespace TheGameVoice.Domain.Enums
     public enum ArticleStatus
     {
         Draft = 1,
+
         ReviewPending = 2,
+
         Published = 3,
+
         Rejected = 4,
-        Archived = 5
+
+        Archived = 5,
+
+        Scheduled = 6
     }
 }

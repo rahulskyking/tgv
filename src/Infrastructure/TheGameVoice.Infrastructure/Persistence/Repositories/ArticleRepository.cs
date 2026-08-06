@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TheGameVoice.Application.Common.Pagination;
 using TheGameVoice.Application.Interfaces.Persistence;
+using TheGameVoice.Application.Modules.Articles.Filters;
 using TheGameVoice.Domain.Entities;
 using TheGameVoice.Domain.Enums;
 using TheGameVoice.Infrastructure.Persistence.Context;
@@ -94,10 +96,11 @@ public class ArticleRepository
     public async Task<IReadOnlyList<Article>> GetAllWithDetailsAsync()
     {
         return await _context.Articles
-            .Include(x => x.FeaturedImage)
-            .Include(x => x.Category)
-            .OrderByDescending(x => x.CreatedAt)
-            .ToListAsync();
+ 
+     .Include(x => x.FeaturedImage)
+     .Include(x => x.Category)
+     .OrderByDescending(x => x.CreatedAt)
+     .ToListAsync();
     }
 
     public async Task<IReadOnlyList<Article>>
@@ -229,5 +232,83 @@ public class ArticleRepository
             .ToListAsync();
     }
 
+    public async Task<PagedResult<Article>> GetPagedAsync(
+    ArticleFilter filter)
+    {
+        var query = BuildArticleQuery();
+
+        // Search
+        if (!string.IsNullOrWhiteSpace(filter.Search))
+        {
+            var search = filter.Search.Trim();
+
+            query = query.Where(x =>
+                EF.Functions.ILike(x.Title, $"%{search}%") ||
+                EF.Functions.ILike(x.Summary, $"%{search}%"));
+        }
+
+        // Status
+        if (filter.Status.HasValue)
+        {
+            query = query.Where(x =>
+                x.Status == filter.Status.Value);
+        }
+
+        // Category
+        if (filter.CategoryId.HasValue)
+        {
+            query = query.Where(x =>
+                x.CategoryId == filter.CategoryId.Value);
+        }
+
+        // Author
+        if (filter.AuthorId.HasValue)
+        {
+            query = query.Where(x =>
+                x.AuthorId == filter.AuthorId.Value);
+        }
+
+        // Sorting
+        query = filter.SortBy switch
+        {
+            ArticleSort.Oldest =>
+                query.OrderBy(x => x.CreatedAt),
+
+            ArticleSort.Updated =>
+                query.OrderByDescending(x => x.UpdatedAt),
+
+            ArticleSort.MostViewed =>
+                query.OrderByDescending(x => x.ViewCount),
+
+            ArticleSort.Title =>
+                query.OrderBy(x => x.Title),
+
+            _ =>
+                query.OrderByDescending(x => x.CreatedAt)
+        };
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .Skip((filter.Page - 1) * filter.PageSize)
+            .Take(filter.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<Article>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            CurrentPage = filter.Page,
+            PageSize = filter.PageSize
+        };
+    }
+
+    private IQueryable<Article> BuildArticleQuery()
+    {
+        return _context.Articles
+            .AsNoTracking()
+            .Include(x => x.FeaturedImage)
+            .Include(x => x.Category);
+    }
 
 }

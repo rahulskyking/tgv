@@ -22,7 +22,7 @@ public class Article : AuditableEntity
     public DateTime? PublishedAt { get; set; }
     public Guid? PublishedById { get; set; }
     public Guid AuthorId { get; set; }
-
+    
     public Guid CategoryId { get; set; }
 
     public Category Category { get; set; } = default!;
@@ -77,6 +77,11 @@ public class Article : AuditableEntity
         set;
     }
     = new List<ArticleReviewPoint>();
+    public DateTime? ScheduledPublishAt { get; set; }
 
+    public Guid? ScheduledById { get; set; }
+    
+    public DateTime? LastModifiedAt { get; set; }
     #endregion
+
 }

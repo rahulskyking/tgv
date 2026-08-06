@@ -7,6 +7,7 @@ using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Helpers;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
+using TheGameVoice.Application.Modules.Articles.Filters;
 using TheGameVoice.Domain.Entities;
 using TheGameVoice.Domain.Enums;
 using TheGameVoice.Infrastructure.Identity;
@@ -35,17 +36,75 @@ public class ArticlesController : BaseAdminController
         _cacheService = cacheService;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(ArticleFilter filter)
     {
-        var articles = await _unitOfWork.Articles.GetAllWithDetailsAsync();
         var currentUser = await _userManager.GetUserAsync(User);
 
+        // Authors can only see their own articles
         if (User.IsInRole(Roles.Author))
         {
-            articles = articles.Where(x => x.AuthorId == currentUser!.Id).ToList();
+            filter.AuthorId = currentUser!.Id;
         }
 
-        return View(articles);
+        var pagedArticles = await _unitOfWork.Articles.GetPagedAsync(filter);
+
+        // Load users only ONCE
+        var users = await _userManager.Users
+            .Select(x => new
+            {
+                x.Id,
+                x.FullName
+            })
+            .ToListAsync();
+
+        var model = new ArticleIndexViewModel
+        {
+            Articles = pagedArticles,
+
+            Filter = filter,
+
+            AuthorNames = users.ToDictionary(
+                x => x.Id,
+                x => x.FullName),
+
+            Categories = (await _unitOfWork.Categories.GetAllAsync())
+                .OrderBy(x => x.Name)
+                .Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                })
+                .ToList(),
+
+            Authors = users
+                .OrderBy(x => x.FullName)
+                .Select(x => new SelectListItem
+                {
+                    Text = x.FullName,
+                    Value = x.Id.ToString()
+                })
+                .ToList(),
+
+            Statuses = Enum
+                .GetValues<ArticleStatus>()
+                .Select(x => new SelectListItem
+                {
+                    Text = x.ToString(),
+                    Value = ((int)x).ToString()
+                })
+                .ToList(),
+
+                SortOptions = Enum
+                .GetValues<ArticleSort>()
+                .Select(x => new SelectListItem
+                {
+                    Text = x.ToString(),
+                    Value = ((int)x).ToString()
+                })
+                .ToList(),
+                    };
+
+        return View(model);
     }
 
     [HttpGet]
@@ -386,7 +445,9 @@ public class ArticlesController : BaseAdminController
         article.Status = ArticleStatus.Published;
         article.PublishedAt = DateTime.UtcNow;
         article.PublishedById = currentUser?.Id;
+        article.ScheduledPublishAt = null;
 
+        article.ScheduledById = null;
         _unitOfWork.Articles.Update(article);
 
         await _unitOfWork.SaveChangesAsync();
@@ -528,6 +589,99 @@ public class ArticlesController : BaseAdminController
         }
 
         await _unitOfWork.Articles.AddReviewPointsAsync(reviewPoints);
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = $"{Roles.Editor},{Roles.Admin},{Roles.SuperAdmin}")]
+    public async Task<IActionResult> Schedule(
+     Guid id,
+     DateTime scheduledPublishAt)
+    {
+        var article = await _unitOfWork.Articles.GetByIdAsync(id);
+
+        if (article == null)
+            return NotFound();
+
+        if (article.Status != ArticleStatus.ReviewPending &&
+    article.Status != ArticleStatus.Scheduled)
+        {
+            TempData["Error"] =
+                "This article cannot be scheduled.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Convert browser local time to UTC
+        var publishAtUtc = DateTime.SpecifyKind(
+            scheduledPublishAt,
+            DateTimeKind.Local)
+            .ToUniversalTime();
+
+        if (publishAtUtc <= DateTime.UtcNow)
+        {
+            TempData["Error"] = "Schedule date must be in the future.";
+
+            return RedirectToAction(nameof(Edit), new { id });
+        }
+
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        article.Status = ArticleStatus.Scheduled;
+
+        article.ScheduledPublishAt = publishAtUtc;
+
+        article.ScheduledById = currentUser?.Id;
+
+        article.PublishedAt = null;
+
+        article.PublishedById = null;
+
+        article.LastModifiedAt = DateTime.UtcNow;
+
+        _unitOfWork.Articles.Update(article);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        _cacheService.RemoveMany(CacheKeys.HomePage);
+
+        TempData["Success"] = "Article scheduled successfully.";
+
+        return RedirectToAction(nameof(Index));
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = $"{Roles.Editor},{Roles.Admin},{Roles.SuperAdmin}")]
+    public async Task<IActionResult> CancelSchedule(Guid id)
+    {
+        var article = await _unitOfWork.Articles.GetByIdAsync(id);
+
+        if (article == null)
+            return NotFound();
+
+        if (article.Status != ArticleStatus.Scheduled)
+        {
+            TempData["Error"] = "Article is not scheduled.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        article.Status = ArticleStatus.ReviewPending;
+
+        article.ScheduledPublishAt = null;
+
+        article.ScheduledById = null;
+
+        article.LastModifiedAt = DateTime.UtcNow;
+
+        _unitOfWork.Articles.Update(article);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        TempData["Success"] = "Schedule cancelled successfully.";
+
+        return RedirectToAction(nameof(Index));
     }
 
 }
