@@ -271,16 +271,33 @@
 
                         </td>
 
+                        @{
+                            var indiaTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+                            OperatingSystem.IsWindows()
+                            ? "India Standard Time"
+                            : "Asia/Kolkata");
+                        }
+
+                        <!-- Created At -->
                         <td class="px-6 py-4">
+
                             @{
                                 var createdUtc = DateTime.SpecifyKind(
                                 article.CreatedAt,
                                 DateTimeKind.Utc);
+
+                                var createdIndiaTime =
+                                TimeZoneInfo.ConvertTimeFromUtc(
+                                createdUtc,
+                                indiaTimeZone);
                             }
 
-                            @(createdUtc.ToLocalTime().ToString("dd MMM yyyy hh:mm tt"))
+                            @createdIndiaTime.ToString("dd MMM yyyy hh:mm tt")
+
                         </td>
 
+
+                        <!-- Published / Scheduled At -->
                         <td class="px-6 py-4">
 
                             @if (article.Status == ArticleStatus.Scheduled &&
@@ -290,8 +307,13 @@
                                 article.ScheduledPublishAt.Value,
                                 DateTimeKind.Utc);
 
+                                var scheduledIndiaTime =
+                                TimeZoneInfo.ConvertTimeFromUtc(
+                                scheduledUtc,
+                                indiaTimeZone);
+
                                 <span class="font-medium text-blue-600">
-                                    @(scheduledUtc.ToLocalTime().ToString("dd MMM yyyy hh:mm tt"))
+                                    @scheduledIndiaTime.ToString("dd MMM yyyy hh:mm tt")
                                 </span>
                             }
                             else if (article.PublishedAt.HasValue)
@@ -300,8 +322,13 @@
                                 article.PublishedAt.Value,
                                 DateTimeKind.Utc);
 
+                                var publishedIndiaTime =
+                                TimeZoneInfo.ConvertTimeFromUtc(
+                                publishedUtc,
+                                indiaTimeZone);
+
                                 <span>
-                                    @(publishedUtc.ToLocalTime().ToString("dd MMM yyyy hh:mm tt"))
+                                    @publishedIndiaTime.ToString("dd MMM yyyy hh:mm tt")
                                 </span>
                             }
                             else
