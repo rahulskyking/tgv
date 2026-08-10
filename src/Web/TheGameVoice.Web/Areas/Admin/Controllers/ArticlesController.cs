@@ -596,16 +596,17 @@ public class ArticlesController : BaseAdminController
     [ValidateAntiForgeryToken]
     [Authorize(Roles = $"{Roles.Editor},{Roles.Admin},{Roles.SuperAdmin}")]
     public async Task<IActionResult> Schedule(
-     Guid id,
-     DateTime scheduledPublishAt)
+      Guid id,
+      DateTime scheduledPublishAt)
     {
-        var article = await _unitOfWork.Articles.GetByIdAsync(id);
+        var article =
+            await _unitOfWork.Articles.GetByIdAsync(id);
 
         if (article == null)
             return NotFound();
 
         if (article.Status != ArticleStatus.ReviewPending &&
-    article.Status != ArticleStatus.Scheduled)
+            article.Status != ArticleStatus.Scheduled)
         {
             TempData["Error"] =
                 "This article cannot be scheduled.";
@@ -613,43 +614,68 @@ public class ArticlesController : BaseAdminController
             return RedirectToAction(nameof(Index));
         }
 
-        // Convert browser local time to UTC
-        var publishAtUtc = DateTime.SpecifyKind(
-            scheduledPublishAt,
-            DateTimeKind.Local)
-            .ToUniversalTime();
+        // Browser sends datetime-local without timezone information.
+        // Treat it explicitly as India Standard Time.
+        var indiaTimeZone =
+            TimeZoneInfo.FindSystemTimeZoneById(
+                OperatingSystem.IsWindows()
+                    ? "India Standard Time"
+                    : "Asia/Kolkata");
+
+        var scheduledIst =
+            DateTime.SpecifyKind(
+                scheduledPublishAt,
+                DateTimeKind.Unspecified);
+
+        var publishAtUtc =
+            TimeZoneInfo.ConvertTimeToUtc(
+                scheduledIst,
+                indiaTimeZone);
 
         if (publishAtUtc <= DateTime.UtcNow)
         {
-            TempData["Error"] = "Schedule date must be in the future.";
+            TempData["Error"] =
+                "Schedule date must be in the future.";
 
-            return RedirectToAction(nameof(Edit), new { id });
+            return RedirectToAction(
+                nameof(Edit),
+                new { id });
         }
 
-        var currentUser = await _userManager.GetUserAsync(User);
+        var currentUser =
+            await _userManager.GetUserAsync(User);
 
-        article.Status = ArticleStatus.Scheduled;
+        article.Status =
+            ArticleStatus.Scheduled;
 
-        article.ScheduledPublishAt = publishAtUtc;
+        article.ScheduledPublishAt =
+            publishAtUtc;
 
-        article.ScheduledById = currentUser?.Id;
+        article.ScheduledById =
+            currentUser?.Id;
 
         article.PublishedAt = null;
 
         article.PublishedById = null;
 
-        article.LastModifiedAt = DateTime.UtcNow;
+        article.LastModifiedAt =
+            DateTime.UtcNow;
 
         _unitOfWork.Articles.Update(article);
 
         await _unitOfWork.SaveChangesAsync();
 
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(
+            CacheKeys.HomePage);
 
-        TempData["Success"] = "Article scheduled successfully.";
+        TempData["Success"] =
+            "Article scheduled successfully.";
 
         return RedirectToAction(nameof(Index));
     }
+
+
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = $"{Roles.Editor},{Roles.Admin},{Roles.SuperAdmin}")]
