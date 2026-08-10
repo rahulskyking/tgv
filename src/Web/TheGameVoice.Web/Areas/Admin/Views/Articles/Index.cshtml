@@ -278,9 +278,7 @@
                                 DateTimeKind.Utc);
                             }
 
-                            @createdUtc
-                            .ToLocalTime()
-                            .ToString("dd MMM yyyy hh:mm tt")
+                            @(createdUtc.ToLocalTime().ToString("dd MMM yyyy hh:mm tt"))
                         </td>
 
                         <td class="px-6 py-4">
@@ -293,9 +291,7 @@
                                 DateTimeKind.Utc);
 
                                 <span class="font-medium text-blue-600">
-                                    @scheduledUtc
-                                    .ToLocalTime()
-                                    .ToString("dd MMM yyyy hh:mm tt")
+                                    @(scheduledUtc.ToLocalTime().ToString("dd MMM yyyy hh:mm tt"))
                                 </span>
                             }
                             else if (article.PublishedAt.HasValue)
@@ -305,9 +301,7 @@
                                 DateTimeKind.Utc);
 
                                 <span>
-                                    @publishedUtc
-                                    .ToLocalTime()
-                                    .ToString("dd MMM yyyy hh:mm tt")
+                                    @(publishedUtc.ToLocalTime().ToString("dd MMM yyyy hh:mm tt"))
                                 </span>
                             }
                             else
