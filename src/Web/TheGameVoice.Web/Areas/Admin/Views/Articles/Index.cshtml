@@ -272,22 +272,47 @@
                         </td>
 
                         <td class="px-6 py-4">
-                            @(article.CreatedAt.ToLocalTime().ToString("dd MMM yyyy") ?? "-")
+                            @{
+                                var createdUtc = DateTime.SpecifyKind(
+                                article.CreatedAt,
+                                DateTimeKind.Utc);
+                            }
+
+                            @createdUtc
+                            .ToLocalTime()
+                            .ToString("dd MMM yyyy hh:mm tt")
                         </td>
 
                         <td class="px-6 py-4">
 
-                            @if (article.Status == ArticleStatus.Scheduled)
+                            @if (article.Status == ArticleStatus.Scheduled &&
+                                                    article.ScheduledPublishAt.HasValue)
                             {
+                                var scheduledUtc = DateTime.SpecifyKind(
+                                article.ScheduledPublishAt.Value,
+                                DateTimeKind.Utc);
+
                                 <span class="font-medium text-blue-600">
+                                    @scheduledUtc
+                                    .ToLocalTime()
+                                    .ToString("dd MMM yyyy hh:mm tt")
+                                </span>
+                            }
+                            else if (article.PublishedAt.HasValue)
+                            {
+                                var publishedUtc = DateTime.SpecifyKind(
+                                article.PublishedAt.Value,
+                                DateTimeKind.Utc);
 
-                                    @article.ScheduledPublishAt?.ToLocalTime().ToString("dd MMM yyyy hh:mm tt")
-
+                                <span>
+                                    @publishedUtc
+                                    .ToLocalTime()
+                                    .ToString("dd MMM yyyy hh:mm tt")
                                 </span>
                             }
                             else
                             {
-                                @(article.PublishedAt?.ToLocalTime().ToString("dd MMM yyyy hh:mm tt") ?? "-")
+                                <span class="text-slate-400">-</span>
                             }
 
                         </td>
