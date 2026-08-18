@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TheGameVoice.Application.Common.Dashboard;
 
-namespace TheGameVoice.Application.Interfaces.Persistence
+namespace TheGameVoice.Application.Interfaces.Persistence;
+
+/// <summary>
+/// Builds the admin editorial dashboard from the existing persistence model.
+/// Implementations must aggregate in the database (no full-table loads).
+/// </summary>
+public interface IDashboardService
 {
-    internal class IDashboardService
-    {
-    }
+    Task<DashboardData> GetDashboardAsync(
+        DashboardFilter filter,
+        CancellationToken cancellationToken = default);
 }

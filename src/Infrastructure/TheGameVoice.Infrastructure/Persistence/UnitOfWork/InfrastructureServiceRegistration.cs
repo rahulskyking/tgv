@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -109,6 +109,9 @@ public static class InfrastructureServiceRegistration
 
         services.AddScoped<IMediaRepository,
     MediaRepository>();
+
+        services.AddScoped<IDashboardService,
+            DashboardService>();
 
         services.Configure<EmailSettings>(
     configuration.GetSection("EmailSettings"));
