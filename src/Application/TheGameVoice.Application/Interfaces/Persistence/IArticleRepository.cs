@@ -1,4 +1,5 @@
-﻿using TheGameVoice.Application.Common.Pagination;
+using TheGameVoice.Application.Common.Pagination;
+using TheGameVoice.Application.Modules.Articles;
 using TheGameVoice.Application.Modules.Articles.Filters;
 using TheGameVoice.Domain.Entities;
 
@@ -47,5 +48,12 @@ public interface IArticleRepository
     Task<List<ArticleReviewPoint>> GetReviewPointsAsync(Guid articleId);
     Task<PagedResult<Article>> GetPagedAsync(
     ArticleFilter filter);
+
+    /// <summary>
+    /// Aggregate counters (article counts per status and view totals) for the
+    /// supplied filter. The <see cref="ArticleFilter.Status"/> value is ignored
+    /// so the caller always gets the complete breakdown.
+    /// </summary>
+    Task<ArticleStatsSummary> GetSummaryAsync(ArticleFilter filter);
 
 }

@@ -33,6 +33,74 @@
 
     </div>
 
+    <!-- Summary: article counts and view totals for the current filter -->
+    <div class="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Total Articles
+            </p>
+
+            <p class="mt-1.5 text-2xl font-bold text-slate-900">
+                @Model.Summary.TotalArticles.ToString("N0")
+            </p>
+
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Published
+            </p>
+
+            <p class="mt-1.5 text-2xl font-bold text-green-600">
+                @Model.Summary.PublishedArticles.ToString("N0")
+            </p>
+
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                In Review / Draft
+            </p>
+
+            <p class="mt-1.5 text-2xl font-bold text-amber-600">
+                @Model.Summary.ReviewPendingArticles.ToString("N0")
+                <span class="text-base font-medium text-slate-400">
+                    / @Model.Summary.DraftArticles.ToString("N0")
+                </span>
+            </p>
+
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Total Views
+            </p>
+
+            <p class="mt-1.5 text-2xl font-bold text-[#fa743e]">
+                @Model.Summary.TotalViews.ToString("N0")
+            </p>
+
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Avg Views / Published
+            </p>
+
+            <p class="mt-1.5 text-2xl font-bold text-slate-900">
+                @Model.Summary.AverageViewsPerPublishedArticle.ToString("N0")
+            </p>
+
+        </div>
+
+    </div>
+
     <div class="mb-6 rounded-2xl border border-default bg-white p-5 shadow-sm">
 
         <form method="get">
@@ -189,6 +257,10 @@
                         Published
                     </th>
 
+                    <th class="px-6 py-4 text-right">
+                        Views
+                    </th>
+
                     <th class="px-6 py-4 text-left">
                         Actions
                     </th>
@@ -216,9 +288,28 @@
                         </td>
                     <td class="px-6 py-4 text-slate-600">
 
-                        @(Model.AuthorNames.TryGetValue(article.AuthorId, out var author)
-                                                ? author
-                                                : "Unknown")
+                        @{
+                            var authorName =
+                                Model.AuthorNames.TryGetValue(article.AuthorId, out var author)
+                                    ? author
+                                    : "Unknown";
+                        }
+
+                        @if (Model.CanViewAuthorStats)
+                        {
+                            <a asp-area="Admin"
+                               asp-controller="Dashboard"
+                               asp-action="Author"
+                               asp-route-id="@article.AuthorId"
+                               class="font-medium text-slate-700 underline-offset-2 hover:text-[#fa743e] hover:underline"
+                               title="View author statistics">
+                                @authorName
+                            </a>
+                        }
+                        else
+                        {
+                            @authorName
+                        }
 
                     </td>
                         <td class="px-6 py-4">
@@ -335,6 +426,20 @@
                             {
                                 <span class="text-slate-400">-</span>
                             }
+
+                        </td>
+
+                        <!-- Views -->
+                        <td class="whitespace-nowrap px-6 py-4 text-right">
+
+                            <span class="inline-flex items-center gap-1.5 text-sm font-semibold tabular-nums text-slate-700"
+                                  title="Total views for this article">
+
+                                <i data-lucide="eye" class="h-4 w-4 text-slate-400"></i>
+
+                                @article.ViewCount.ToString("N0")
+
+                            </span>
 
                         </td>
 

@@ -1,0 +1,901 @@
+@using TheGameVoice.Application.Modules.Articles.Filters
+@using TheGameVoice.Domain.Enums
+@model TheGameVoice.Web.Areas.Admin.ViewModels.Dashboard.AuthorStatsViewModel
+
+@functions
+{
+    private static readonly TimeZoneInfo IndiaTimeZone =
+        TimeZoneInfo.FindSystemTimeZoneById(
+            OperatingSystem.IsWindows()
+                ? "India Standard Time"
+                : "Asia/Kolkata");
+
+    private static string FormatNumber(long value)
+        => value.ToString("N0");
+
+    private static string FormatCompact(long value)
+    {
+        if (value >= 1_000_000)
+        {
+            return (value / 1_000_000d).ToString("0.##") + "M";
+        }
+
+        if (value >= 1_000)
+        {
+            return (value / 1_000d).ToString("0.#") + "K";
+        }
+
+        return value.ToString("N0");
+    }
+
+    private static DateTime ToIst(DateTime utc)
+        => TimeZoneInfo.ConvertTimeFromUtc(
+            DateTime.SpecifyKind(utc, DateTimeKind.Utc),
+            IndiaTimeZone);
+
+    private static string ToIstLabel(DateTime utc)
+        => ToIst(utc).ToString("dd MMM yyyy, hh:mm tt");
+
+    private static string ToIstDateLabel(DateTime utc)
+        => ToIst(utc).ToString("dd MMM yyyy");
+
+    private static string StatusLabel(ArticleStatus status)
+        => status switch
+        {
+            ArticleStatus.ReviewPending => "In Review",
+            _ => status.ToString()
+        };
+
+    private static string StatusBarColor(ArticleStatus status)
+        => status switch
+        {
+            ArticleStatus.Draft => "bg-slate-400",
+            ArticleStatus.ReviewPending => "bg-amber-400",
+            ArticleStatus.Scheduled => "bg-blue-500",
+            ArticleStatus.Published => "bg-green-500",
+            ArticleStatus.Rejected => "bg-red-400",
+            ArticleStatus.Archived => "bg-gray-300",
+            _ => "bg-slate-400"
+        };
+
+    private static string BarWidth(double percentage)
+    {
+        if (double.IsNaN(percentage) || percentage < 0)
+        {
+            percentage = 0;
+        }
+
+        if (percentage > 100)
+        {
+            percentage = 100;
+        }
+
+        return "width: " + percentage.ToString(
+            "0.##",
+            System.Globalization.CultureInfo.InvariantCulture) + "%";
+    }
+
+    private static string BarHeight(double percentage)
+    {
+        if (double.IsNaN(percentage) || percentage < 0)
+        {
+            percentage = 0;
+        }
+
+        if (percentage > 100)
+        {
+            percentage = 100;
+        }
+
+        return "height: " + percentage.ToString(
+            "0.##",
+            System.Globalization.CultureInfo.InvariantCulture) + "%";
+    }
+
+    private static string StatusBadgeClass(ArticleStatus status)
+        => status switch
+        {
+            ArticleStatus.Draft => "bg-slate-100 text-slate-700",
+            ArticleStatus.ReviewPending => "bg-amber-100 text-amber-800",
+            ArticleStatus.Scheduled => "bg-blue-100 text-blue-800",
+            ArticleStatus.Published => "bg-green-100 text-green-800",
+            ArticleStatus.Rejected => "bg-red-100 text-red-800",
+            ArticleStatus.Archived => "bg-gray-200 text-gray-700",
+            _ => "bg-slate-100 text-slate-700"
+        };
+}
+
+@{
+    ViewData["Title"] = $"{Model.AuthorName} — Author Statistics";
+
+    var authorRoute = new Dictionary<string, string>
+    {
+        ["Filter.AuthorId"] = Model.AuthorId.ToString()
+    };
+
+    var authorPublishedRoute = new Dictionary<string, string>
+    {
+        ["Filter.AuthorId"] = Model.AuthorId.ToString(),
+        ["Filter.Status"] = ((int)ArticleStatus.Published).ToString(),
+        ["Filter.SortBy"] = ((int)ArticleSort.MostViewed).ToString()
+    };
+
+    var maxTrend = Model.PublishingTrend.Count > 0
+        ? Model.PublishingTrend.Max(x => x.PublishedCount)
+        : 0;
+
+    var maxWorkflow = Model.Workflow.Count > 0
+        ? Model.Workflow.Max(x => x.Count)
+        : 0;
+}
+
+<div class="space-y-6">
+
+    <!-- Header -->
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+
+        <div class="min-w-0">
+
+            <a asp-area="Admin"
+               asp-controller="Dashboard"
+               asp-action="Index"
+               asp-route-range="@Model.SelectedRange"
+               class="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-[#fa743e]">
+
+                <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                Back to dashboard
+
+            </a>
+
+            <div class="flex items-start gap-4">
+
+                @if (!string.IsNullOrWhiteSpace(Model.AvatarPath))
+                {
+                    <img src="@Model.AvatarPath"
+                         alt="@Model.AuthorName"
+                         class="h-14 w-14 shrink-0 rounded-full object-cover ring-2 ring-orange-100" />
+                }
+                else
+                {
+                    <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-orange-100 text-lg font-bold text-[#fa743e]">
+                        @Model.Initials
+                    </div>
+                }
+
+                <div class="min-w-0">
+
+                    <div class="flex flex-wrap items-center gap-2">
+
+                        <h1 class="text-2xl font-bold text-slate-900">
+                            @Model.AuthorName
+                        </h1>
+
+                        @if (Model.IsSelf)
+                        {
+                            <span class="rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-semibold text-[#fa743e]">
+                                You
+                            </span>
+                        }
+
+                        @if (!Model.IsActive)
+                        {
+                            <span class="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
+                                Inactive
+                            </span>
+                        }
+
+                        @foreach (var role in Model.Roles)
+                        {
+                            <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+                                @role
+                            </span>
+                        }
+
+                    </div>
+
+                    <p class="mt-1 text-sm text-slate-500">
+
+                        @if (!string.IsNullOrWhiteSpace(Model.AuthorEmail))
+                        {
+                            <span>@Model.AuthorEmail</span>
+                        }
+
+                        @if (Model.RankByViews.HasValue && Model.TotalAuthors > 1)
+                        {
+                            <span class="mx-2 text-slate-300">•</span>
+                            <span>
+                                Rank #@Model.RankByViews of @Model.TotalAuthors by views
+                            </span>
+                        }
+
+                    </p>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Bio))
+                    {
+                        <p class="mt-2 max-w-2xl text-sm text-slate-500">
+                            @Model.Bio
+                        </p>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+
+            <form method="get"
+                  asp-area="Admin"
+                  asp-controller="Dashboard"
+                  asp-action="Author"
+                  class="flex items-center gap-3">
+
+                <input type="hidden" name="id" value="@Model.AuthorId" />
+
+                <div class="relative">
+
+                    <i data-lucide="calendar"
+                       class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+
+                    <select name="range"
+                            onchange="this.form.submit()"
+                            class="cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-8 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-200">
+
+                        <option value="Last7Days" selected="@(Model.SelectedRange == "Last7Days")">
+                            Last 7 Days
+                        </option>
+
+                        <option value="Last30Days" selected="@(Model.SelectedRange == "Last30Days")">
+                            Last 30 Days
+                        </option>
+
+                        <option value="Last90Days" selected="@(Model.SelectedRange == "Last90Days")">
+                            Last 90 Days
+                        </option>
+
+                    </select>
+
+                    <i data-lucide="chevron-down"
+                       class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+
+                </div>
+
+            </form>
+
+            <a asp-area="Admin"
+               asp-controller="Articles"
+               asp-action="Index"
+               asp-all-route-data="authorRoute"
+               class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">
+
+                <i data-lucide="files" class="h-4 w-4"></i>
+                All articles
+
+            </a>
+
+            <a asp-area="Admin"
+               asp-controller="Dashboard"
+               asp-action="AuthorExport"
+               asp-route-id="@Model.AuthorId"
+               asp-route-range="@Model.SelectedRange"
+               class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">
+
+                <i data-lucide="download" class="h-4 w-4"></i>
+                Export
+
+            </a>
+
+        </div>
+
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
+            <div class="flex items-start justify-between gap-3">
+
+                <div class="min-w-0">
+
+                    <p class="truncate text-sm font-medium text-slate-500">
+                        Total Articles
+                    </p>
+
+                    <p class="mt-2 text-3xl font-bold text-slate-900">
+                        @FormatNumber(Model.TotalArticles)
+                    </p>
+
+                    <p class="mt-1 text-xs text-slate-400">
+                        +@FormatNumber(Model.CreatedInPeriod) in @Model.SelectedRangeLabel.ToLowerInvariant()
+                    </p>
+
+                </div>
+
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100">
+                    <i data-lucide="file-text" class="h-5 w-5 text-slate-500"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
+            <div class="flex items-start justify-between gap-3">
+
+                <div class="min-w-0">
+
+                    <p class="truncate text-sm font-medium text-slate-500">
+                        Published Articles
+                    </p>
+
+                    <p class="mt-2 text-3xl font-bold text-green-600">
+                        @FormatNumber(Model.PublishedArticles)
+                    </p>
+
+                    <p class="mt-1 text-xs text-slate-400">
+                        @(Model.PublishedPercentage.ToString("0.0"))% of their output
+                        · +@FormatNumber(Model.PublishedInPeriod) this period
+                    </p>
+
+                </div>
+
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green-50">
+                    <i data-lucide="circle-check" class="h-5 w-5 text-green-600"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
+            <div class="flex items-start justify-between gap-3">
+
+                <div class="min-w-0">
+
+                    <p class="truncate text-sm font-medium text-slate-500">
+                        Total Views
+                    </p>
+
+                    <p class="mt-2 text-3xl font-bold text-slate-900">
+                        @FormatNumber(Model.TotalViews)
+                    </p>
+
+                    <p class="mt-1 text-xs text-slate-400">
+                        @(Model.ViewSharePercentage.ToString("0.0"))% of all site views
+                    </p>
+
+                </div>
+
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-50">
+                    <i data-lucide="eye" class="h-5 w-5 text-[#fa743e]"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
+            <div class="flex items-start justify-between gap-3">
+
+                <div class="min-w-0">
+
+                    <p class="truncate text-sm font-medium text-slate-500">
+                        Avg Views / Published
+                    </p>
+
+                    <p class="mt-2 text-3xl font-bold text-slate-900">
+                        @FormatNumber((long)Model.AverageViewsPerPublishedArticle)
+                    </p>
+
+                    <p class="mt-1 text-xs text-slate-400">
+                        @if (Model.RankByPublished.HasValue && Model.TotalAuthors > 1)
+                        {
+                            <span>Rank #@Model.RankByPublished of @Model.TotalAuthors by output</span>
+                        }
+                        else
+                        {
+                            <span>Lifetime average</span>
+                        }
+                    </p>
+
+                </div>
+
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50">
+                    <i data-lucide="trending-up" class="h-5 w-5 text-blue-600"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+
+        <!-- Workflow -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-5">
+
+            <div class="mb-4 flex items-center justify-between">
+
+                <h2 class="text-base font-semibold text-slate-900">
+                    Workflow Breakdown
+                </h2>
+
+                <span class="text-xs text-slate-400">
+                    Lifetime
+                </span>
+
+            </div>
+
+            <div class="space-y-3.5">
+
+                @foreach (var status in Model.Workflow)
+                {
+                    var width = maxWorkflow > 0
+                        ? (status.Count * 100d) / maxWorkflow
+                        : 0;
+
+                    var statusRoute = new Dictionary<string, string>
+                    {
+                        ["Filter.AuthorId"] = Model.AuthorId.ToString(),
+                        ["Filter.Status"] = ((int)status.Status).ToString()
+                    };
+
+                    <div>
+
+                        <div class="mb-1.5 flex items-center justify-between text-sm">
+
+                            <a asp-area="Admin"
+                               asp-controller="Articles"
+                               asp-action="Index"
+                               asp-all-route-data="statusRoute"
+                               class="font-medium text-slate-600 hover:text-[#fa743e]">
+                                @StatusLabel(status.Status)
+                            </a>
+
+                            <span class="font-semibold tabular-nums text-slate-800">
+                                @FormatNumber(status.Count)
+                            </span>
+
+                        </div>
+
+                        <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+
+                            <div class="h-full rounded-full @StatusBarColor(status.Status)"
+                                 style="@BarWidth(width)"></div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+            <div class="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 text-sm">
+
+                <div>
+                    <p class="text-xs text-slate-400">First published</p>
+                    <p class="mt-0.5 font-medium text-slate-700">
+                        @(Model.FirstPublishedAtUtc.HasValue
+                            ? ToIstDateLabel(Model.FirstPublishedAtUtc.Value)
+                            : "—")
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-xs text-slate-400">Last published</p>
+                    <p class="mt-0.5 font-medium text-slate-700">
+                        @(Model.LastPublishedAtUtc.HasValue
+                            ? ToIstDateLabel(Model.LastPublishedAtUtc.Value)
+                            : "—")
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Publishing trend -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-7">
+
+            <div class="mb-4 flex items-center justify-between">
+
+                <h2 class="text-base font-semibold text-slate-900">
+                    Publishing Trend
+                </h2>
+
+                <span class="text-xs text-slate-400">
+                    @Model.SelectedRangeLabel · @FormatNumber(Model.PublishedInPeriod) published
+                </span>
+
+            </div>
+
+            @if (maxTrend > 0)
+            {
+                <div class="flex h-40 items-end gap-[3px]">
+
+                    @foreach (var point in Model.PublishingTrend)
+                    {
+                        var height = point.PublishedCount > 0
+                            ? Math.Max(6, (point.PublishedCount * 100d) / maxTrend)
+                            : 2;
+
+                        var tooltip =
+                            $"{point.Day:dd MMM yyyy} — {point.PublishedCount} published";
+
+                        <div class="group relative flex-1"
+                             title="@tooltip">
+
+                            <div class="w-full rounded-t @(point.PublishedCount > 0 ? "bg-[#fa743e]" : "bg-slate-100")"
+                                 style="@BarHeight(height)"></div>
+
+                        </div>
+                    }
+
+                </div>
+
+                <div class="mt-2 flex justify-between text-xs text-slate-400">
+
+                    <span>
+                        @(Model.PublishingTrend.First().Day.ToString("dd MMM"))
+                    </span>
+
+                    <span>
+                        @(Model.PublishingTrend.Last().Day.ToString("dd MMM"))
+                    </span>
+
+                </div>
+            }
+            else
+            {
+                <div class="flex h-40 flex-col items-center justify-center text-center">
+
+                    <i data-lucide="bar-chart-3" class="h-8 w-8 text-slate-300"></i>
+
+                    <p class="mt-2 text-sm text-slate-500">
+                        Nothing published in this period.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+
+        <!-- Top articles by views -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-7">
+
+            <div class="mb-4 flex items-center justify-between">
+
+                <h2 class="text-base font-semibold text-slate-900">
+                    Top Articles by Views
+                </h2>
+
+                <a asp-area="Admin"
+                   asp-controller="Articles"
+                   asp-action="Index"
+                   asp-all-route-data="authorPublishedRoute"
+                   class="text-xs font-medium text-[#fa743e] hover:text-[#e56734]">
+                    View all published
+                </a>
+
+            </div>
+
+            @if (Model.TopArticles.Any())
+            {
+                <div class="overflow-x-auto">
+
+                    <table class="min-w-full">
+
+                        <thead>
+
+                            <tr class="border-b border-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
+
+                                <th class="px-3 py-2.5">Article</th>
+
+                                <th class="px-3 py-2.5">Category</th>
+
+                                <th class="px-3 py-2.5 text-right">Views</th>
+
+                                <th class="px-3 py-2.5 text-right">Published</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody class="divide-y divide-slate-100">
+
+                            @foreach (var article in Model.TopArticles)
+                            {
+                                <tr class="hover:bg-slate-50">
+
+                                    <td class="max-w-[320px] px-3 py-3">
+
+                                        <a asp-area="Admin"
+                                           asp-controller="Articles"
+                                           asp-action="Edit"
+                                           asp-route-id="@article.Id"
+                                           class="line-clamp-1 text-sm font-medium text-slate-800 hover:text-[#fa743e]">
+                                            @article.Title
+                                        </a>
+
+                                    </td>
+
+                                    <td class="whitespace-nowrap px-3 py-3 text-sm text-slate-500">
+                                        @article.CategoryName
+                                    </td>
+
+                                    <td class="whitespace-nowrap px-3 py-3 text-right text-sm font-semibold tabular-nums text-slate-800">
+                                        @FormatNumber(article.ViewCount)
+                                    </td>
+
+                                    <td class="whitespace-nowrap px-3 py-3 text-right text-sm text-slate-500">
+                                        @(article.PublishedAtUtc.HasValue
+                                            ? ToIstDateLabel(article.PublishedAtUtc.Value)
+                                            : "—")
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="py-8 text-center">
+
+                    <i data-lucide="flame" class="mx-auto h-8 w-8 text-slate-300"></i>
+
+                    <p class="mt-2 text-sm text-slate-500">
+                        No published articles yet.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+
+        <!-- Category breakdown -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-5">
+
+            <div class="mb-4 flex items-center justify-between">
+
+                <h2 class="text-base font-semibold text-slate-900">
+                    Category Focus
+                </h2>
+
+                <span class="text-xs text-slate-400">
+                    Share of articles
+                </span>
+
+            </div>
+
+            @if (Model.CategoryBreakdown.Any())
+            {
+                <div class="space-y-3.5">
+
+                    @foreach (var category in Model.CategoryBreakdown.Take(8))
+                    {
+                        <div>
+
+                            <div class="mb-1.5 flex items-center justify-between text-sm">
+
+                                <span class="truncate font-medium text-slate-600">
+                                    @(category.CategoryName ?? "Uncategorised")
+                                </span>
+
+                                <span class="ml-3 shrink-0 tabular-nums text-slate-500">
+                                    @FormatNumber(category.TotalArticles) ·
+                                    @FormatCompact(category.TotalViews) views
+                                </span>
+
+                            </div>
+
+                            <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+
+                                <div class="h-full rounded-full bg-[#fa743e]"
+                                     style="@BarWidth(category.SharePercentage)"></div>
+
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <div class="py-8 text-center">
+
+                    <i data-lucide="layers" class="mx-auto h-8 w-8 text-slate-300"></i>
+
+                    <p class="mt-2 text-sm text-slate-500">
+                        No articles yet.
+                    </p>
+
+                </div>
+            }
+
+            @if (Model.UpcomingPublications.Any())
+            {
+                <div class="mt-6 border-t border-slate-100 pt-4">
+
+                    <h3 class="mb-3 text-sm font-semibold text-slate-700">
+                        Upcoming Publications
+                    </h3>
+
+                    <div class="space-y-2.5">
+
+                        @foreach (var upcoming in Model.UpcomingPublications)
+                        {
+                            <div class="flex items-start justify-between gap-3">
+
+                                <a asp-area="Admin"
+                                   asp-controller="Articles"
+                                   asp-action="Edit"
+                                   asp-route-id="@upcoming.Id"
+                                   class="line-clamp-1 text-sm text-slate-700 hover:text-[#fa743e]">
+                                    @upcoming.Title
+                                </a>
+
+                                <span class="shrink-0 whitespace-nowrap text-xs text-slate-400">
+                                    @ToIstLabel(upcoming.ScheduledPublishAtUtc)
+                                </span>
+
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+    <!-- Recent activity -->
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
+        <div class="mb-4 flex items-center justify-between">
+
+            <h2 class="text-base font-semibold text-slate-900">
+                Recently Updated Articles
+            </h2>
+
+            <a asp-area="Admin"
+               asp-controller="Articles"
+               asp-action="Index"
+               asp-all-route-data="authorRoute"
+               class="text-xs font-medium text-[#fa743e] hover:text-[#e56734]">
+                Open in articles
+            </a>
+
+        </div>
+
+        @if (Model.RecentArticles.Any())
+        {
+            <div class="overflow-x-auto">
+
+                <table class="min-w-full">
+
+                    <thead>
+
+                        <tr class="border-b border-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
+
+                            <th class="px-3 py-2.5">Article</th>
+
+                            <th class="px-3 py-2.5">Status</th>
+
+                            <th class="px-3 py-2.5">Category</th>
+
+                            <th class="px-3 py-2.5 text-right">Views</th>
+
+                            <th class="px-3 py-2.5 text-right">Created</th>
+
+                            <th class="px-3 py-2.5 text-right">Published</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="divide-y divide-slate-100">
+
+                        @foreach (var article in Model.RecentArticles)
+                        {
+                            <tr class="hover:bg-slate-50">
+
+                                <td class="max-w-[320px] px-3 py-3">
+
+                                    <a asp-area="Admin"
+                                       asp-controller="Articles"
+                                       asp-action="Edit"
+                                       asp-route-id="@article.Id"
+                                       class="line-clamp-1 text-sm font-medium text-slate-800 hover:text-[#fa743e]">
+                                        @article.Title
+                                    </a>
+
+                                </td>
+
+                                <td class="whitespace-nowrap px-3 py-3">
+
+                                    <span class="rounded-full px-2.5 py-1 text-xs font-medium @StatusBadgeClass(article.Status)">
+                                        @StatusLabel(article.Status)
+                                    </span>
+
+                                </td>
+
+                                <td class="whitespace-nowrap px-3 py-3 text-sm text-slate-500">
+                                    @article.CategoryName
+                                </td>
+
+                                <td class="whitespace-nowrap px-3 py-3 text-right text-sm tabular-nums text-slate-700">
+                                    @FormatNumber(article.ViewCount)
+                                </td>
+
+                                <td class="whitespace-nowrap px-3 py-3 text-right text-sm text-slate-500">
+                                    @ToIstDateLabel(article.CreatedAtUtc)
+                                </td>
+
+                                <td class="whitespace-nowrap px-3 py-3 text-right text-sm text-slate-500">
+                                    @(article.PublishedAtUtc.HasValue
+                                        ? ToIstDateLabel(article.PublishedAtUtc.Value)
+                                        : "—")
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="py-8 text-center">
+
+                <i data-lucide="file-text" class="mx-auto h-8 w-8 text-slate-300"></i>
+
+                <p class="mt-2 text-sm text-slate-500">
+                    This author has not created any articles yet.
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+    <p class="text-right text-xs text-slate-400">
+        Generated @ToIstLabel(Model.GeneratedAtUtc) IST
+    </p>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    });
+</script>
