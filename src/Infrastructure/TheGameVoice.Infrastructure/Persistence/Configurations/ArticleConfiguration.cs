@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TheGameVoice.Domain.Entities;
 
@@ -35,6 +35,14 @@ public class ArticleConfiguration
         {
             x.Status,
             x.ScheduledPublishAt
+        });
+
+        // Supports "most read" dashboards and the public most-read widget:
+        // WHERE status = Published ORDER BY view_count DESC LIMIT n
+        builder.HasIndex(x => new
+        {
+            x.Status,
+            x.ViewCount
         });
 
         builder.HasOne(x => x.Category)

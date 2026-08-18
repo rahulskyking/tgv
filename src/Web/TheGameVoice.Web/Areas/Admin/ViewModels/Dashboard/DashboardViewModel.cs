@@ -1,20 +1,41 @@
-﻿namespace TheGameVoice.Web.Areas.Admin.ViewModels.Dashboard;
+using TheGameVoice.Application.Common.Dashboard;
+
+namespace TheGameVoice.Web.Areas.Admin.ViewModels.Dashboard;
 
 public class DashboardViewModel
 {
-    public int TotalArticles { get; set; }
+    public DashboardKpiViewModel Kpis { get; set; } = new();
 
-    public int PublishedArticles { get; set; }
+    public ArticlePerformanceViewModel Performance { get; set; } = new();
 
-    public int ScheduledArticles { get; set; }
+    public IReadOnlyList<WorkflowStatusViewModel> Workflow { get; set; }
+        = Array.Empty<WorkflowStatusViewModel>();
 
-    public int PendingReviewArticles { get; set; }
+    public ScheduleHealthViewModel ScheduleHealth { get; set; } = new();
 
-    public int DraftArticles { get; set; }
+    public IReadOnlyList<UpcomingArticleViewModel> UpcomingPublications
+    { get; set; } = Array.Empty<UpcomingArticleViewModel>();
 
-    public int RejectedArticles { get; set; }
+    public IReadOnlyList<MostReadArticleViewModel> MostReadArticles
+    { get; set; } = Array.Empty<MostReadArticleViewModel>();
 
-    public int ArchivedArticles { get; set; }
+    public IReadOnlyList<AuthorPerformanceViewModel> Authors { get; set; }
+        = Array.Empty<AuthorPerformanceViewModel>();
 
-    public long TotalViews { get; set; }
+    public IReadOnlyList<DashboardActivityViewModel> Activity { get; set; }
+        = Array.Empty<DashboardActivityViewModel>();
+
+    /// <summary>Currently selected date range, e.g. <c>Last30Days</c>.</summary>
+    public string SelectedRange { get; set; }
+        = DashboardDateRange.Last30Days.ToString();
+
+    public string SelectedRangeLabel { get; set; } = "Last 30 Days";
+
+    public bool ScopeToAuthor { get; set; }
+
+    public string? ScopedAuthorName { get; set; }
+
+    public bool LoadFailed { get; set; }
+
+    public DateTime GeneratedAtUtc { get; set; }
 }

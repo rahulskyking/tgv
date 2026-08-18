@@ -1,4 +1,17 @@
-﻿@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+
+@functions
+{
+    private string NavClass(string controller)
+    {
+        var current =
+            ViewContext.RouteData.Values["controller"]?.ToString();
+
+        return current == controller
+            ? "flex items-center gap-3 rounded-lg bg-gray-800 px-3 py-2.5 text-sm font-medium text-white"
+            : "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-gray-800 hover:text-white";
+    }
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,58 +34,70 @@
                 TGV Admin
             </div>
 
-            <nav class="mt-6">
+            <nav class="mt-6 space-y-1 px-3">
 
                 <a asp-area="Admin"
                    asp-controller="Dashboard"
                    asp-action="Index"
-                   class="block px-4 py-3 hover:bg-gray-800">
+                   class="@NavClass("Dashboard")">
+                    <i data-lucide="layout-dashboard" class="h-4 w-4"></i>
                     Dashboard
                 </a>
+
                 <a asp-area="Admin"
                    asp-controller="Articles"
                    asp-action="Index"
-                   class="block rounded-lg px-4 py-3 hover:bg-gray-700 transition">
+                   class="@NavClass("Articles")">
+                    <i data-lucide="file-text" class="h-4 w-4"></i>
                     Articles
                 </a>
 
                 <a href="#"
-                   class="block px-4 py-3 hover:bg-gray-800">
+                   class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-gray-800 hover:text-white">
+                    <i data-lucide="star" class="h-4 w-4"></i>
                     Reviews
                 </a>
 
                 <a asp-area="Admin"
                    asp-controller="Media"
                    asp-action="Index"
-                   class="block rounded-lg px-4 py-3 hover:bg-gray-700 transition">
+                   class="@NavClass("Media")">
+                    <i data-lucide="image" class="h-4 w-4"></i>
                     Media
                 </a>
+
                 <a asp-area="Admin"
                    asp-controller="Categories"
                    asp-action="Index"
-                   class="block rounded-lg px-4 py-3 hover:bg-gray-700 transition">
+                   class="@NavClass("Categories")">
+                    <i data-lucide="folder" class="h-4 w-4"></i>
                     Categories
                 </a>
+
                 <a asp-area="Admin"
                    asp-controller="Tags"
                    asp-action="Index"
-                   class="block rounded-lg px-4 py-3 hover:bg-gray-700 transition">
+                   class="@NavClass("Tags")">
+                    <i data-lucide="tag" class="h-4 w-4"></i>
                     Tags
                 </a>
+
                 <a asp-area="Admin"
                    asp-controller="Games"
-                   asp-action="Index" 
-                   class="block rounded-lg px-4 py-3 hover:bg-gray-700 transition">
+                   asp-action="Index"
+                   class="@NavClass("Games")">
+                    <i data-lucide="gamepad-2" class="h-4 w-4"></i>
                     Games
                 </a>
+
                 <a asp-area="Admin"
                    asp-controller="Users"
                    asp-action="Index"
-                   class="block rounded-lg px-4 py-3 hover:bg-gray-700 transition">
-
+                   class="@NavClass("Users")">
+                    <i data-lucide="users" class="h-4 w-4"></i>
                     Users
-
                 </a>
+
             </nav>
 
         </aside>
