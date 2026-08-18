@@ -11,4 +11,13 @@ public interface IDashboardService
     Task<DashboardData> GetDashboardAsync(
         DashboardFilter filter,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Drill-down statistics for a single author.
+    /// Returns <c>null</c> when the author does not exist.
+    /// </summary>
+    Task<AuthorStatsData?> GetAuthorStatsAsync(
+        Guid authorId,
+        DashboardFilter filter,
+        CancellationToken cancellationToken = default);
 }

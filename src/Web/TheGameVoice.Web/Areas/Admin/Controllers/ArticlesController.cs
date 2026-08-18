@@ -48,6 +48,8 @@ public class ArticlesController : BaseAdminController
 
         var pagedArticles = await _unitOfWork.Articles.GetPagedAsync(filter);
 
+        var summary = await _unitOfWork.Articles.GetSummaryAsync(filter);
+
         // Load users only ONCE
         var users = await _userManager.Users
             .Select(x => new
@@ -94,18 +96,37 @@ public class ArticlesController : BaseAdminController
                 })
                 .ToList(),
 
-                SortOptions = Enum
+            SortOptions = Enum
                 .GetValues<ArticleSort>()
                 .Select(x => new SelectListItem
                 {
-                    Text = x.ToString(),
+                    Text = SortLabel(x),
                     Value = ((int)x).ToString()
                 })
                 .ToList(),
-                    };
+
+            Summary = summary,
+
+            CanViewAuthorStats =
+                User.IsInRole(Roles.SuperAdmin) ||
+                User.IsInRole(Roles.Admin) ||
+                User.IsInRole(Roles.Editor) ||
+                User.IsInRole(Roles.Author)
+        };
 
         return View(model);
     }
+
+    private static string SortLabel(ArticleSort sort)
+        => sort switch
+        {
+            ArticleSort.Latest => "Newest first",
+            ArticleSort.Oldest => "Oldest first",
+            ArticleSort.Updated => "Recently updated",
+            ArticleSort.MostViewed => "Most viewed",
+            ArticleSort.Title => "Title (A-Z)",
+            _ => sort.ToString()
+        };
 
     [HttpGet]
     public async Task<IActionResult> Create()

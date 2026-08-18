@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using TheGameVoice.Application.Common.Pagination;
 using TheGameVoice.Application.Interfaces.Persistence;
+using TheGameVoice.Application.Modules.Articles;
 using TheGameVoice.Application.Modules.Articles.Filters;
 using TheGameVoice.Domain.Entities;
 using TheGameVoice.Domain.Enums;
@@ -300,6 +301,66 @@ public class ArticleRepository
             TotalCount = totalCount,
             CurrentPage = filter.Page,
             PageSize = filter.PageSize
+        };
+    }
+
+    public async Task<ArticleStatsSummary> GetSummaryAsync(
+        ArticleFilter filter)
+    {
+        var query = _context.Articles.AsNoTracking();
+
+        // Search
+        if (!string.IsNullOrWhiteSpace(filter.Search))
+        {
+            var search = filter.Search.Trim();
+
+            query = query.Where(x =>
+                EF.Functions.ILike(x.Title, $"%{search}%") ||
+                EF.Functions.ILike(x.Summary, $"%{search}%"));
+        }
+
+        // Category
+        if (filter.CategoryId.HasValue)
+        {
+            query = query.Where(x =>
+                x.CategoryId == filter.CategoryId.Value);
+        }
+
+        // Author
+        if (filter.AuthorId.HasValue)
+        {
+            query = query.Where(x =>
+                x.AuthorId == filter.AuthorId.Value);
+        }
+
+        // Status is deliberately not applied: the cards show the breakdown.
+        var buckets = await query
+            .GroupBy(x => x.Status)
+            .Select(g => new
+            {
+                Status = g.Key,
+                Count = g.Count(),
+                Views = g.Sum(x => (long)x.ViewCount)
+            })
+            .ToListAsync();
+
+        int CountFor(ArticleStatus status) =>
+            buckets.FirstOrDefault(x => x.Status == status)?.Count ?? 0;
+
+        long ViewsFor(ArticleStatus status) =>
+            buckets.FirstOrDefault(x => x.Status == status)?.Views ?? 0;
+
+        return new ArticleStatsSummary
+        {
+            TotalArticles = buckets.Sum(x => x.Count),
+            PublishedArticles = CountFor(ArticleStatus.Published),
+            DraftArticles = CountFor(ArticleStatus.Draft),
+            ReviewPendingArticles = CountFor(ArticleStatus.ReviewPending),
+            ScheduledArticles = CountFor(ArticleStatus.Scheduled),
+            RejectedArticles = CountFor(ArticleStatus.Rejected),
+            ArchivedArticles = CountFor(ArticleStatus.Archived),
+            TotalViews = buckets.Sum(x => x.Views),
+            PublishedViews = ViewsFor(ArticleStatus.Published)
         };
     }
 
