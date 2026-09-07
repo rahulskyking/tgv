@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using TheGameVoice.Domain.Enums;
 
 namespace TheGameVoice.Application.Modules.Articles.Filters;
@@ -8,6 +8,13 @@ public class ArticleFilter
     public string? Search { get; set; }
 
     public ArticleStatus? Status { get; set; }
+
+    /// <summary>
+    /// Audience segment filter for the admin list: null = show everything,
+    /// PcConsole / Mobile = only articles targeting that segment (articles
+    /// marked for both appear under either value).
+    /// </summary>
+    public GameSegment? Segment { get; set; }
 
     public Guid? CategoryId { get; set; }
 

@@ -4,6 +4,7 @@ using TheGameVoice.Infrastructure.Persistence.Context;
 using Microsoft.AspNetCore.Identity;
 using TheGameVoice.Infrastructure.Identity.Seed;
 using TheGameVoice.Infrastructure.Identity.Entities;
+using TheGameVoice.Web.Services;
 
 
 
@@ -15,6 +16,12 @@ builder.Services
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Site mode (PC / Console gaming vs Mobile gaming) is resolved per request
+// from the tgv_mode cookie.
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<ISiteSegmentAccessor, SiteSegmentAccessor>();
 
 var app = builder.Build();
 
@@ -30,6 +37,19 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Public pages are rendered per site mode, which lives in a cookie — tell
+// shared caches / CDNs not to serve one mode's HTML to the other.
+app.Use(async (context, next) =>
+{
+    if (!context.Request.Path.StartsWithSegments("/Admin",
+            StringComparison.OrdinalIgnoreCase))
+    {
+        context.Response.Headers["Vary"] = "Cookie";
+    }
+
+    await next();
+});
 
 app.UseAuthentication();
 

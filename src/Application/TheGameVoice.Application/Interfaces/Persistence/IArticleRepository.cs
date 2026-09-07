@@ -2,14 +2,23 @@ using TheGameVoice.Application.Common.Pagination;
 using TheGameVoice.Application.Modules.Articles;
 using TheGameVoice.Application.Modules.Articles.Filters;
 using TheGameVoice.Domain.Entities;
+using TheGameVoice.Domain.Enums;
 
 namespace TheGameVoice.Application.Interfaces.Persistence;
 
+/// <summary>
+/// Public read methods accept an optional <see cref="GameSegment"/>.
+/// Passing null keeps the old behaviour (every segment) which is what the
+/// admin area, sitemap and RSS feed want; the public site always passes the
+/// visitor's current site mode.
+/// </summary>
 public interface IArticleRepository
     : IRepository<Article>
 {
     Task<IReadOnlyList<Article>>
-        GetLatestPublishedAsync(int count);
+        GetLatestPublishedAsync(
+            int count,
+            GameSegment? segment = null);
 
     Task<Article?> GetBySlugAsync(string slug);
 
@@ -17,29 +26,42 @@ public interface IArticleRepository
     GetAllWithMediaAsync();
 
     Task<IReadOnlyList<Article>>
-    GetPublishedAsync();
+    GetPublishedAsync(
+        GameSegment? segment = null);
+
     Task<IReadOnlyList<Article>>GetAllWithDetailsAsync();
 
     Task<IReadOnlyList<Article>>
     GetPublishedByCategoryAsync(
-        Guid categoryId);
+        Guid categoryId,
+        GameSegment? segment = null);
 
     Task<IReadOnlyList<Article>>
     GetRelatedArticlesAsync(
         Guid categoryId,
-        Guid articleId);
+        Guid articleId,
+        GameSegment? segment = null);
 
     Task<IReadOnlyList<Article>>
-    SearchAsync(string query);
+    SearchAsync(
+        string query,
+        GameSegment? segment = null);
 
-    Task<IReadOnlyList<Article>>GetPublishedByTagAsync(string slug);
+    Task<IReadOnlyList<Article>>GetPublishedByTagAsync(
+        string slug,
+        GameSegment? segment = null);
+
     void Update(Article article);
 
-    Task<IReadOnlyList<Article>>GetMostReadAsync(int count);
+    Task<IReadOnlyList<Article>>GetMostReadAsync(
+        int count,
+        GameSegment? segment = null);
 
     Task<IReadOnlyList<Article>>
     GetPublishedByAuthorAsync(
-        Guid authorId);
+        Guid authorId,
+        GameSegment? segment = null);
+
     Task DeleteReviewPointsAsync(Guid articleId);
     
 

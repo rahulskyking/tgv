@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TheGameVoice.Domain.Common.Extensions;
+using TheGameVoice.Domain.Enums;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Media;
 
 namespace TheGameVoice.Web.Areas.Admin.ViewModels.Games;
@@ -22,6 +24,44 @@ public class EditGameViewModel
     public string? Publisher { get; set; }
 
     public string? Platforms { get; set; }
+
+    #region Section
+
+    /// <summary>Show this game in the PC / Console section.</summary>
+    [Display(Name = "PC / Console game")]
+    public bool IsPcConsole { get; set; } = true;
+
+    /// <summary>Show this game in the Mobile section.</summary>
+    [Display(Name = "Mobile game")]
+    public bool IsMobile { get; set; }
+
+    /// <summary>
+    /// Sections this game shows up in (trending games widget, game pages).
+    /// Defaults to PC / Console when nothing is ticked.
+    /// </summary>
+    public GameSegment Segment
+    {
+        get
+        {
+            var segment =
+                GameSegmentExtensions.FromFlags(IsPcConsole, IsMobile);
+
+            return segment == GameSegment.None
+                ? GameSegment.PcConsole
+                : segment;
+        }
+    }
+
+    /// <summary>Fills the checkboxes from a saved game.</summary>
+    public void SetSegment(GameSegment segment)
+    {
+        IsPcConsole = segment.Includes(GameSegment.PcConsole);
+
+        IsMobile = segment.Includes(GameSegment.Mobile);
+    }
+
+    #endregion
+
 
     public string? Genres { get; set; }
 

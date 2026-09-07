@@ -63,7 +63,7 @@ _cacheService;
             .AddAsync(tag);
 
         await _unitOfWork.SaveChangesAsync();
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
         return RedirectToAction(nameof(Index));
     }

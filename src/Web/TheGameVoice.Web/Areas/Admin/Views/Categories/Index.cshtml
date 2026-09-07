@@ -1,7 +1,15 @@
-﻿@model IReadOnlyList<TheGameVoice.Domain.Entities.Category>
+﻿@using TheGameVoice.Domain.Enums
+@model IReadOnlyList<TheGameVoice.Domain.Entities.Category>
 
 @{
     ViewData["Title"] = "Categories";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-5 py-3 text-sm text-green-800">
+        @TempData["Success"]
+    </div>
 }
 
 <div class="space-y-8">
@@ -67,9 +75,45 @@
 
                     </div>
 
-                    <div class="text-sm text-slate-400">
+                    <div class="flex items-center gap-4">
 
-                        @category.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+                        <!-- Which side of the site this category belongs to -->
+                        <form asp-action="SetSegment"
+                              method="post"
+                              class="flex items-center gap-2">
+
+                            <input type="hidden"
+                                   name="id"
+                                   value="@category.Id" />
+
+                            <select name="segment"
+                                    onchange="this.form.submit()"
+                                    class="rounded-lg border border-slate-200 px-3 py-2 text-sm">
+
+                                <option value="@((int)GameSegment.PcConsole)"
+                                        selected="@(category.Segment == GameSegment.PcConsole)">
+                                    PC / Console
+                                </option>
+
+                                <option value="@((int)GameSegment.Mobile)"
+                                        selected="@(category.Segment == GameSegment.Mobile)">
+                                    Mobile
+                                </option>
+
+                                <option value="@((int)GameSegment.All)"
+                                        selected="@(category.Segment == GameSegment.All)">
+                                    Both sections
+                                </option>
+
+                            </select>
+
+                        </form>
+
+                        <div class="text-sm text-slate-400">
+
+                            @category.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+
+                        </div>
 
                     </div>
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
@@ -122,6 +122,9 @@ _cacheService;
             Platforms =
              model.Platforms,
 
+            Segment =
+             model.Segment,
+
             Genres =
              model.Genres,
 
@@ -148,7 +151,7 @@ _cacheService;
             .AddAsync(game);
 
         await _unitOfWork.SaveChangesAsync();
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
         return RedirectToAction(nameof(Index));
     }
@@ -211,6 +214,9 @@ _cacheService;
                     })
                     .ToList()
             };
+
+        // Tick the section checkboxes from the saved game.
+        model.SetSegment(game.Segment);
 
         return View(model);
     }
@@ -294,6 +300,9 @@ _cacheService;
 
         game.Platforms =
             model.Platforms;
+
+        game.Segment =
+            model.Segment;
 
         game.Genres =
             model.Genres;

@@ -3,6 +3,7 @@ using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Infrastructure.Persistence.UnitOfWork;
+using TheGameVoice.Web.Services;
 using TheGameVoice.Web.ViewModels.Tags;
 
 namespace TheGameVoice.Web.Controllers;
@@ -17,11 +18,15 @@ public class TagsController : Controller
     private readonly ICacheService
 _cacheService;
 
+    private readonly ISiteSegmentAccessor _siteSegment;
+
     public TagsController(
         ITagRepository tagRepository,
         IArticleRepository articleRepository,
-        ICacheService cacheService)
+        ICacheService cacheService,
+        ISiteSegmentAccessor siteSegment)
     {
+        _siteSegment = siteSegment;
         _tagRepository =
             tagRepository;
 
@@ -35,9 +40,13 @@ _cacheService;
     public async Task<IActionResult> Details(
         string slug)
     {
+        var segment = _siteSegment.Current;
+
         var model =
             await _cacheService.GetOrCreateAsync(
-                $"{CacheKeys.Tags}_{slug}",
+                CacheKeys.ForSegment(
+                    $"{CacheKeys.Tags}_{slug}",
+                    segment),
                 async () =>
                 {
                     var tag =
@@ -51,7 +60,9 @@ _cacheService;
 
                     var articles =
                         await _articleRepository
-                            .GetPublishedByTagAsync(slug);
+                            .GetPublishedByTagAsync(
+                                slug,
+                                segment);
 
                     return new TagDetailsViewModel
                     {

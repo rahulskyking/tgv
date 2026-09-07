@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TheGameVoice.Domain.Entities;
+using TheGameVoice.Domain.Enums;
 
 namespace TheGameVoice.Infrastructure.Persistence.Configurations;
 
@@ -19,6 +20,11 @@ public class ArticleConfiguration
         builder.Property(x => x.Slug)
             .HasMaxLength(350)
             .IsRequired();
+
+        // Audience segment (PC/Console, Mobile or both). Stored as the
+        // integer bit flag; existing rows were backfilled to PC/Console.
+        builder.Property(x => x.Segment)
+            .HasDefaultValue(GameSegment.PcConsole);
 
         builder.HasIndex(x => x.Slug)
             .IsUnique();
@@ -43,6 +49,15 @@ public class ArticleConfiguration
         {
             x.Status,
             x.ViewCount
+        });
+
+        // Every public query is now "published articles of the current
+        // site mode, newest first".
+        builder.HasIndex(x => new
+        {
+            x.Segment,
+            x.Status,
+            x.PublishedAt
         });
 
         builder.HasOne(x => x.Category)

@@ -66,7 +66,7 @@ public class ScheduledArticlePublisher : BackgroundService
 
                     await db.SaveChangesAsync(stoppingToken);
 
-                    cache.RemoveMany(CacheKeys.HomePage);
+                    cache.RemoveMany(CacheKeys.AllHomePageKeys());
 
                     _logger.LogInformation(
                         "{Count} article(s) published automatically.",

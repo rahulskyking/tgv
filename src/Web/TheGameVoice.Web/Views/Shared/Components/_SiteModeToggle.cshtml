@@ -1,0 +1,55 @@
+@model TheGameVoice.Web.ViewModels.Shared.NavigationViewModel
+
+@*
+    Site mode toggle: flips the entire public site between PC / Console
+    gaming and Mobile gaming. The choice is stored in the tgv_mode cookie
+    by SiteModeController and every public page reads it back through
+    ISiteSegmentAccessor.
+*@
+
+@{
+    var isMobileMode =
+        Model.CurrentSegment == GameSegment.Mobile;
+
+    var pcUrl =
+        Url.Action(
+            "Switch",
+            "SiteMode",
+            new { mode = "pc", returnUrl = Model.ReturnUrl });
+
+    var mobileUrl =
+        Url.Action(
+            "Switch",
+            "SiteMode",
+            new { mode = "mobile", returnUrl = Model.ReturnUrl });
+
+    const string activeClass =
+        "rounded-full bg-primary px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-black";
+
+    const string inactiveClass =
+        "rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-slate-500 transition hover:text-slate-900";
+}
+
+<div class="inline-flex items-center gap-1 rounded-full border border-default bg-slate-100 p-1"
+     role="group"
+     aria-label="Choose gaming section">
+
+    <a href="@pcUrl"
+       class="@(isMobileMode ? inactiveClass : activeClass)"
+       aria-current="@(isMobileMode ? "false" : "true")"
+       title="PC and console gaming coverage">
+
+        PC / Console
+
+    </a>
+
+    <a href="@mobileUrl"
+       class="@(isMobileMode ? activeClass : inactiveClass)"
+       aria-current="@(isMobileMode ? "true" : "false")"
+       title="Mobile gaming coverage">
+
+        Mobile
+
+    </a>
+
+</div>

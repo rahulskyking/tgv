@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -96,6 +96,21 @@ public class ArticlesController : BaseAdminController
                 })
                 .ToList(),
 
+            // Audience sections: articles ticked for both show under either.
+            Segments = new List<SelectListItem>
+            {
+                new()
+                {
+                    Text = "PC / Console games",
+                    Value = ((int)GameSegment.PcConsole).ToString()
+                },
+                new()
+                {
+                    Text = "Mobile games",
+                    Value = ((int)GameSegment.Mobile).ToString()
+                }
+            },
+
             SortOptions = Enum
                 .GetValues<ArticleSort>()
                 .Select(x => new SelectListItem
@@ -140,6 +155,10 @@ public class ArticlesController : BaseAdminController
         }
         await PopulateArticleFormData(model);
         model.StatusDisplay = "Draft";
+
+        // New articles default to PC / Console, the site's main section.
+        model.SetSegment(GameSegment.PcConsole);
+
         return View(model);
     }
 
@@ -168,6 +187,7 @@ public class ArticlesController : BaseAdminController
             FeaturedImageId = model.FeaturedImageId,
             AuthorId = authorId,
             Status = ArticleStatus.Draft,
+            Segment = model.Segment,
             CategoryId = model.CategoryId,
             Slug = await _slugService.GenerateSlugAsync(model.Title),
 
@@ -234,7 +254,7 @@ public class ArticlesController : BaseAdminController
 
         await _unitOfWork.SaveChangesAsync();
 
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
         return RedirectToAction(nameof(Index));
     }
@@ -285,6 +305,8 @@ public class ArticlesController : BaseAdminController
                 Title = x.Title,
                 VideoUrl = x.VideoUrl
             }).ToList();
+
+        model.SetSegment(article.Segment);
 
         model.IsReview = article.IsReview;
         model.ReviewScore = article.ReviewScore;
@@ -339,6 +361,9 @@ public class ArticlesController : BaseAdminController
         article.SeoDescription = model.SeoDescription;
         article.FeaturedImageId = model.FeaturedImageId;
         article.CategoryId = model.CategoryId;
+
+        // Audience section(s) this article belongs to.
+        article.Segment = model.Segment;
 
         if (User.IsInRole(Roles.Author))
             article.AuthorId = currentUser!.Id;
@@ -427,7 +452,7 @@ public class ArticlesController : BaseAdminController
 
         await _unitOfWork.SaveChangesAsync();
 
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
         return RedirectToAction(nameof(Index));
     }
@@ -449,7 +474,7 @@ public class ArticlesController : BaseAdminController
         _unitOfWork.Articles.Update(article);
 
         await _unitOfWork.SaveChangesAsync();
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
         return RedirectToAction(nameof(Index));
     }
@@ -472,7 +497,7 @@ public class ArticlesController : BaseAdminController
         _unitOfWork.Articles.Update(article);
 
         await _unitOfWork.SaveChangesAsync();
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
         return RedirectToAction(nameof(Index));
     }
@@ -514,7 +539,7 @@ public class ArticlesController : BaseAdminController
         _unitOfWork.Articles.Update(article);
 
         await _unitOfWork.SaveChangesAsync();
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
         return RedirectToAction(nameof(Index));
     }
@@ -531,7 +556,7 @@ public class ArticlesController : BaseAdminController
         _unitOfWork.Articles.Update(article);
 
         await _unitOfWork.SaveChangesAsync();
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
         return RedirectToAction(nameof(Index));
     }
@@ -548,7 +573,7 @@ public class ArticlesController : BaseAdminController
         _unitOfWork.Articles.Update(article);
 
         await _unitOfWork.SaveChangesAsync();
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
         return RedirectToAction(nameof(Index));
     }
@@ -687,7 +712,7 @@ public class ArticlesController : BaseAdminController
         await _unitOfWork.SaveChangesAsync();
 
         _cacheService.RemoveMany(
-            CacheKeys.HomePage);
+            CacheKeys.AllHomePageKeys());
 
         TempData["Success"] =
             "Article scheduled successfully.";

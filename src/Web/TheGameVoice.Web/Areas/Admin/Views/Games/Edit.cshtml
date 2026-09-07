@@ -84,6 +84,30 @@
                 <input asp-for="Platforms"
                        placeholder="PC, PS5, Xbox Series X"
                        class="w-full rounded-2xl border px-4 py-3" />
+
+                <div class="mt-4 rounded-2xl border px-4 py-3">
+
+                    <div class="mb-2 text-sm font-medium">
+                        Site section
+                    </div>
+
+                    <label class="mb-1 flex items-center gap-3">
+
+                        <input asp-for="IsPcConsole" class="h-4 w-4" />
+
+                        <span class="text-sm">PC / Console game</span>
+
+                    </label>
+
+                    <label class="flex items-center gap-3">
+
+                        <input asp-for="IsMobile" class="h-4 w-4" />
+
+                        <span class="text-sm">Mobile game</span>
+
+                    </label>
+
+                </div>
             </div>
 
             <div>

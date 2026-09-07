@@ -19,6 +19,14 @@ public class Article : AuditableEntity
 
     public ArticleStatus Status { get; set; }
 
+    /// <summary>
+    /// Which audience this article is written for: PC / Console gaming,
+    /// Mobile gaming, or both. Drives what the public site shows in each
+    /// mode. Existing content was backfilled to <see cref="GameSegment.PcConsole"/>.
+    /// </summary>
+    public GameSegment Segment { get; set; }
+        = GameSegment.PcConsole;
+
     public DateTime? PublishedAt { get; set; }
     public Guid? PublishedById { get; set; }
     public Guid AuthorId { get; set; }

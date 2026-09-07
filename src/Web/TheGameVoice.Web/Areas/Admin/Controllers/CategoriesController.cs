@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TheGameVoice.Application.Constants;
+using TheGameVoice.Domain.Common.Extensions;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Entities;
+using TheGameVoice.Domain.Enums;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Categories;
 
 namespace TheGameVoice.Web.Areas.Admin.Controllers;
@@ -55,6 +57,8 @@ _cacheService;
         {
             Name = model.Name,
 
+            Segment = model.Segment,
+
             Slug = await _slugService
                 .GenerateSlugAsync(model.Name)
         };
@@ -63,10 +67,43 @@ _cacheService;
             .AddAsync(category);
 
         await _unitOfWork.SaveChangesAsync();
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
         return RedirectToAction(nameof(Index));
     }
+    /// <summary>
+    /// Moves a category between the PC / Console and Mobile sections
+    /// straight from the list (categories have no dedicated edit screen).
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SetSegment(
+        Guid id,
+        GameSegment segment)
+    {
+        var category =
+            await _unitOfWork.Categories.GetByIdAsync(id);
+
+        if (category == null)
+        {
+            return NotFound();
+        }
+
+        category.Segment =
+            segment == GameSegment.None
+                ? GameSegment.All
+                : segment;
+
+        await _unitOfWork.SaveChangesAsync();
+
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
+
+        TempData["Success"] =
+            $"{category.Name} now appears in: {category.Segment.ToDisplayName()}.";
+
+        return RedirectToAction(nameof(Index));
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reorder([FromBody] List<Guid> ids)
@@ -87,7 +124,7 @@ _cacheService;
 
         await _unitOfWork.SaveChangesAsync();
 
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
         return Ok();
     }

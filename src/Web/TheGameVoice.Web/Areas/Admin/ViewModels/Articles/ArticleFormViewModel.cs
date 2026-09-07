@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using TheGameVoice.Domain.Common.Extensions;
 using TheGameVoice.Domain.Enums;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Media;
 
@@ -31,6 +32,35 @@ public class ArticleFormViewModel : IValidatableObject
 
     [Required(ErrorMessage = "Please select a category.")]
     public Guid CategoryId { get; set; }
+
+    #region Audience segment
+
+    /// <summary>
+    /// "PC / Console game" checkbox — the historical default for this site.
+    /// </summary>
+    [Display(Name = "PC / Console games")]
+    public bool IsPcConsole { get; set; } = true;
+
+    /// <summary>"Mobile game" checkbox.</summary>
+    [Display(Name = "Mobile games")]
+    public bool IsMobile { get; set; }
+
+    /// <summary>
+    /// The two checkboxes folded into the bit flag stored on the article.
+    /// Ticking both publishes the article into both site modes.
+    /// </summary>
+    public GameSegment Segment
+        => GameSegmentExtensions.FromFlags(IsPcConsole, IsMobile);
+
+    /// <summary>Fills the checkboxes from a saved article.</summary>
+    public void SetSegment(GameSegment segment)
+    {
+        IsPcConsole = segment.Includes(GameSegment.PcConsole);
+
+        IsMobile = segment.Includes(GameSegment.Mobile);
+    }
+
+    #endregion
 
     public List<Guid> SelectedTagIds { get; set; } = new();
 
@@ -106,6 +136,15 @@ public class ArticleFormViewModel : IValidatableObject
             yield return new ValidationResult(
                 "Article content is required.",
                 new[] { nameof(Content) });
+        }
+
+        // Audience segment: an article with no segment would be invisible
+        // on the public site, so at least one checkbox is required.
+        if (!IsPcConsole && !IsMobile)
+        {
+            yield return new ValidationResult(
+                "Select at least one section: PC / Console games or Mobile games.",
+                new[] { nameof(IsPcConsole) });
         }
 
         // Category

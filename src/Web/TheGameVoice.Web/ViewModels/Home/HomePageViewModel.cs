@@ -1,9 +1,14 @@
-﻿using TheGameVoice.Domain.Entities;
+using TheGameVoice.Domain.Entities;
+using TheGameVoice.Domain.Enums;
 
 namespace TheGameVoice.Web.ViewModels.Home;
 
 public class HomePageViewModel
 {
+    /// <summary>Site mode this homepage was built for.</summary>
+    public GameSegment Segment { get; set; }
+        = GameSegment.PcConsole;
+
     public IReadOnlyList<Article> LatestNews
     { get; set; }
         = new List<Article>();

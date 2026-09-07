@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TheGameVoice.Domain.Entities;
+using TheGameVoice.Domain.Enums;
 
 namespace TheGameVoice.Infrastructure.Persistence.Configurations;
 
@@ -20,10 +21,16 @@ public class GameConfiguration : IEntityTypeConfiguration<Game>
             .HasMaxLength(300)
             .IsRequired();
 
+        // Existing games are PC / Console titles.
+        builder.Property(x => x.Segment)
+            .HasDefaultValue(GameSegment.PcConsole);
+
         builder.HasIndex(x => x.Slug)
             .IsUnique();
 
         builder.HasIndex(x => x.Name);
+
+        builder.HasIndex(x => x.Segment);
         builder
         .HasOne(x => x.BannerImage)
         .WithMany()

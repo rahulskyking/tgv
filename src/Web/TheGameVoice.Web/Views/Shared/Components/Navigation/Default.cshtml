@@ -1,6 +1,14 @@
 ﻿@model TheGameVoice.Web.ViewModels.Shared.NavigationViewModel
 
 @{
+    var isMobileMode =
+        Model.CurrentSegment == GameSegment.Mobile;
+
+    var sectionLabel =
+        isMobileMode
+            ? "Mobile Gaming"
+            : "PC / Console Gaming";
+
     var primaryCategories =
         Model.Categories
             .Take(7)
@@ -26,17 +34,36 @@
 
                 <!-- LOGO -->
 
-                <a asp-controller="Home"
-                   asp-action="Index"
-                   class="shrink-0">
+                <div class="shrink-0">
 
-                    <span class="text-3xl font-black tracking-tight text-primary">
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="block">
 
-                        TheGameVoice
+                        <span class="text-3xl font-black tracking-tight text-primary">
 
-                    </span>
+                            TheGameVoice
 
-                </a>
+                        </span>
+
+                        <span class="block text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+
+                            @sectionLabel
+
+                        </span>
+
+                    </a>
+
+                    <!-- SITE MODE TOGGLE (under the logo) -->
+
+                    <div class="mt-2">
+
+                        <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
+                                 model="Model" />
+
+                    </div>
+
+                </div>
 
                 <!-- PRIMARY NAV -->
 
@@ -107,7 +134,7 @@
 
         <!-- MOBILE HEADER -->
 
-        <div class="flex h-16 items-center justify-between lg:hidden">
+        <div class="flex h-16 items-center justify-between gap-3 lg:hidden">
 
             <a asp-controller="Home"
                asp-action="Index">
@@ -118,7 +145,16 @@
 
                 </span>
 
+                <span class="block text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+
+                    @sectionLabel
+
+                </span>
+
             </a>
+
+            <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
+                     model="Model" />
 
             <button id="mobile-menu-button"
                     type="button"
@@ -160,6 +196,15 @@
         </div>
 
         <div class="py-8">
+
+            <!-- SITE MODE TOGGLE -->
+
+            <div class="mb-6">
+
+                <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
+                         model="Model" />
+
+            </div>
 
             <!-- SEARCH -->
 

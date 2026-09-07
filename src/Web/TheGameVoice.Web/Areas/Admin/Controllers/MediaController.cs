@@ -134,7 +134,7 @@ _cacheService;
 
             await _unitOfWork.SaveChangesAsync();
 
-            _cacheService.RemoveMany(CacheKeys.HomePage);
+            _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
             TempData["Success"] =
                 $"{model.Files.Count} image(s) uploaded successfully.";
@@ -210,7 +210,7 @@ _cacheService;
         _unitOfWork.Media.Update(media);
 
         await _unitOfWork.SaveChangesAsync();
-        _cacheService.RemoveMany(CacheKeys.HomePage);
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
         return RedirectToAction(nameof(Index));
     }
@@ -253,7 +253,7 @@ _cacheService;
             await _unitOfWork.SaveChangesAsync();
 
             _cacheService.RemoveMany(
-                CacheKeys.HomePage);
+                CacheKeys.AllHomePageKeys());
 
             TempData["Success"] =
                 "Media deleted successfully.";

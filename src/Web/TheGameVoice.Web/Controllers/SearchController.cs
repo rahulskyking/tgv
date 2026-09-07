@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TheGameVoice.Application.Interfaces.Persistence;
+using TheGameVoice.Web.Services;
 using TheGameVoice.Web.ViewModels.Search;
 
 namespace TheGameVoice.Web.Controllers;
@@ -9,11 +10,16 @@ public class SearchController : Controller
     private readonly IArticleRepository
         _articleRepository;
 
+    private readonly ISiteSegmentAccessor _siteSegment;
+
     public SearchController(
-        IArticleRepository articleRepository)
+        IArticleRepository articleRepository,
+        ISiteSegmentAccessor siteSegment)
     {
         _articleRepository =
             articleRepository;
+
+        _siteSegment = siteSegment;
     }
 
     [HttpGet]
@@ -27,7 +33,9 @@ public class SearchController : Controller
         {
             articles =
                 (await _articleRepository
-                    .SearchAsync(query))
+                    .SearchAsync(
+                        query,
+                        _siteSegment.Current))
                 .ToList();
         }
 

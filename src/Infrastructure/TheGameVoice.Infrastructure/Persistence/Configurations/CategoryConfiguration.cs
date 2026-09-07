@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TheGameVoice.Domain.Entities;
+using TheGameVoice.Domain.Enums;
 
 namespace TheGameVoice.Infrastructure.Persistence.Configurations;
 
@@ -19,6 +20,11 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.Property(x => x.Slug)
             .HasMaxLength(200)
             .IsRequired();
+
+        // Categories default to both site modes so existing navigation
+        // keeps working after the migration.
+        builder.Property(x => x.Segment)
+            .HasDefaultValue(GameSegment.All);
 
         builder.HasIndex(x => x.Slug)
             .IsUnique();

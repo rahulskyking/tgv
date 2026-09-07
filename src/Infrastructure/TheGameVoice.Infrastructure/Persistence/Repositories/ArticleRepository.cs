@@ -37,12 +37,39 @@ public class ArticleRepository
             .FirstOrDefaultAsync(x =>
                 x.Id == id);
     }
-    public async Task<IReadOnlyList<Article>>
-        GetLatestPublishedAsync(int count)
+    /// <summary>
+    /// Restricts a query to a single audience segment (PC/Console or Mobile).
+    /// Articles flagged for both segments match either value because the
+    /// column stores a bit flag. Null / All means "no filtering", which is
+    /// what the admin area, sitemap and RSS feed use.
+    /// </summary>
+    private static IQueryable<Article> ApplySegment(
+        IQueryable<Article> query,
+        GameSegment? segment)
     {
-        return await _dbSet
+        if (segment is null ||
+            segment == GameSegment.None ||
+            segment == GameSegment.All)
+        {
+            return query;
+        }
+
+        var flag = segment.Value;
+
+        return query.Where(x =>
+            (x.Segment & flag) == flag);
+    }
+
+    public async Task<IReadOnlyList<Article>>
+        GetLatestPublishedAsync(
+            int count,
+            GameSegment? segment = null)
+    {
+        var query = _dbSet
             .Where(x => x.Status == ArticleStatus.Published)
-            .Include(x => x.Category)
+            .Include(x => x.Category);
+
+        return await ApplySegment(query, segment)
             .OrderByDescending(x => x.PublishedAt)
             .Take(count)
             .ToListAsync();
@@ -60,13 +87,16 @@ public class ArticleRepository
 
 
     public async Task<IReadOnlyList<Article>>
-    GetPublishedAsync()
+    GetPublishedAsync(
+        GameSegment? segment = null)
     {
-        return await _context.Articles
-            .Include(x => x.FeaturedImage ).Include(x => x.Category)
+        var query = _context.Articles
+            .Include(x => x.FeaturedImage).Include(x => x.Category)
             .Where(x =>
                 x.Status ==
-                ArticleStatus.Published)
+                ArticleStatus.Published);
+
+        return await ApplySegment(query, segment)
             .OrderByDescending(x =>
                 x.PublishedAt)
             .ToListAsync();
@@ -106,16 +136,19 @@ public class ArticleRepository
 
     public async Task<IReadOnlyList<Article>>
     GetPublishedByCategoryAsync(
-        Guid categoryId)
+        Guid categoryId,
+        GameSegment? segment = null)
     {
-        return await _context.Articles
+        var query = _context.Articles
             .Include(x => x.FeaturedImage)
             .Include(x => x.Category)
             .Where(x =>
                 x.Status ==
-                TheGameVoice.Domain.Enums.ArticleStatus.Published
+                ArticleStatus.Published
                 &&
-                x.CategoryId == categoryId)
+                x.CategoryId == categoryId);
+
+        return await ApplySegment(query, segment)
             .OrderByDescending(x =>
                 x.PublishedAt)
             .ToListAsync();
@@ -123,48 +156,56 @@ public class ArticleRepository
     public async Task<IReadOnlyList<Article>>
     GetRelatedArticlesAsync(
         Guid categoryId,
-        Guid articleId)
+        Guid articleId,
+        GameSegment? segment = null)
     {
-        return await _context.Articles
+        var query = _context.Articles
             .Include(x => x.FeaturedImage)
             .Include(x => x.Category)
             .Where(x =>
                 x.Status ==
-                TheGameVoice.Domain.Enums.ArticleStatus.Published
+                ArticleStatus.Published
                 &&
                 x.CategoryId == categoryId
                 &&
-                x.Id != articleId)
+                x.Id != articleId);
+
+        return await ApplySegment(query, segment)
             .OrderByDescending(x =>
                 x.PublishedAt)
             .Take(4)
             .ToListAsync();
     }
 
-    public async Task<IReadOnlyList<Article>> SearchAsync(string query)
+    public async Task<IReadOnlyList<Article>> SearchAsync(
+        string query,
+        GameSegment? segment = null)
     {
         query = query.ToLower();
 
-        return await _context.Articles
+        var articles = _context.Articles
             .Include(x => x.FeaturedImage)
             .Include(x => x.Category)
             .Where(x =>
                 x.Status ==
-                TheGameVoice.Domain.Enums.ArticleStatus.Published
+                ArticleStatus.Published
                 &&
                 (
                     x.Title.ToLower().Contains(query)
                     ||
                     x.Summary.ToLower().Contains(query)
-                ))
+                ));
+
+        return await ApplySegment(articles, segment)
             .OrderByDescending(x =>
                 x.PublishedAt)
             .ToListAsync();
     }
     public async Task<IReadOnlyList<Article>> GetPublishedByTagAsync(
-        string slug)
+        string slug,
+        GameSegment? segment = null)
     {
-        return await _context.Articles
+        var query = _context.Articles
             .Include(x => x.FeaturedImage)
             .Include(x => x.Category)
             .Include(x => x.ArticleTags)
@@ -174,21 +215,27 @@ public class ArticleRepository
                 ArticleStatus.Published
                 &&
                 x.ArticleTags.Any(t =>
-                    t.Tag.Slug == slug))
+                    t.Tag.Slug == slug));
+
+        return await ApplySegment(query, segment)
             .OrderByDescending(x =>
                 x.PublishedAt)
             .ToListAsync();
     }
 
     public async Task<IReadOnlyList<Article>>
-        GetMostReadAsync(int count)
+        GetMostReadAsync(
+            int count,
+            GameSegment? segment = null)
     {
-        return await _context.Articles
+        var query = _context.Articles
             .Include(x => x.FeaturedImage)
             .Include(x => x.Category)
             .Where(x =>
                 x.Status ==
-                ArticleStatus.Published)
+                ArticleStatus.Published);
+
+        return await ApplySegment(query, segment)
             .OrderByDescending(x =>
                 x.ViewCount)
             .Take(count)
@@ -197,15 +244,18 @@ public class ArticleRepository
 
     public async Task<IReadOnlyList<Article>>
     GetPublishedByAuthorAsync(
-        Guid authorId)
+        Guid authorId,
+        GameSegment? segment = null)
     {
-        return await _context.Articles
+        var query = _context.Articles
             .Include(x => x.FeaturedImage)
             .Include(x => x.Category)
             .Where(x =>
                 x.Status == ArticleStatus.Published
                 &&
-                x.AuthorId == authorId)
+                x.AuthorId == authorId);
+
+        return await ApplySegment(query, segment)
             .OrderByDescending(x =>
                 x.PublishedAt)
             .ToListAsync();
@@ -254,6 +304,9 @@ public class ArticleRepository
             query = query.Where(x =>
                 x.Status == filter.Status.Value);
         }
+
+        // Audience segment (PC / Console vs Mobile)
+        query = ApplySegment(query, filter.Segment);
 
         // Category
         if (filter.CategoryId.HasValue)
@@ -332,6 +385,9 @@ public class ArticleRepository
             query = query.Where(x =>
                 x.AuthorId == filter.AuthorId.Value);
         }
+
+        // Audience segment (PC / Console vs Mobile)
+        query = ApplySegment(query, filter.Segment);
 
         // Status is deliberately not applied: the cards show the breakdown.
         var buckets = await query

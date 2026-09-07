@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TheGameVoice.Application.Common.Pagination;
 using TheGameVoice.Application.Modules.Articles;
 using TheGameVoice.Application.Modules.Articles.Filters;
@@ -25,6 +25,10 @@ public class ArticleIndexViewModel
         = new();
 
     public List<SelectListItem> Statuses { get; set; }
+        = new();
+
+    /// <summary>Audience sections (PC / Console, Mobile) for the filter bar.</summary>
+    public List<SelectListItem> Segments { get; set; }
         = new();
     public List<SelectListItem> SortOptions { get; set; }
     = new();

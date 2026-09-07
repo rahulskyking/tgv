@@ -1,4 +1,5 @@
 using TheGameVoice.Domain.Common.Base;
+using TheGameVoice.Domain.Enums;
 
 namespace TheGameVoice.Domain.Entities;
 
@@ -18,7 +19,18 @@ public class Game : AuditableEntity
 
     public string? Publisher { get; set; }
 
+    /// <summary>
+    /// Free text list of hardware platforms, e.g. "PS5, Xbox Series X, PC".
+    /// Purely descriptive — see <see cref="Segment"/> for the site mode.
+    /// </summary>
     public string? Platforms { get; set; }
+
+    /// <summary>
+    /// Which site mode(s) this game shows up in (trending games widget,
+    /// game hub listings). Backfilled to PC / Console for existing rows.
+    /// </summary>
+    public GameSegment Segment { get; set; }
+        = GameSegment.PcConsole;
 
     public string? Genres { get; set; }
 

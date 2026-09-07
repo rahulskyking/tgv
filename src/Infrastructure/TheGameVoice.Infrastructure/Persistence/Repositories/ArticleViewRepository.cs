@@ -25,7 +25,8 @@ public class ArticleViewRepository
     }
     public async Task<IReadOnlyList<Article>>
         GetTrendingArticlesAsync(
-            int count)
+            int count,
+            GameSegment? segment = null)
     {
         var sevenDaysAgo =
             DateTime.UtcNow.AddDays(-7);
@@ -43,15 +44,17 @@ public class ArticleViewRepository
                     x.Key)
                 .ToListAsync();
 
+        var trending = _context.Articles
+            .Include(x => x.FeaturedImage)
+            .Include(x => x.Category)
+            .Where(x =>
+                articleIds.Contains(x.Id)
+                &&
+                x.Status ==
+                ArticleStatus.Published);
+
         var articles =
-            await _context.Articles
-                .Include(x => x.FeaturedImage)
-                .Include(x => x.Category)
-                .Where(x =>
-                    articleIds.Contains(x.Id)
-                    &&
-                    x.Status ==
-                    ArticleStatus.Published)
+            await ApplySegment(trending, segment)
                 .ToListAsync();
 
         if (articles.Any())
@@ -59,15 +62,40 @@ public class ArticleViewRepository
             return articles;
         }
 
-        return await _context.Articles
+        // Fallback: not enough view data yet, show the newest published
+        // articles of the current site mode instead.
+        var latest = _context.Articles
             .Include(x => x.FeaturedImage)
             .Include(x => x.Category)
             .Where(x =>
                 x.Status ==
-                ArticleStatus.Published)
+                ArticleStatus.Published);
+
+        return await ApplySegment(latest, segment)
             .OrderByDescending(x =>
                 x.PublishedAt)
             .Take(count)
             .ToListAsync();
+    }
+
+    /// <summary>
+    /// Restricts a query to a single audience segment. Articles flagged for
+    /// both segments match either value (the column is a bit flag).
+    /// </summary>
+    private static IQueryable<Article> ApplySegment(
+        IQueryable<Article> query,
+        GameSegment? segment)
+    {
+        if (segment is null ||
+            segment == GameSegment.None ||
+            segment == GameSegment.All)
+        {
+            return query;
+        }
+
+        var flag = segment.Value;
+
+        return query.Where(x =>
+            (x.Segment & flag) == flag);
     }
 }

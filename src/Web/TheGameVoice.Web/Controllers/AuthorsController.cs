@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Infrastructure.Identity.Entities;
+using TheGameVoice.Web.Services;
 using TheGameVoice.Web.ViewModels.Authors;
 
 namespace TheGameVoice.Web.Controllers;
@@ -17,11 +18,15 @@ public class AuthorsController : Controller
     private readonly IMediaRepository
         _mediaRepository;
 
+    private readonly ISiteSegmentAccessor _siteSegment;
+
     public AuthorsController(
         UserManager<ApplicationUser> userManager,
         IArticleRepository articleRepository,
-        IMediaRepository mediaRepository)
+        IMediaRepository mediaRepository,
+        ISiteSegmentAccessor siteSegment)
     {
+        _siteSegment = siteSegment;
         _userManager = userManager;
 
         _articleRepository = articleRepository;
@@ -46,7 +51,8 @@ public class AuthorsController : Controller
         var articles =
             await _articleRepository
                 .GetPublishedByAuthorAsync(
-                    author.Id);
+                    author.Id,
+                    _siteSegment.Current);
 
         string? avatarPath = null;
 

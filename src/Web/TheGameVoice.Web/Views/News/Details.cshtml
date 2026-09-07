@@ -1,4 +1,4 @@
-﻿@model TheGameVoice.Web.ViewModels.News.ArticleDetailsViewModel
+@model TheGameVoice.Web.ViewModels.News.ArticleDetailsViewModel
 
 @{
     var article = Model.Article;
@@ -84,6 +84,19 @@
 
 
 <div class="tgv-container py-12">
+
+    @if (ViewData["SwitchedModeNotice"] != null)
+    {
+        <!-- The reader opened an article from the other gaming section, so
+             the site flipped modes for them instead of showing a 404. -->
+        <div class="mb-8 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-5 py-3 text-sm text-amber-800">
+
+            <span class="font-semibold">Heads up:</span>
+
+            <span>@ViewData["SwitchedModeNotice"]</span>
+
+        </div>
+    }
 
 
     <div id="reading-progress"></div>
