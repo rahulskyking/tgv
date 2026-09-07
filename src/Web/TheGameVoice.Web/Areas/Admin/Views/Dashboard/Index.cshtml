@@ -973,10 +973,7 @@
 
                                     <td class="max-w-[300px] px-3 py-3">
 
-                                        <a asp-area="Admin"
-                                           asp-controller="Articles"
-                                           asp-action="Edit"
-                                           asp-route-id="@article.Id"
+                                        <a 
                                            class="line-clamp-1 text-sm font-medium text-slate-800 hover:text-[#fa743e]">
                                             @article.Title
                                         </a>
@@ -1050,10 +1047,8 @@
 
                             <div class="min-w-0 flex-1">
 
-                                <a asp-area="Admin"
-                                   asp-controller="Articles"
-                                   asp-action="Edit"
-                                   asp-route-id="@item.ArticleId"
+                                <a 
+                                 
                                    class="line-clamp-1 text-sm font-medium text-slate-800 hover:text-[#fa743e]">
                                     @item.ArticleTitle
                                 </a>

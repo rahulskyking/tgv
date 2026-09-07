@@ -7,7 +7,7 @@
 
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0" />
- 
+    @RenderSection("Head", required: false)
     <title>
         @(ViewData["Title"] ?? "TheGameVoice")
     </title>
@@ -20,6 +20,7 @@
 
     <meta property="og:description"
           content="@(ViewData["Description"] ?? "Gaming News, Reviews and Features")" />
+
 
 @if (ViewData["CanonicalUrl"] != null)
 {

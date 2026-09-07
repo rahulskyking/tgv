@@ -1,5 +1,88 @@
 ﻿@model TheGameVoice.Web.ViewModels.News.ArticleDetailsViewModel
 
+@{
+    var article = Model.Article;
+
+    var seoTitle =
+        !string.IsNullOrWhiteSpace(article.SeoTitle)
+            ? article.SeoTitle
+            : article.Title;
+
+    var seoDescription =
+        !string.IsNullOrWhiteSpace(article.SeoDescription)
+            ? article.SeoDescription
+            : article.Summary;
+
+    var canonicalUrl =
+        ViewData["CanonicalUrl"]?.ToString()
+        ?? Url.Action(
+            "Details",
+            "News",
+            new { slug = article.Slug },
+            Context.Request.Scheme);
+
+    var seoImage =
+        article.FeaturedImage?.FilePath;
+}
+
+@section Head
+{
+    <title>@seoTitle</title>
+
+    @if (!string.IsNullOrWhiteSpace(seoDescription))
+    {
+        <meta name="description"
+              content="@seoDescription" />
+    }
+
+    <link rel="canonical"
+          href="@canonicalUrl" />
+
+    <!-- Open Graph -->
+
+    <meta property="og:type"
+          content="article" />
+
+    <meta property="og:title"
+          content="@seoTitle" />
+
+    @if (!string.IsNullOrWhiteSpace(seoDescription))
+    {
+        <meta property="og:description"
+              content="@seoDescription" />
+    }
+
+    <meta property="og:url"
+          content="@canonicalUrl" />
+
+    @if (!string.IsNullOrWhiteSpace(seoImage))
+    {
+        <meta property="og:image"
+              content="@seoImage" />
+    }
+
+    <!-- Twitter / X -->
+
+    <meta name="twitter:card"
+          content="summary_large_image" />
+
+    <meta name="twitter:title"
+          content="@seoTitle" />
+
+    @if (!string.IsNullOrWhiteSpace(seoDescription))
+    {
+        <meta name="twitter:description"
+              content="@seoDescription" />
+    }
+
+    @if (!string.IsNullOrWhiteSpace(seoImage))
+    {
+        <meta name="twitter:image"
+              content="@seoImage" />
+    }
+}
+
+
 <div class="tgv-container py-12">
 
 
@@ -175,10 +258,10 @@
 
                 <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
-                    @foreach (var article in Model.RelatedArticles)
+                    @foreach (var relatedArticle in Model.RelatedArticles)
                     {
                         <partial name="~/Views/Shared/Components/_RelatedArticleCard.cshtml"
-                                 model="article" />
+                                 model="relatedArticle" />
                     }
 
                 </div>

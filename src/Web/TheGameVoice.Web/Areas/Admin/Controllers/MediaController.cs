@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Entities;
+using TheGameVoice.Infrastructure.Identity;
+using TheGameVoice.Infrastructure.Services;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Media;
 
 namespace TheGameVoice.Web.Areas.Admin.Controllers;
@@ -13,17 +16,33 @@ public class MediaController : BaseAdminController
     private readonly IStorageService _storageService;
 
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMediaMigrationService _mediaMigrationService;
     private readonly ICacheService
 _cacheService;
+    private readonly SupabaseStorageService _supabaseStorage;
+    private readonly CloudflareR2StorageService _r2Storage;
+    private readonly IArticleContentMigrationService _articleContentMigrationService;
+
+
+
+
     public MediaController(
-        IStorageService storageService,
-        IUnitOfWork unitOfWork,
-        ICacheService cacheService)
+     IStorageService storageService,
+     SupabaseStorageService supabaseStorage,
+     CloudflareR2StorageService r2Storage,
+     IUnitOfWork unitOfWork,
+     ICacheService cacheService,
+     IMediaMigrationService mediaMigrationService,
+     IArticleContentMigrationService articleContentMigrationService)
     {
         _storageService = storageService;
+        _supabaseStorage = supabaseStorage;
+        _r2Storage = r2Storage;
 
         _unitOfWork = unitOfWork;
         _cacheService = cacheService;
+        _mediaMigrationService = mediaMigrationService;
+        _articleContentMigrationService = articleContentMigrationService;
     }
 
     public async Task<IActionResult> Index()
@@ -195,10 +214,10 @@ _cacheService;
 
         return RedirectToAction(nameof(Index));
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(
-    Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         var media =
             await _unitOfWork.Media
@@ -209,14 +228,61 @@ _cacheService;
             return NotFound();
         }
 
-        await _storageService.DeleteAsync(
-            media.FilePath);
+        try
+        {
+            if (IsR2File(media.FilePath))
+            {
+                await _r2Storage.DeleteAsync(
+                    media.FilePath);
+            }
+            else if (IsSupabaseFile(media.FilePath))
+            {
+                await _supabaseStorage.DeleteAsync(
+                    media.FilePath);
+            }
+            else
+            {
+                TempData["Error"] =
+                    "Unknown storage provider for this media file.";
 
-        _unitOfWork.Media.Remove(media);
+                return RedirectToAction(nameof(Index));
+            }
 
-        await _unitOfWork.SaveChangesAsync();_cacheService.RemoveMany(CacheKeys.HomePage);
+            _unitOfWork.Media.Remove(media);
 
-        return RedirectToAction(
-            nameof(Index));
+            await _unitOfWork.SaveChangesAsync();
+
+            _cacheService.RemoveMany(
+                CacheKeys.HomePage);
+
+            TempData["Success"] =
+                "Media deleted successfully.";
+
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] =
+                $"Unable to delete media: {ex.Message}";
+
+            return RedirectToAction(nameof(Index));
+        }
     }
+
+    private static bool IsR2File(string filePath)
+    {
+        return filePath.StartsWith(
+            "https://media.thegamevoice.com/",
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsSupabaseFile(string filePath)
+    {
+        return filePath.Contains(
+            ".supabase.co/storage/",
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+
+   
 }

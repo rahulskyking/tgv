@@ -1,4 +1,5 @@
-﻿@model IReadOnlyList<TheGameVoice.Domain.Entities.Media>
+﻿@using TheGameVoice.Infrastructure.Identity
+@model IReadOnlyList<TheGameVoice.Domain.Entities.Media>
 
 <div class="space-y-6">
 
@@ -84,3 +85,58 @@
     </div>
 
 </div>
+
+@* 
+    <div class="flex flex-wrap items-center gap-3">
+
+        <!-- Scan -->
+
+        <form asp-action="ScanR2Migration"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <button type="submit"
+                    class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
+
+                <i data-lucide="scan-search"
+                   class="h-4 w-4"></i>
+
+                Scan Storage
+
+            </button>
+
+        </form>
+
+
+        <!-- Migration -->
+
+        <form asp-action="MigrateToR2"
+              method="post"
+              onsubmit="return confirmR2Migration();">
+
+            @Html.AntiForgeryToken()
+
+            <button type="submit"
+                    class="flex items-center gap-2 rounded-xl bg-[#fa743e] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#e9632f]">
+
+                <i data-lucide="cloud-upload"
+                   class="h-4 w-4"></i>
+
+                Migrate to R2
+
+            </button>
+
+        </form>
+
+    </div>
+<script>
+    function confirmR2Migration() {
+
+        return confirm(
+            "This will migrate all existing Supabase media files to Cloudflare R2.\n\n" +
+            "Your database relationships will remain unchanged.\n\n" +
+            "Do you want to continue?"
+        );
+    }
+</script> *@

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +9,7 @@ using TheGameVoice.Application.Settings;
 using TheGameVoice.Infrastructure.BackgroundServices;
 using TheGameVoice.Infrastructure.Configuration;
 using TheGameVoice.Infrastructure.Identity.Entities;
+using TheGameVoice.Infrastructure.Persistence.Configurations;
 using TheGameVoice.Infrastructure.Persistence.Context;
 using TheGameVoice.Infrastructure.Persistence.Repositories;
 using TheGameVoice.Infrastructure.Persistence.UnitOfWork;
@@ -94,12 +95,25 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IGameRepository, GameRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
 
-        services.Configure<SupabaseStorageOptions>(configuration.GetSection("SupabaseStorage"));
+        services.Configure<SupabaseStorageOptions>(
+       configuration.GetSection("SupabaseStorage"));
+
+        services.Configure<CloudflareR2StorageOptions>(
+            configuration.GetSection("CloudflareR2"));
+
         services.AddHttpClient();
 
+        services.AddScoped<SupabaseStorageService>();
 
-        services.AddScoped<IStorageService, SupabaseStorageService>();
+        services.AddScoped<CloudflareR2StorageService>();
 
+        services.AddScoped<IStorageService,
+            CloudflareR2StorageService>();
+
+        services.AddScoped<IMediaMigrationService,
+            MediaMigrationService>();
+        services.AddScoped<IArticleContentMigrationService,
+    ArticleContentMigrationService>();
         services.AddMemoryCache();
 
         services.AddScoped<ICacheService,
