@@ -5,7 +5,7 @@
 
     <div class="flex items-center justify-between">
 
-        <h1 class="text-3xl font-bold">
+        <h1 class="text-fluid-3xl font-bold">
             Media Library
         </h1>
 
@@ -23,7 +23,7 @@
 
         @foreach (var item in Model)
         {
-            <div class="group overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:shadow-lg">
+            <div class="group overflow-hidden rounded-2xl border bg-surface shadow-sm transition hover:shadow-lg">
                 @if (item.IsImage)
                 {
                     <div class="aspect-video overflow-hidden">
@@ -41,7 +41,7 @@
                         @item.FileName
                     </p>
 
-                    <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
+                    <div class="mt-2 flex items-center justify-between text-xs text-ink-muted">
 
                         <span>
                             @item.ContentType.Replace("image/", "").ToUpper()
@@ -97,7 +97,7 @@
             @Html.AntiForgeryToken()
 
             <button type="submit"
-                    class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
+                    class="flex items-center gap-2 rounded-xl border border-line bg-surface px-5 py-3 text-sm font-semibold text-ink-soft shadow-sm transition hover:bg-surface-muted">
 
                 <i data-lucide="scan-search"
                    class="h-4 w-4"></i>

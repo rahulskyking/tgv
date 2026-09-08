@@ -20,7 +20,7 @@
             .ToList();
 }
 
-<header class="sticky top-0 z-50 border-b border-default bg-white">
+<header class="sticky top-0 z-50 border-b border-default bg-surface">
 
     <div class="tgv-container">
 
@@ -30,7 +30,7 @@
 
             <!-- LEFT -->
 
-            <div class="flex items-center gap-10">
+            <div class="flex items-center gap-fluid-10">
 
                 <!-- LOGO -->
 
@@ -40,13 +40,13 @@
                        asp-action="Index"
                        class="block">
 
-                        <span class="text-3xl font-black tracking-tight text-primary">
+                        <span class="text-fluid-3xl font-black tracking-tight text-primary">
 
                             TheGameVoice
 
                         </span>
 
-                        <span class="block text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                        <span class="block text-[11px] font-bold uppercase tracking-[0.2em] text-ink-faint">
 
                             @sectionLabel
 
@@ -71,7 +71,7 @@
 
                    @*  <a asp-controller="Home"
                        asp-action="Index"
-                       class="text-sm font-bold uppercase tracking-[0.12em] text-slate-900 transition hover:text-primary">
+                       class="text-sm font-bold uppercase tracking-[0.12em] text-ink transition hover:text-primary">
 
                         Home
 
@@ -82,7 +82,7 @@
                         <a asp-controller="Categories"
                            asp-action="Details"
                            asp-route-slug="@category.Slug"
-                           class="text-sm font-bold uppercase tracking-[0.12em] text-slate-900 transition hover:text-primary">
+                           class="text-sm font-bold uppercase tracking-[0.12em] text-ink transition hover:text-primary">
 
                             @category.Name
 
@@ -104,7 +104,7 @@
                     <input type="text"
                            name="query"
                            placeholder="Search articles..."
-                           class="w-56 rounded-full border border-default bg-white px-5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-primary" />
+                           class="w-56 rounded-full border border-default bg-surface px-5 py-2.5 text-sm text-ink outline-none transition focus:border-primary" />
 
                 </form>
 
@@ -126,7 +126,7 @@
                         <a asp-controller="Categories"
                            asp-action="Details"
                            asp-route-slug="@category.Slug"
-                           class="text-sm font-semibold uppercase tracking-[0.12em] text-slate-600 transition hover:text-primary">
+                           class="text-sm font-semibold uppercase tracking-[0.12em] text-ink-mid transition hover:text-primary">
 
                             @category.Name
 
@@ -151,7 +151,7 @@
 
                 </span>
 
-                <span class="block text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                <span class="block text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
 
                     @sectionLabel
 
@@ -159,7 +159,7 @@
 
             </a>
 
-            <div class="tgv-hide-xs">
+            <div class="max-xs:hidden">
 
                 <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
                          model="Model" />
@@ -170,7 +170,7 @@
 
             <button id="mobile-menu-button"
                     type="button"
-                    class="flex h-10 w-10 items-center justify-center rounded-md border border-default bg-white">
+                    class="flex h-10 w-10 items-center justify-center rounded-md border border-default bg-surface">
 
                 ☰
 
@@ -185,7 +185,7 @@
 <!-- MOBILE OVERLAY -->
 
 <div id="mobile-menu-overlay"
-     class="fixed inset-0 z-[999] hidden bg-white">
+     class="fixed inset-0 z-[999] hidden bg-surface">
 
     <div class="tgv-container">
 
@@ -199,7 +199,7 @@
 
             <button id="mobile-menu-close"
                     type="button"
-                    class="text-3xl">
+                    class="text-fluid-3xl">
 
                 ×
 
@@ -230,7 +230,7 @@
                 <input type="text"
                        name="query"
                        placeholder="Search articles..."
-                       class="w-full rounded-full border border-default bg-white px-5 py-3 text-slate-900 outline-none focus:border-primary" />
+                       class="w-full rounded-full border border-default bg-surface px-5 py-3 text-ink outline-none focus:border-primary" />
 
             </form>
 

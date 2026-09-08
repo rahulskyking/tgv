@@ -41,29 +41,16 @@
           content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
 
+    @*  One compiled stylesheet (see tailwind.config.js + wwwroot/css/app.css) *@
     <link rel="stylesheet"
-          href="~/css/site.css" />
-    @*  Design tokens + .bg-primary / .border-default helpers. The admin was
-        loading only site.css, so those token classes had no definition. *@
-    <link rel="stylesheet"
-          href="~/css/theme.css"
-          asp-append-version="true" />
-    <link rel="stylesheet"
-          href="~/css/theme-utilities.css"
-          asp-append-version="true" />
-    <link rel="stylesheet"
-          href="~/css/theme-responsive.css"
-          asp-append-version="true" />
-    @*  Dark theme layer — must be the LAST stylesheet. *@
-    <link rel="stylesheet"
-          href="~/css/theme-dark.css"
+          href="~/css/site.css"
           asp-append-version="true" />
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css"
           rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-canvas">
 
     <!-- MOBILE TOP BAR (hidden from 1024px up) -->
 

@@ -1,7 +1,7 @@
 ﻿@model TheGameVoice.Domain.Entities.Article
 
 
-<div class="tgv-container py-12">
+<div class="tgv-container py-fluid-12">
 
     <article class="mx-auto max-w-5xl">
 
@@ -15,7 +15,7 @@
 
         </div>
 
-        <h1 class="tgv-display text-4xl font-extrabold">
+        <h1 class="tgv-display text-fluid-4xl font-extrabold">
 
             @Model.Title
 
@@ -39,7 +39,7 @@
 
         @if (Model.FeaturedImage != null)
         {
-            <div class="mt-10 overflow-hidden rounded-[32px] shadow-xl">
+            <div class="mt-fluid-10 overflow-hidden rounded-[32px] shadow-xl">
 
                 <img src="@Model.FeaturedImage.FilePath"
                      alt="@Model.Title"
@@ -48,7 +48,7 @@
             </div>
         }
 
-        <div class="article-content mt-12">
+        <div class="article-content mt-fluid-12">
 
             @Html.Raw(Model.Content)
 

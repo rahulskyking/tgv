@@ -3,7 +3,7 @@
 <a asp-controller="News"
    asp-action="Details"
    asp-route-slug="@Model.Slug"
-   class="group block border-b border-slate-200 py-5 transition-colors hover:bg-slate-50/50 md:py-6">
+   class="group block border-b border-line py-5 transition-colors hover:bg-surface-muted/50 md:py-6">
 
     <div class="flex items-start gap-3 md:gap-5">
 
@@ -34,21 +34,21 @@
 
                 @if (Model.PublishedAt.HasValue)
                 {
-                    <span class="text-slate-500">
+                    <span class="text-ink-muted">
                         @(Model.PublishedAt.Value.ToLocalTime().ToString("dd MMM yyyy"))
                     </span>
                 }
             </div>
 
             <!-- Title -->
-            <h3 class="line-clamp-3 text-[15px] font-semibold leading-tight text-slate-900 transition-colors group-hover:text-primary md:text-lg lg:text-xl">
+            <h3 class="line-clamp-3 text-[15px] font-semibold leading-tight text-ink transition-colors group-hover:text-primary md:text-lg lg:text-xl">
                 @Model.Title
             </h3>
 
             <!-- Summary -->
             @if (!string.IsNullOrWhiteSpace(Model.Summary))
             {
-                <p class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-slate-600 md:mt-2 md:text-[15px]">
+                <p class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-ink-mid md:mt-2 md:text-[15px]">
                     @Model.Summary
                 </p>
             }

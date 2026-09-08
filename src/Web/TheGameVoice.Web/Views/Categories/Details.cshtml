@@ -1,11 +1,11 @@
 ﻿@model TheGameVoice.Web.ViewModels.Categories.CategoryDetailsViewModel
 
-<div class="tgv-container py-12 space-y-20">
+<div class="tgv-container py-fluid-12 space-y-20">
 
     
     <!-- CATEGORY HERO -->
 
-    <section class="py-10">
+    <section class="py-fluid-10">
 
         <div class="max-w-4xl">
 
@@ -19,7 +19,7 @@
 
             </div>
 
-            <h1 class="tgv-display text-6xl lg:text-8xl">
+            <h1 class="tgv-display text-fluid-6xl lg:text-8xl">
 
                 @Model.Category.Name
 
@@ -37,7 +37,7 @@
 
                 <div>
 
-                    <div class="text-3xl font-black">
+                    <div class="text-fluid-3xl font-black">
 
                         @Model.Articles.Count
 
@@ -63,7 +63,7 @@
 
        
 
-        <div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+        <div class="mt-fluid-10 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
 
             @foreach (var article in Model.Articles)
             {

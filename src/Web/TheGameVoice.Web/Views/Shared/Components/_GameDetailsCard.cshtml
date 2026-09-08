@@ -25,7 +25,7 @@
     <div class="mx-auto max-w-4xl">
 
         <!-- CARD -->
-        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm md:rounded-2xl">
+        <div class="overflow-hidden rounded-xl border border-line bg-surface shadow-sm md:rounded-2xl">
 
             <!-- COVER IMAGE -->
             @if (Model.CoverImage != null)
@@ -46,7 +46,7 @@
                 </div>
 
                 <!-- TITLE -->
-                <h1 class="mb-3 text-2xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-3xl md:mb-4 md:text-4xl lg:text-5xl">
+                <h1 class="mb-3 text-2xl font-extrabold leading-[1.1] tracking-tight text-ink sm:text-3xl md:mb-4 md:text-4xl lg:text-5xl">
                     @Model.Name
                 </h1>
 
@@ -67,43 +67,43 @@
                 <!-- SUMMARY -->
                 @if (!string.IsNullOrWhiteSpace(Model.Summary))
                 {
-                    <p class="mb-4 text-sm leading-relaxed text-slate-600 md:mb-6 md:text-base">
+                    <p class="mb-4 text-sm leading-relaxed text-ink-mid md:mb-6 md:text-base">
                         @Model.Summary
                     </p>
                 }
 
                 <!-- DIVIDER -->
-                <div class="my-4 border-t border-slate-200 md:my-6"></div>
+                <div class="my-4 border-t border-line md:my-6"></div>
 
                 <!-- GAME INFO — 2-col grid on mobile to save vertical space -->
                 <div class="mb-4 grid grid-cols-2 gap-x-4 gap-y-3 md:mb-6 md:gap-y-4">
 
                     <!-- Release Date -->
                     <div>
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 md:text-xs">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-ink-faint md:text-xs">
                             Release
                         </div>
-                        <div class="mt-0.5 text-sm font-semibold text-slate-900 md:mt-1">
+                        <div class="mt-0.5 text-sm font-semibold text-ink md:mt-1">
                             @(Model.ReleaseDate?.ToString("dd MMM yyyy") ?? "TBA")
                         </div>
                     </div>
 
                     <!-- Developer -->
                     <div>
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 md:text-xs">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-ink-faint md:text-xs">
                             Developer
                         </div>
-                        <div class="mt-0.5 truncate text-sm font-semibold text-slate-900 md:mt-1" title="@(Model.Developer ?? "Unknown")">
+                        <div class="mt-0.5 truncate text-sm font-semibold text-ink md:mt-1" title="@(Model.Developer ?? "Unknown")">
                             @(string.IsNullOrWhiteSpace(Model.Developer) ? "Unknown" : Model.Developer)
                         </div>
                     </div>
 
                     <!-- Publisher -->
                     <div>
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 md:text-xs">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-ink-faint md:text-xs">
                             Publisher
                         </div>
-                        <div class="mt-0.5 truncate text-sm font-semibold text-slate-900 md:mt-1" title="@(Model.Publisher ?? "Unknown")">
+                        <div class="mt-0.5 truncate text-sm font-semibold text-ink md:mt-1" title="@(Model.Publisher ?? "Unknown")">
                             @(string.IsNullOrWhiteSpace(Model.Publisher) ? "Unknown" : Model.Publisher)
                         </div>
                     </div>
@@ -112,7 +112,7 @@
                     @if (!string.IsNullOrWhiteSpace(Model.OfficialWebsite))
                     {
                         <div>
-                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 md:text-xs">
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-ink-faint md:text-xs">
                                 Website
                             </div>
                             <a href="@Model.OfficialWebsite"
@@ -133,13 +133,13 @@
                 @if (platforms.Length > 0)
                 {
                     <div class="mb-4 md:mb-6">
-                        <div class="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 md:mb-2 md:text-xs">
+                        <div class="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-ink-faint md:mb-2 md:text-xs">
                             Platforms
                         </div>
                         <div class="flex flex-wrap gap-1.5 md:gap-2">
                             @foreach (var platform in platforms)
                             {
-                                <span class="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 md:rounded-lg md:px-3 md:py-1.5 md:text-sm">
+                                <span class="inline-flex items-center rounded-md border border-line bg-surface-muted px-2.5 py-1 text-xs font-semibold text-ink-soft md:rounded-lg md:px-3 md:py-1.5 md:text-sm">
                                     @platform.Trim()
                                 </span>
                             }
@@ -148,7 +148,7 @@
                 }
 
                 <!-- ACTION BUTTONS -->
-                <div class="flex flex-wrap gap-2 border-t border-slate-200 pt-4 md:gap-3 md:pt-6">
+                <div class="flex flex-wrap gap-2 border-t border-line pt-4 md:gap-3 md:pt-6">
                     <a asp-controller="Games"
                        asp-action="Details"
                        asp-route-slug="@Model.Slug"
@@ -164,7 +164,7 @@
                         <a href="@Model.OfficialWebsite"
                            target="_blank"
                            rel="noopener noreferrer"
-                           class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 transition hover:border-[#7c3aed] hover:text-[#7c3aed] sm:flex-none sm:px-5 sm:py-3 sm:text-sm md:rounded-xl">
+                           class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-line bg-surface px-4 py-2.5 text-xs font-bold text-ink-soft transition hover:border-[#7c3aed] hover:text-[#7c3aed] sm:flex-none sm:px-5 sm:py-3 sm:text-sm md:rounded-xl">
                             Wishlist
                         </a>
                     }

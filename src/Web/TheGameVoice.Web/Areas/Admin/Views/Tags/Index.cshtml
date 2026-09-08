@@ -17,7 +17,7 @@
     }
     <div class="flex items-center justify-between">
 
-        <h1 class="text-3xl font-bold">
+        <h1 class="text-fluid-3xl font-bold">
             Tags
         </h1>
 
@@ -28,11 +28,11 @@
 
     </div>
 
-    <div class="overflow-hidden rounded-2xl bg-white shadow-sm">
+    <div class="overflow-hidden rounded-2xl bg-surface shadow-sm">
 
         <table class="min-w-full">
 
-            <thead class="border-b bg-gray-50">
+            <thead class="border-b bg-surface-muted">
 
                 <tr>
 
@@ -60,13 +60,13 @@
 
                 @foreach (var tag in Model)
                 {
-                    <tr class="border-b hover:bg-slate-50">
+                    <tr class="border-b hover:bg-surface-muted">
 
                         <td class="px-6 py-4 font-medium">
                             @tag.Name
                         </td>
 
-                        <td class="px-6 py-4 text-gray-500">
+                        <td class="px-6 py-4 text-ink-muted">
                             @tag.Slug
                         </td>
 

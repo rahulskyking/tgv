@@ -1,22 +1,22 @@
 ﻿@model TheGameVoice.Web.ViewModels.Pages.ContactViewModel
 
-<div class="tgv-container py-16">
+<div class="tgv-container py-fluid-16">
 
     <!-- HERO -->
 
-    <div class="mx-auto mb-14 max-w-3xl text-center">
+    <div class="mx-auto mb-fluid-14 max-w-3xl text-center">
 
         <span class="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
             Contact TheGameVoice
         </span>
 
-        <h1 class="mt-6 text-5xl font-black tracking-tight text-slate-900">
+        <h1 class="mt-6 text-fluid-5xl font-black tracking-tight text-ink">
 
             We'd Love to Hear From You
 
         </h1>
 
-        <p class="mt-5 text-lg leading-8 text-slate-600">
+        <p class="mt-5 text-lg leading-8 text-ink-mid">
 
             Whether you have a news tip, business inquiry, feedback,
             correction request, or simply want to say hello,
@@ -35,13 +35,13 @@
         </div>
     }
 
-    <div class="grid gap-10 lg:grid-cols-3">
+    <div class="grid gap-fluid-10 lg:grid-cols-3">
 
         <!-- LEFT SIDE -->
 
         <div class="space-y-6">
 
-            <div class="rounded-3xl border border-default bg-white p-8 shadow-sm">
+            <div class="rounded-3xl border border-default bg-surface p-8 shadow-sm">
 @* 
                 <h2 class="text-xl font-bold">
                     Contact Information
@@ -51,7 +51,7 @@
 
                 @*     <div>
 
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-ink-muted">
                             Email
                         </p>
 
@@ -66,11 +66,11 @@
 
                     <div>
 
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-ink-muted">
                             Response Time
                         </p>
 
-                        <p class="mt-2 text-slate-700">
+                        <p class="mt-2 text-ink-soft">
                             Usually within 24–48 hours.
                         </p>
 
@@ -78,11 +78,11 @@
 
                     <div>
 
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-ink-muted">
                             Topics
                         </p>
 
-                        <ul class="mt-2 space-y-2 text-slate-700">
+                        <ul class="mt-2 space-y-2 text-ink-soft">
 
                             <li>• Editorial Feedback</li>
 
@@ -108,7 +108,7 @@
 
    @*      <div class="lg:col-span-2">
 
-            <div class="rounded-3xl border border-default bg-white p-10 shadow-sm">
+            <div class="rounded-3xl border border-default bg-surface p-fluid-10 shadow-sm">
 
                 <form asp-action="Contact"
                       method="post"

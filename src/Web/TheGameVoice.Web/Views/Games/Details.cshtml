@@ -1,11 +1,11 @@
 ﻿@model TheGameVoice.Web.ViewModels.Games.GameDetailsViewModel
 
-<div class="tgv-container py-12 space-y-20">
+<div class="tgv-container py-fluid-12 space-y-20">
 
 
     <!-- GAME HERO -->
 
-    <section class="overflow-hidden rounded-[32px] bg-white shadow-xl">
+    <section class="overflow-hidden rounded-[32px] bg-surface shadow-xl">
 
         @if (Model.Game.CoverImage != null)
         {
@@ -26,7 +26,7 @@
 
             </div>
 
-            <h1 class="tgv-display text-4xl color: var(--tgv-text); lg:text-6xl">
+            <h1 class="tgv-display text-fluid-4xl text-ink lg:text-6xl">
 
                 @Model.Game.Name
 
@@ -34,7 +34,7 @@
 
             @if (!string.IsNullOrWhiteSpace(Model.Game.Summary))
             {
-                <p class="mt-6 max-w-4xl text-lg leading-relaxed text-slate-600">
+                <p class="mt-6 max-w-4xl text-lg leading-relaxed text-ink-mid">
 
                     @Model.Game.Summary
 
@@ -89,7 +89,7 @@
     <section>
 
 
-        <div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+        <div class="mt-fluid-10 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
 
             @foreach (var item in Model.Game.ArticleGames)
             {

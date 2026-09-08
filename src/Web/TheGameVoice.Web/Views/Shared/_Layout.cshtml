@@ -52,24 +52,12 @@
     <meta property="og:type"
           content="website" />
 
+    @*  One compiled stylesheet: tailwind.config.js + wwwroot/css/app.css
+        → wwwroot/css/site.css  (npm run css:build) *@
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
-          
-    <link rel="stylesheet"
-          href="~/css/app.css"
-          asp-append-version="true" />
-    <link rel="stylesheet"
-          href="~/css/theme.css" />
-    <link rel="stylesheet"
-          href="~/css/theme-utilities.css" />
-    <link rel="stylesheet"
-          href="~/css/theme-responsive.css"
-          asp-append-version="true" />
-    @*  Dark theme layer — must be the LAST stylesheet. *@
-    <link rel="stylesheet"
-          href="~/css/theme-dark.css"
-          asp-append-version="true" />
+
     <link rel="alternate"
           type="application/rss+xml"
           title="TheGameVoice RSS Feed"
@@ -81,7 +69,7 @@
           rel="stylesheet">
 </head>
 
-<body class="bg-slate-50">
+<body class="bg-canvas">
 
     @await Component.InvokeAsync("Navigation")
 

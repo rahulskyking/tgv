@@ -49,13 +49,13 @@
     private static string StatusBarColor(ArticleStatus status)
         => status switch
         {
-            ArticleStatus.Draft => "bg-slate-400",
+            ArticleStatus.Draft => "bg-ink-faint",
             ArticleStatus.ReviewPending => "bg-amber-400",
             ArticleStatus.Scheduled => "bg-blue-500",
             ArticleStatus.Published => "bg-green-500",
             ArticleStatus.Rejected => "bg-red-400",
             ArticleStatus.Archived => "bg-gray-300",
-            _ => "bg-slate-400"
+            _ => "bg-ink-faint"
         };
 
     private static string BarWidth(double percentage)
@@ -95,13 +95,13 @@
     private static string StatusBadgeClass(ArticleStatus status)
         => status switch
         {
-            ArticleStatus.Draft => "bg-slate-100 text-slate-700",
+            ArticleStatus.Draft => "bg-surface-raised text-ink-soft",
             ArticleStatus.ReviewPending => "bg-amber-100 text-amber-800",
             ArticleStatus.Scheduled => "bg-blue-100 text-blue-800",
             ArticleStatus.Published => "bg-green-100 text-green-800",
             ArticleStatus.Rejected => "bg-red-100 text-red-800",
-            ArticleStatus.Archived => "bg-gray-200 text-gray-700",
-            _ => "bg-slate-100 text-slate-700"
+            ArticleStatus.Archived => "bg-line text-ink-soft",
+            _ => "bg-surface-raised text-ink-soft"
         };
 }
 
@@ -140,7 +140,7 @@
                asp-controller="Dashboard"
                asp-action="Index"
                asp-route-range="@Model.SelectedRange"
-               class="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-[#fa743e]">
+               class="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-ink-muted transition hover:text-[#fa743e]">
 
                 <i data-lucide="arrow-left" class="h-4 w-4"></i>
                 Back to dashboard
@@ -166,7 +166,7 @@
 
                     <div class="flex flex-wrap items-center gap-2">
 
-                        <h1 class="text-2xl font-bold text-slate-900">
+                        <h1 class="text-2xl font-bold text-ink">
                             @Model.AuthorName
                         </h1>
 
@@ -186,14 +186,14 @@
 
                         @foreach (var role in Model.Roles)
                         {
-                            <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+                            <span class="rounded-full bg-surface-raised px-2.5 py-0.5 text-xs font-medium text-ink-mid">
                                 @role
                             </span>
                         }
 
                     </div>
 
-                    <p class="mt-1 text-sm text-slate-500">
+                    <p class="mt-1 text-sm text-ink-muted">
 
                         @if (!string.IsNullOrWhiteSpace(Model.AuthorEmail))
                         {
@@ -212,7 +212,7 @@
 
                     @if (!string.IsNullOrWhiteSpace(Model.Bio))
                     {
-                        <p class="mt-2 max-w-2xl text-sm text-slate-500">
+                        <p class="mt-2 max-w-2xl text-sm text-ink-muted">
                             @Model.Bio
                         </p>
                     }
@@ -236,11 +236,11 @@
                 <div class="relative">
 
                     <i data-lucide="calendar"
-                       class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+                       class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint"></i>
 
                     <select name="range"
                             onchange="this.form.submit()"
-                            class="cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-8 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-200">
+                            class="cursor-pointer appearance-none rounded-xl border border-line bg-surface py-2.5 pl-9 pr-8 text-sm font-medium text-ink-soft shadow-sm transition hover:border-line-strong focus:outline-none focus:ring-2 focus:ring-orange-200">
 
                         <option value="Last7Days" selected="@(Model.SelectedRange == "Last7Days")">
                             Last 7 Days
@@ -257,7 +257,7 @@
                     </select>
 
                     <i data-lucide="chevron-down"
-                       class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+                       class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint"></i>
 
                 </div>
 
@@ -267,7 +267,7 @@
                asp-controller="Articles"
                asp-action="Index"
                asp-all-route-data="authorRoute"
-               class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">
+               class="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink-soft shadow-sm transition hover:border-line-strong hover:bg-surface-muted">
 
                 <i data-lucide="files" class="h-4 w-4"></i>
                 All articles
@@ -279,7 +279,7 @@
                asp-action="AuthorExport"
                asp-route-id="@Model.AuthorId"
                asp-route-range="@Model.SelectedRange"
-               class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">
+               class="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink-soft shadow-sm transition hover:border-line-strong hover:bg-surface-muted">
 
                 <i data-lucide="download" class="h-4 w-4"></i>
                 Export
@@ -300,49 +300,49 @@
     <!-- KPI Cards -->
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
 
             <div class="flex items-start justify-between gap-3">
 
                 <div class="min-w-0">
 
-                    <p class="truncate text-sm font-medium text-slate-500">
+                    <p class="truncate text-sm font-medium text-ink-muted">
                         Total Articles
                     </p>
 
-                    <p class="mt-2 text-3xl font-bold text-slate-900">
+                    <p class="mt-2 text-fluid-3xl font-bold text-ink">
                         @FormatNumber(Model.TotalArticles)
                     </p>
 
-                    <p class="mt-1 text-xs text-slate-400">
+                    <p class="mt-1 text-xs text-ink-faint">
                         +@FormatNumber(Model.CreatedInPeriod) in @Model.SelectedRangeLabel.ToLowerInvariant()
                     </p>
 
                 </div>
 
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100">
-                    <i data-lucide="file-text" class="h-5 w-5 text-slate-500"></i>
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-raised">
+                    <i data-lucide="file-text" class="h-5 w-5 text-ink-muted"></i>
                 </div>
 
             </div>
 
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
 
             <div class="flex items-start justify-between gap-3">
 
                 <div class="min-w-0">
 
-                    <p class="truncate text-sm font-medium text-slate-500">
+                    <p class="truncate text-sm font-medium text-ink-muted">
                         Published Articles
                     </p>
 
-                    <p class="mt-2 text-3xl font-bold text-green-600">
+                    <p class="mt-2 text-fluid-3xl font-bold text-green-600">
                         @FormatNumber(Model.PublishedArticles)
                     </p>
 
-                    <p class="mt-1 text-xs text-slate-400">
+                    <p class="mt-1 text-xs text-ink-faint">
                         @(Model.PublishedPercentage.ToString("0.0"))% of their output
                         · +@FormatNumber(Model.PublishedInPeriod) this period
                     </p>
@@ -357,21 +357,21 @@
 
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
 
             <div class="flex items-start justify-between gap-3">
 
                 <div class="min-w-0">
 
-                    <p class="truncate text-sm font-medium text-slate-500">
+                    <p class="truncate text-sm font-medium text-ink-muted">
                         Total Views
                     </p>
 
-                    <p class="mt-2 text-3xl font-bold text-slate-900">
+                    <p class="mt-2 text-fluid-3xl font-bold text-ink">
                         @FormatNumber(Model.TotalViews)
                     </p>
 
-                    <p class="mt-1 text-xs text-slate-400">
+                    <p class="mt-1 text-xs text-ink-faint">
                         @(Model.ViewSharePercentage.ToString("0.0"))% of all site views
                     </p>
 
@@ -385,21 +385,21 @@
 
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
 
             <div class="flex items-start justify-between gap-3">
 
                 <div class="min-w-0">
 
-                    <p class="truncate text-sm font-medium text-slate-500">
+                    <p class="truncate text-sm font-medium text-ink-muted">
                         Avg Views / Published
                     </p>
 
-                    <p class="mt-2 text-3xl font-bold text-slate-900">
+                    <p class="mt-2 text-fluid-3xl font-bold text-ink">
                         @FormatNumber((long)Model.AverageViewsPerPublishedArticle)
                     </p>
 
-                    <p class="mt-1 text-xs text-slate-400">
+                    <p class="mt-1 text-xs text-ink-faint">
                         @if (Model.RankByPublished.HasValue && Model.TotalAuthors > 1)
                         {
                             <span>Rank #@Model.RankByPublished of @Model.TotalAuthors by output</span>
@@ -425,15 +425,15 @@
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
 
         <!-- Workflow -->
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-5">
+        <div class="rounded-2xl border border-line bg-surface p-5 shadow-sm lg:col-span-5">
 
             <div class="mb-4 flex items-center justify-between">
 
-                <h2 class="text-base font-semibold text-slate-900">
+                <h2 class="text-base font-semibold text-ink">
                     Workflow Breakdown
                 </h2>
 
-                <span class="text-xs text-slate-400">
+                <span class="text-xs text-ink-faint">
                     Lifetime
                 </span>
 
@@ -461,17 +461,17 @@
                                asp-controller="Articles"
                                asp-action="Index"
                                asp-all-route-data="statusRoute"
-                               class="font-medium text-slate-600 hover:text-[#fa743e]">
+                               class="font-medium text-ink-mid hover:text-[#fa743e]">
                                 @StatusLabel(status.Status)
                             </a>
 
-                            <span class="font-semibold tabular-nums text-slate-800">
+                            <span class="font-semibold tabular-nums text-ink">
                                 @FormatNumber(status.Count)
                             </span>
 
                         </div>
 
-                        <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                        <div class="h-2 w-full overflow-hidden rounded-full bg-surface-raised">
 
                             <div class="h-full rounded-full @StatusBarColor(status.Status)"
                                  style="@BarWidth(width)"></div>
@@ -483,11 +483,11 @@
 
             </div>
 
-            <div class="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 text-sm">
+            <div class="mt-5 grid grid-cols-2 gap-3 border-t border-line-subtle pt-4 text-sm">
 
                 <div>
-                    <p class="text-xs text-slate-400">First published</p>
-                    <p class="mt-0.5 font-medium text-slate-700">
+                    <p class="text-xs text-ink-faint">First published</p>
+                    <p class="mt-0.5 font-medium text-ink-soft">
                         @(Model.FirstPublishedAtUtc.HasValue
                             ? ToIstDateLabel(Model.FirstPublishedAtUtc.Value)
                             : "—")
@@ -495,8 +495,8 @@
                 </div>
 
                 <div>
-                    <p class="text-xs text-slate-400">Last published</p>
-                    <p class="mt-0.5 font-medium text-slate-700">
+                    <p class="text-xs text-ink-faint">Last published</p>
+                    <p class="mt-0.5 font-medium text-ink-soft">
                         @(Model.LastPublishedAtUtc.HasValue
                             ? ToIstDateLabel(Model.LastPublishedAtUtc.Value)
                             : "—")
@@ -508,15 +508,15 @@
         </div>
 
         <!-- Publishing trend -->
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-7">
+        <div class="rounded-2xl border border-line bg-surface p-5 shadow-sm lg:col-span-7">
 
             <div class="mb-4 flex items-center justify-between">
 
-                <h2 class="text-base font-semibold text-slate-900">
+                <h2 class="text-base font-semibold text-ink">
                     Publishing Trend
                 </h2>
 
-                <span class="text-xs text-slate-400">
+                <span class="text-xs text-ink-faint">
                     @Model.SelectedRangeLabel · @FormatNumber(Model.PublishedInPeriod) published
                 </span>
 
@@ -538,7 +538,7 @@
                         <div class="group relative flex-1"
                              title="@tooltip">
 
-                            <div class="w-full rounded-t @(point.PublishedCount > 0 ? "bg-[#fa743e]" : "bg-slate-100")"
+                            <div class="w-full rounded-t @(point.PublishedCount > 0 ? "bg-[#fa743e]" : "bg-surface-raised")"
                                  style="@BarHeight(height)"></div>
 
                         </div>
@@ -546,7 +546,7 @@
 
                 </div>
 
-                <div class="mt-2 flex justify-between text-xs text-slate-400">
+                <div class="mt-2 flex justify-between text-xs text-ink-faint">
 
                     <span>
                         @(Model.PublishingTrend.First().Day.ToString("dd MMM"))
@@ -564,7 +564,7 @@
 
                     <i data-lucide="bar-chart-3" class="h-8 w-8 text-slate-300"></i>
 
-                    <p class="mt-2 text-sm text-slate-500">
+                    <p class="mt-2 text-sm text-ink-muted">
                         Nothing published in this period.
                     </p>
 
@@ -578,11 +578,11 @@
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
 
         <!-- Top articles by views -->
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-7">
+        <div class="rounded-2xl border border-line bg-surface p-5 shadow-sm lg:col-span-7">
 
             <div class="mb-4 flex items-center justify-between">
 
-                <h2 class="text-base font-semibold text-slate-900">
+                <h2 class="text-base font-semibold text-ink">
                     Top Articles by Views
                 </h2>
 
@@ -604,7 +604,7 @@
 
                         <thead>
 
-                            <tr class="border-b border-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
+                            <tr class="border-b border-line-subtle text-left text-xs font-semibold uppercase tracking-wide text-ink-faint">
 
                                 <th class="px-3 py-2.5">Article</th>
 
@@ -618,11 +618,11 @@
 
                         </thead>
 
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody class="divide-y divide-line-subtle">
 
                             @foreach (var article in Model.TopArticles)
                             {
-                                <tr class="hover:bg-slate-50">
+                                <tr class="hover:bg-surface-muted">
 
                                     <td class="max-w-[320px] px-3 py-3">
 
@@ -630,21 +630,21 @@
                                            asp-controller="Articles"
                                            asp-action="Edit"
                                            asp-route-id="@article.Id"
-                                           class="line-clamp-1 text-sm font-medium text-slate-800 hover:text-[#fa743e]">
+                                           class="line-clamp-1 text-sm font-medium text-ink hover:text-[#fa743e]">
                                             @article.Title
                                         </a>
 
                                     </td>
 
-                                    <td class="whitespace-nowrap px-3 py-3 text-sm text-slate-500">
+                                    <td class="whitespace-nowrap px-3 py-3 text-sm text-ink-muted">
                                         @article.CategoryName
                                     </td>
 
-                                    <td class="whitespace-nowrap px-3 py-3 text-right text-sm font-semibold tabular-nums text-slate-800">
+                                    <td class="whitespace-nowrap px-3 py-3 text-right text-sm font-semibold tabular-nums text-ink">
                                         @FormatNumber(article.ViewCount)
                                     </td>
 
-                                    <td class="whitespace-nowrap px-3 py-3 text-right text-sm text-slate-500">
+                                    <td class="whitespace-nowrap px-3 py-3 text-right text-sm text-ink-muted">
                                         @(article.PublishedAtUtc.HasValue
                                             ? ToIstDateLabel(article.PublishedAtUtc.Value)
                                             : "—")
@@ -665,7 +665,7 @@
 
                     <i data-lucide="flame" class="mx-auto h-8 w-8 text-slate-300"></i>
 
-                    <p class="mt-2 text-sm text-slate-500">
+                    <p class="mt-2 text-sm text-ink-muted">
                         No published articles yet.
                     </p>
 
@@ -675,15 +675,15 @@
         </div>
 
         <!-- Category breakdown -->
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-5">
+        <div class="rounded-2xl border border-line bg-surface p-5 shadow-sm lg:col-span-5">
 
             <div class="mb-4 flex items-center justify-between">
 
-                <h2 class="text-base font-semibold text-slate-900">
+                <h2 class="text-base font-semibold text-ink">
                     Category Focus
                 </h2>
 
-                <span class="text-xs text-slate-400">
+                <span class="text-xs text-ink-faint">
                     Share of articles
                 </span>
 
@@ -699,18 +699,18 @@
 
                             <div class="mb-1.5 flex items-center justify-between text-sm">
 
-                                <span class="truncate font-medium text-slate-600">
+                                <span class="truncate font-medium text-ink-mid">
                                     @(category.CategoryName ?? "Uncategorised")
                                 </span>
 
-                                <span class="ml-3 shrink-0 tabular-nums text-slate-500">
+                                <span class="ml-3 shrink-0 tabular-nums text-ink-muted">
                                     @FormatNumber(category.TotalArticles) ·
                                     @FormatCompact(category.TotalViews) views
                                 </span>
 
                             </div>
 
-                            <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                            <div class="h-2 w-full overflow-hidden rounded-full bg-surface-raised">
 
                                 <div class="h-full rounded-full bg-[#fa743e]"
                                      style="@BarWidth(category.SharePercentage)"></div>
@@ -728,7 +728,7 @@
 
                     <i data-lucide="layers" class="mx-auto h-8 w-8 text-slate-300"></i>
 
-                    <p class="mt-2 text-sm text-slate-500">
+                    <p class="mt-2 text-sm text-ink-muted">
                         No articles yet.
                     </p>
 
@@ -737,9 +737,9 @@
 
             @if (Model.UpcomingPublications.Any())
             {
-                <div class="mt-6 border-t border-slate-100 pt-4">
+                <div class="mt-6 border-t border-line-subtle pt-4">
 
-                    <h3 class="mb-3 text-sm font-semibold text-slate-700">
+                    <h3 class="mb-3 text-sm font-semibold text-ink-soft">
                         Upcoming Publications
                     </h3>
 
@@ -753,11 +753,11 @@
                                    asp-controller="Articles"
                                    asp-action="Edit"
                                    asp-route-id="@upcoming.Id"
-                                   class="line-clamp-1 text-sm text-slate-700 hover:text-[#fa743e]">
+                                   class="line-clamp-1 text-sm text-ink-soft hover:text-[#fa743e]">
                                     @upcoming.Title
                                 </a>
 
-                                <span class="shrink-0 whitespace-nowrap text-xs text-slate-400">
+                                <span class="shrink-0 whitespace-nowrap text-xs text-ink-faint">
                                     @ToIstLabel(upcoming.ScheduledPublishAtUtc)
                                 </span>
 
@@ -774,11 +774,11 @@
     </div>
 
     <!-- Recent activity -->
-    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
 
         <div class="mb-4 flex items-center justify-between">
 
-            <h2 class="text-base font-semibold text-slate-900">
+            <h2 class="text-base font-semibold text-ink">
                 Recently Updated Articles
             </h2>
 
@@ -800,7 +800,7 @@
 
                     <thead>
 
-                        <tr class="border-b border-slate-100 text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
+                        <tr class="border-b border-line-subtle text-left text-xs font-semibold uppercase tracking-wide text-ink-faint">
 
                             <th class="px-3 py-2.5">Article</th>
 
@@ -818,11 +818,11 @@
 
                     </thead>
 
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-line-subtle">
 
                         @foreach (var article in Model.RecentArticles)
                         {
-                            <tr class="hover:bg-slate-50">
+                            <tr class="hover:bg-surface-muted">
 
                                 <td class="max-w-[320px] px-3 py-3">
 
@@ -830,7 +830,7 @@
                                        asp-controller="Articles"
                                        asp-action="Edit"
                                        asp-route-id="@article.Id"
-                                       class="line-clamp-1 text-sm font-medium text-slate-800 hover:text-[#fa743e]">
+                                       class="line-clamp-1 text-sm font-medium text-ink hover:text-[#fa743e]">
                                         @article.Title
                                     </a>
 
@@ -844,19 +844,19 @@
 
                                 </td>
 
-                                <td class="whitespace-nowrap px-3 py-3 text-sm text-slate-500">
+                                <td class="whitespace-nowrap px-3 py-3 text-sm text-ink-muted">
                                     @article.CategoryName
                                 </td>
 
-                                <td class="whitespace-nowrap px-3 py-3 text-right text-sm tabular-nums text-slate-700">
+                                <td class="whitespace-nowrap px-3 py-3 text-right text-sm tabular-nums text-ink-soft">
                                     @FormatNumber(article.ViewCount)
                                 </td>
 
-                                <td class="whitespace-nowrap px-3 py-3 text-right text-sm text-slate-500">
+                                <td class="whitespace-nowrap px-3 py-3 text-right text-sm text-ink-muted">
                                     @ToIstDateLabel(article.CreatedAtUtc)
                                 </td>
 
-                                <td class="whitespace-nowrap px-3 py-3 text-right text-sm text-slate-500">
+                                <td class="whitespace-nowrap px-3 py-3 text-right text-sm text-ink-muted">
                                     @(article.PublishedAtUtc.HasValue
                                         ? ToIstDateLabel(article.PublishedAtUtc.Value)
                                         : "—")
@@ -877,7 +877,7 @@
 
                 <i data-lucide="file-text" class="mx-auto h-8 w-8 text-slate-300"></i>
 
-                <p class="mt-2 text-sm text-slate-500">
+                <p class="mt-2 text-sm text-ink-muted">
                     This author has not created any articles yet.
                 </p>
 
@@ -886,7 +886,7 @@
 
     </div>
 
-    <p class="text-right text-xs text-slate-400">
+    <p class="text-right text-xs text-ink-faint">
         Generated @ToIstLabel(Model.GeneratedAtUtc) IST
     </p>
 

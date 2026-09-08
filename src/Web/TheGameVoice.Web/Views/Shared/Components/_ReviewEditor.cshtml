@@ -1,15 +1,15 @@
 ﻿@model TheGameVoice.Web.Areas.Admin.ViewModels.Articles.ArticleFormViewModel
 
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+<div class="overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
 
     <!-- Header -->
-    <div class="border-b border-slate-200 bg-slate-50/50 px-6 py-5 sm:px-8">
+    <div class="border-b border-line bg-surface-muted/50 px-6 py-5 sm:px-8">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-lg font-semibold text-slate-900">
+                <h2 class="text-lg font-semibold text-ink">
                     Review Configuration
                 </h2>
-                <p class="mt-1 text-sm text-slate-500">
+                <p class="mt-1 text-sm text-ink-muted">
                     Enable to add a review score, verdict, and pros/cons list.
                 </p>
             </div>
@@ -17,7 +17,7 @@
             <!-- Modern Toggle Switch -->
             <label class="relative inline-flex cursor-pointer items-center">
                 <input asp-for="IsReview" type="checkbox" id="is-review-checkbox" class="peer sr-only" />
-                <div class="h-6 w-11 rounded-full bg-slate-200 transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-slate-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#7c3aed] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#7c3aed]/20"></div>
+                <div class="h-6 w-11 rounded-full bg-line transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-line-strong after:bg-surface after:transition-all after:content-[''] peer-checked:bg-[#7c3aed] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#7c3aed]/20"></div>
             </label>
         </div>
     </div>
@@ -30,13 +30,13 @@
             <!-- Review Score -->
             <div>
                 <div class="mb-1.5 flex items-center gap-2">
-                    <label asp-for="ReviewScore" class="text-sm font-semibold text-slate-700">
+                    <label asp-for="ReviewScore" class="text-sm font-semibold text-ink-soft">
                         Review Score
                     </label>
 
                     <button type="button"
                             id="review-score-info-btn"
-                            class="flex h-5 w-5 items-center justify-center rounded-full border border-slate-300 text-xs font-bold text-slate-500 transition hover:border-primary hover:text-primary">
+                            class="flex h-5 w-5 items-center justify-center rounded-full border border-line-strong text-xs font-bold text-ink-muted transition hover:border-primary hover:text-primary">
                         i
                     </button>
                 </div>
@@ -49,10 +49,10 @@
                            min="1"
                            max="10"
                            placeholder="e.g. 8.5"
-                           class="block w-full rounded-lg border-0 py-2.5 pl-4 pr-12 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-[#7c3aed] sm:text-sm sm:leading-6" />
+                           class="block w-full rounded-lg border-0 py-2.5 pl-4 pr-12 text-ink shadow-sm ring-1 ring-inset ring-line-strong placeholder:text-ink-faint focus:ring-2 focus:ring-inset focus:ring-[#7c3aed] sm:text-sm sm:leading-6" />
 
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-                        <span class="text-slate-400 sm:text-sm font-medium">/ 10</span>
+                        <span class="text-ink-faint sm:text-sm font-medium">/ 10</span>
                     </div>
                 </div>
 
@@ -61,12 +61,12 @@
 
             <!-- Verdict -->
             <div>
-                <label asp-for="ReviewVerdict" class="mb-1.5 block text-sm font-semibold text-slate-700">
+                <label asp-for="ReviewVerdict" class="mb-1.5 block text-sm font-semibold text-ink-soft">
                     Verdict
                 </label>
 
-                <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <div class="rounded-xl border border-line bg-surface-muted p-4">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-ink-muted">
                         Review Verdict
                     </p>
 
@@ -82,11 +82,11 @@
         <!-- Summary -->
         <div>
             <div class="mb-1.5 flex items-end justify-between">
-                <label asp-for="ReviewSummary" class="block text-sm font-semibold text-slate-700">
+                <label asp-for="ReviewSummary" class="block text-sm font-semibold text-ink-soft">
                     Review Summary
                 </label>
 
-                <span class="text-xs font-medium text-slate-400" id="summary-counter">
+                <span class="text-xs font-medium text-ink-faint" id="summary-counter">
                     0 / 500
                 </span>
             </div>
@@ -96,7 +96,7 @@
                       rows="4"
                       maxlength="500"
                       placeholder="Briefly summarize the final thoughts..."
-                      class="block w-full rounded-lg border-0 px-4 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-[#7c3aed] sm:text-sm sm:leading-6"></textarea>
+                      class="block w-full rounded-lg border-0 px-4 py-2.5 text-ink shadow-sm ring-1 ring-inset ring-line-strong placeholder:text-ink-faint focus:ring-2 focus:ring-inset focus:ring-[#7c3aed] sm:text-sm sm:leading-6"></textarea>
 
             <span asp-validation-for="ReviewSummary" class="mt-1.5 flex text-xs font-medium text-red-500"></span>
         </div>
@@ -105,8 +105,8 @@
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
 
             <!-- Pros -->
-            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-                <div class="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
+            <div class="rounded-xl border border-line bg-surface-muted p-5">
+                <div class="mb-4 flex items-center justify-between border-b border-line pb-3">
                     <div class="flex items-center gap-2">
                         <div class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
@@ -114,12 +114,12 @@
                             </svg>
                         </div>
 
-                        <h3 class="text-sm font-bold text-slate-800">The Good</h3>
+                        <h3 class="text-sm font-bold text-ink">The Good</h3>
                     </div>
 
                     <button type="button"
                             id="add-good-point"
-                            class="inline-flex items-center gap-1 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm ring-1 ring-inset ring-slate-300 transition-colors hover:bg-slate-50 hover:text-emerald-600">
+                            class="inline-flex items-center gap-1 rounded-lg bg-surface px-3 py-1.5 text-xs font-semibold text-ink-mid shadow-sm ring-1 ring-inset ring-line-strong transition-colors hover:bg-surface-muted hover:text-emerald-600">
                         Add Pro
                     </button>
                 </div>
@@ -130,10 +130,10 @@
                         <div class="list-item-row flex items-center gap-2">
                             <input asp-for="GoodReviewPoints[i]"
                                    placeholder="e.g. Stunning graphics"
-                                   class="block w-full rounded-lg border-0 px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm" />
+                                   class="block w-full rounded-lg border-0 px-3 py-2 text-ink shadow-sm ring-1 ring-inset ring-line-strong focus:ring-2 focus:ring-inset focus:ring-emerald-500 sm:text-sm" />
 
                             <button type="button"
-                                    class="remove-row flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                                    class="remove-row flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink-faint transition-colors hover:bg-red-50 hover:text-red-500"
                                     data-list="good">
                                 <svg class="pointer-events-none h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -145,8 +145,8 @@
             </div>
 
             <!-- Cons -->
-            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-                <div class="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
+            <div class="rounded-xl border border-line bg-surface-muted p-5">
+                <div class="mb-4 flex items-center justify-between border-b border-line pb-3">
                     <div class="flex items-center gap-2">
                         <div class="flex h-6 w-6 items-center justify-center rounded-full bg-red-100 text-red-600">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
@@ -154,12 +154,12 @@
                             </svg>
                         </div>
 
-                        <h3 class="text-sm font-bold text-slate-800">The Bad</h3>
+                        <h3 class="text-sm font-bold text-ink">The Bad</h3>
                     </div>
 
                     <button type="button"
                             id="add-bad-point"
-                            class="inline-flex items-center gap-1 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm ring-1 ring-inset ring-slate-300 transition-colors hover:bg-slate-50 hover:text-red-600">
+                            class="inline-flex items-center gap-1 rounded-lg bg-surface px-3 py-1.5 text-xs font-semibold text-ink-mid shadow-sm ring-1 ring-inset ring-line-strong transition-colors hover:bg-surface-muted hover:text-red-600">
                         Add Con
                     </button>
                 </div>
@@ -170,10 +170,10 @@
                         <div class="list-item-row flex items-center gap-2">
                             <input asp-for="BadReviewPoints[i]"
                                    placeholder="e.g. Frame rate drops"
-                                   class="block w-full rounded-lg border-0 px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-red-500 sm:text-sm" />
+                                   class="block w-full rounded-lg border-0 px-3 py-2 text-ink shadow-sm ring-1 ring-inset ring-line-strong focus:ring-2 focus:ring-inset focus:ring-red-500 sm:text-sm" />
 
                             <button type="button"
-                                    class="remove-row flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                                    class="remove-row flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink-faint transition-colors hover:bg-red-50 hover:text-red-500"
                                     data-list="bad">
                                 <svg class="pointer-events-none h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -191,15 +191,15 @@
 <div id="review-score-modal"
      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
 
-    <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
-        <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+    <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-surface shadow-2xl">
+        <div class="flex items-center justify-between border-b border-line px-6 py-5">
             <h2 class="text-xl font-bold">
                 Review Score Guide
             </h2>
 
             <button type="button"
                     id="close-review-score-modal"
-                    class="text-3xl text-slate-400 hover:text-red-500">
+                    class="text-fluid-3xl text-ink-faint hover:text-red-500">
                 ×
             </button>
         </div>
@@ -223,7 +223,7 @@
 
             @foreach (var item in scores)
             {
-                <div class="flex items-center gap-4 rounded-xl border border-slate-200 p-4">
+                <div class="flex items-center gap-4 rounded-xl border border-line p-4">
                     <div class="@item.Color flex h-12 w-12 items-center justify-center rounded-xl font-bold text-white">
                         @item.Score
                     </div>
@@ -233,7 +233,7 @@
                             @item.Title
                         </div>
 
-                        <div class="text-sm text-slate-600">
+                        <div class="text-sm text-ink-mid">
                             @item.Text
                         </div>
                     </div>
@@ -303,10 +303,10 @@
                     <input name="${listPrefix}[${index}]"
                            id="${listPrefix}_${index}_"
                            placeholder="${placeholder}"
-                           class="block w-full rounded-lg border-0 px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-${focusColor}-500 sm:text-sm" />
+                           class="block w-full rounded-lg border-0 px-3 py-2 text-ink shadow-sm ring-1 ring-inset ring-line-strong focus:ring-2 focus:ring-inset focus:ring-${focusColor}-500 sm:text-sm" />
 
                     <button type="button"
-                            class="remove-row flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                            class="remove-row flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink-faint transition-colors hover:bg-red-50 hover:text-red-500"
                             data-list="${dataListType}">
                         <svg class="pointer-events-none h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />

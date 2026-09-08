@@ -16,17 +16,17 @@
     @* TRENDING *@
     @if (Model.RelatedArticles.Any())
     {
-        <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section class="rounded-3xl border border-line bg-surface p-6 shadow-sm">
 
             <div class="mb-6 flex items-center gap-4">
 
-                <h3 class="text-xl font-bold tracking-tight text-slate-900">
+                <h3 class="text-xl font-bold tracking-tight text-ink">
 
                     Trending Now
 
                 </h3>
 
-                <div class="h-px flex-1 bg-slate-200"></div>
+                <div class="h-px flex-1 bg-line"></div>
 
             </div>
 
@@ -46,17 +46,17 @@
     @* TOPICS *@
     @if (Model.Article.ArticleTags.Any())
     {
-        <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section class="rounded-3xl border border-line bg-surface p-6 shadow-sm">
 
             <div class="mb-6 flex items-center gap-4">
 
-                <h3 class="text-xl font-bold tracking-tight text-slate-900">
+                <h3 class="text-xl font-bold tracking-tight text-ink">
 
                     Topics
 
                 </h3>
 
-                <div class="h-px flex-1 bg-slate-200"></div>
+                <div class="h-px flex-1 bg-line"></div>
 
             </div>
 
@@ -67,7 +67,7 @@
                     <a asp-controller="Tags"
                        asp-action="Details"
                        asp-route-slug="@tag.Tag.Slug"
-                       class="rounded-full border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-primary hover:text-primary">
+                       class="rounded-full border border-line px-3 py-2 text-sm font-medium text-ink-soft transition hover:border-primary hover:text-primary">
 
                         @tag.Tag.Name
 
@@ -81,13 +81,13 @@
 
     @* FOLLOW *@
     @* FOLLOW *@
-    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section class="rounded-3xl border border-line bg-surface p-6 shadow-sm">
         <div class="mb-6 flex items-center gap-4">
-            <h3 class="text-xl font-bold tracking-tight text-slate-900">
+            <h3 class="text-xl font-bold tracking-tight text-ink">
                 Follow TheGameVoice
             </h3>
 
-            <div class="h-px flex-1 bg-slate-200"></div>
+            <div class="h-px flex-1 bg-line"></div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -97,8 +97,8 @@
                target="_blank"
                rel="noopener noreferrer"
                aria-label="Follow TheGameVoice on YouTube"
-               class="group inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-red-500 hover:bg-red-50 hover:text-red-600 hover:shadow-md">
-                <svg class="h-5 w-5 text-slate-500 transition-colors duration-200 group-hover:text-red-600"
+               class="group inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-center text-sm font-semibold text-ink-soft shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-red-500 hover:bg-red-50 hover:text-red-600 hover:shadow-md">
+                <svg class="h-5 w-5 text-ink-muted transition-colors duration-200 group-hover:text-red-600"
                      viewBox="0 0 24 24"
                      fill="currentColor"
                      aria-hidden="true">
@@ -112,8 +112,8 @@
                target="_blank"
                rel="noopener noreferrer"
                aria-label="Follow TheGameVoice on Instagram"
-               class="group inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-pink-500 hover:bg-pink-50 hover:text-pink-600 hover:shadow-md">
-                <svg class="h-5 w-5 text-slate-500 transition-colors duration-200 group-hover:text-pink-600"
+               class="group inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-center text-sm font-semibold text-ink-soft shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-pink-500 hover:bg-pink-50 hover:text-pink-600 hover:shadow-md">
+                <svg class="h-5 w-5 text-ink-muted transition-colors duration-200 group-hover:text-pink-600"
                      viewBox="0 0 24 24"
                      fill="currentColor"
                      aria-hidden="true">
@@ -127,8 +127,8 @@
                target="_blank"
                rel="noopener noreferrer"
                aria-label="Follow TheGameVoice on X"
-               class="group inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-900 hover:bg-slate-900 hover:text-white hover:shadow-md">
-                <svg class="h-5 w-5 text-slate-500 transition-colors duration-200 group-hover:text-white"
+               class="group inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-center text-sm font-semibold text-ink-soft shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-900 hover:bg-slate-900 hover:text-white hover:shadow-md">
+                <svg class="h-5 w-5 text-ink-muted transition-colors duration-200 group-hover:text-white"
                      viewBox="0 0 24 24"
                      fill="currentColor"
                      aria-hidden="true">
@@ -142,8 +142,8 @@
                target="_blank"
                rel="noopener noreferrer"
                aria-label="Follow TheGameVoice on LinkedIn"
-               class="group inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md">
-                <svg class="h-5 w-5 text-slate-500 transition-colors duration-200 group-hover:text-blue-700"
+               class="group inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-center text-sm font-semibold text-ink-soft shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md">
+                <svg class="h-5 w-5 text-ink-muted transition-colors duration-200 group-hover:text-blue-700"
                      viewBox="0 0 24 24"
                      fill="currentColor"
                      aria-hidden="true">

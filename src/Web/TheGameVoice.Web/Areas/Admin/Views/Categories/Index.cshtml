@@ -17,11 +17,11 @@
     <div class="flex items-center justify-between">
 
         <div>
-            <h1 class="text-3xl font-bold text-slate-900">
+            <h1 class="text-fluid-3xl font-bold text-ink">
                 Categories
             </h1>
 
-            <p class="mt-1 text-sm text-slate-500">
+            <p class="mt-1 text-sm text-ink-muted">
                 Drag and drop categories to control their order across the website.
             </p>
         </div>
@@ -46,28 +46,28 @@
 
     </div>
 
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="rounded-2xl border border-line bg-surface shadow-sm">
 
         <ul id="categoryList">
 
             @foreach (var category in Model)
             {
                 <li data-id="@category.Id"
-                    class="flex cursor-move items-center justify-between border-b border-slate-100 px-6 py-5 transition hover:bg-violet-50">
+                    class="flex cursor-move items-center justify-between border-b border-line-subtle px-6 py-5 transition hover:bg-violet-50">
 
                     <div class="flex items-center gap-4">
 
-                        <div class="text-2xl text-slate-400">
+                        <div class="text-2xl text-ink-faint">
                             ☰
                         </div>
 
                         <div>
 
-                            <div class="font-semibold text-slate-900">
+                            <div class="font-semibold text-ink">
                                 @category.Name
                             </div>
 
-                            <div class="text-sm text-slate-500">
+                            <div class="text-sm text-ink-muted">
                                 @category.Slug
                             </div>
 
@@ -88,7 +88,7 @@
 
                             <select name="segment"
                                     onchange="this.form.submit()"
-                                    class="rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                                    class="rounded-lg border border-line px-3 py-2 text-sm">
 
                                 <option value="@((int)GameSegment.PcConsole)"
                                         selected="@(category.Segment == GameSegment.PcConsole)">
@@ -109,7 +109,7 @@
 
                         </form>
 
-                        <div class="text-sm text-slate-400">
+                        <div class="text-sm text-ink-faint">
 
                             @category.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
 

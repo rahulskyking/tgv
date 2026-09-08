@@ -1,10 +1,10 @@
 ﻿@model TheGameVoice.Web.ViewModels.Authors.AuthorDetailsViewModel
 
-<div class="tgv-container py-12">
+<div class="tgv-container py-fluid-12">
 
     <div class="mx-auto max-w-6xl">
 
-        <div class="rounded-3xl border bg-white p-8 shadow-sm">
+        <div class="rounded-3xl border bg-surface p-8 shadow-sm">
 
             <div class="flex flex-col gap-8 md:flex-row md:items-center">
 
@@ -18,7 +18,7 @@
 
                 <div>
 
-                    <h1 class="text-4xl font-bold">
+                    <h1 class="text-fluid-4xl font-bold">
 
                         @Model.FullName
 
@@ -27,7 +27,7 @@
                     @if (!string.IsNullOrWhiteSpace(
                                         Model.Bio))
                     {
-                        <p class="mt-4 max-w-3xl text-lg text-slate-600">
+                        <p class="mt-4 max-w-3xl text-lg text-ink-mid">
 
                             @Model.Bio
 
@@ -77,9 +77,9 @@
 
         </div>
 
-        <div class="mt-16">
+        <div class="mt-fluid-16">
 
-            <h2 class="mb-8 text-3xl font-bold">
+            <h2 class="mb-8 text-fluid-3xl font-bold">
 
                 Latest Articles
 
