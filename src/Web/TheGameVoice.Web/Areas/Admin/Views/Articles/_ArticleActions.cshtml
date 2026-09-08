@@ -105,6 +105,10 @@
             @Html.AntiForgeryToken()
 
             <button type="submit"
+                    data-confirm="It goes live on the public site immediately."
+                    data-confirm-title="Publish this article?"
+                    data-confirm-action="Publish"
+                    data-confirm-tone="primary"
                     class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-ink-soft transition-all hover:bg-green-50">
 
                 <i data-lucide="rocket"
@@ -142,6 +146,10 @@
             @Html.AntiForgeryToken()
 
             <button type="submit"
+                    data-confirm="The author will have to fix it and submit again."
+                    data-confirm-title="Reject this article?"
+                    data-confirm-action="Reject"
+                    data-confirm-tone="danger"
                     class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-red-600 transition-all hover:bg-red-50">
 
                 <i data-lucide="circle-x"
@@ -206,6 +214,10 @@
             @Html.AntiForgeryToken()
 
             <button type="submit"
+                    data-confirm="It goes live on the public site immediately."
+                    data-confirm-title="Publish this article?"
+                    data-confirm-action="Publish"
+                    data-confirm-tone="primary"
                     class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-ink-soft transition-all hover:bg-green-50">
 
                 <i data-lucide="rocket"
@@ -244,6 +256,10 @@
             @Html.AntiForgeryToken()
 
             <button type="submit"
+                    data-confirm="The article stays a draft instead of publishing automatically."
+                    data-confirm-title="Cancel the schedule?"
+                    data-confirm-action="Cancel schedule"
+                    data-confirm-tone="danger"
                     class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-red-600 transition-all hover:bg-red-50">
 
                 <i data-lucide="calendar-x-2"
@@ -269,6 +285,10 @@
             @Html.AntiForgeryToken()
 
             <button type="submit"
+                    data-confirm="It disappears from the public site. You can restore it later."
+                    data-confirm-title="Archive this article?"
+                    data-confirm-action="Archive"
+                    data-confirm-tone="danger"
                     class="flex w-full items-center gap-3 px-5 py-3.5 text-sm font-medium text-ink-soft transition-all hover:bg-surface-muted">
 
                 <i data-lucide="archive"

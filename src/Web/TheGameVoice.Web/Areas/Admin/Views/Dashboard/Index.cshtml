@@ -242,6 +242,146 @@
     else
     {
 
+    @*  NEEDS ATTENTION ------------------------------------------------
+        The dashboard used to open with a wall of totals. This band is the
+        opposite: only things that need a human, each one a link straight to
+        the filtered list. It hides itself completely when the queue is clean.
+    *@
+    @{
+        var health = Model.ScheduleHealth;
+
+        var attention = new List<(string Key, int Count, string Label, string Hint, string Icon, string Tone, ArticleStatus Status)>();
+
+        if (health.OverdueCount > 0)
+        {
+            attention.Add(("overdue", health.OverdueCount, "Overdue",
+                "Scheduled time has passed", "alarm-clock", "danger", ArticleStatus.Scheduled));
+        }
+
+        if (Model.Kpis.PendingReviewArticles > 0)
+        {
+            attention.Add(("review", Model.Kpis.PendingReviewArticles, "Waiting for review",
+                "Sitting in the editor queue", "inbox", "warning", ArticleStatus.ReviewPending));
+        }
+
+        if (Model.Kpis.RejectedArticles > 0)
+        {
+            attention.Add(("rejected", Model.Kpis.RejectedArticles, "Sent back",
+                "Rejected, needs a rewrite", "circle-x", "danger", ArticleStatus.Rejected));
+        }
+
+        if (health.DueTodayCount > 0)
+        {
+            attention.Add(("today", health.DueTodayCount, "Going live today",
+                "Publishes automatically", "calendar-clock", "info", ArticleStatus.Scheduled));
+        }
+
+        if (Model.Kpis.DraftArticles > 0)
+        {
+            attention.Add(("drafts", Model.Kpis.DraftArticles, "Unfinished drafts",
+                "Never submitted", "pencil-line", "muted", ArticleStatus.Draft));
+        }
+
+        string ToneCard(string tone) => tone switch
+        {
+            "danger" => "border-red-200 bg-red-50 hover:border-red-300",
+            "warning" => "border-amber-200 bg-amber-50 hover:border-amber-300",
+            "info" => "border-blue-200 bg-blue-50 hover:border-blue-300",
+            _ => "border-line bg-surface-raised hover:border-line-strong"
+        };
+
+        string ToneText(string tone) => tone switch
+        {
+            "danger" => "text-red-700",
+            "warning" => "text-amber-700",
+            "info" => "text-blue-700",
+            _ => "text-ink"
+        };
+    }
+
+    <section class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+
+            <h2 class="inline-flex items-center gap-2 text-sm font-semibold text-ink">
+                <i data-lucide="bell-ring" class="h-4 w-4 text-[#fa743e]"></i>
+                Needs your attention
+            </h2>
+
+            @if (health.NextScheduledAtUtc.HasValue)
+            {
+                <span class="inline-flex min-w-0 items-center gap-2 text-xs text-ink-muted">
+                    <i data-lucide="calendar-clock" class="h-3.5 w-3.5 shrink-0"></i>
+                    Next up
+                    <strong class="truncate font-semibold text-ink">@health.NextScheduledTitle</strong>
+                    <span class="shrink-0">@DayLabel(health.NextScheduledAtUtc.Value), @TimeLabel(health.NextScheduledAtUtc.Value)</span>
+                </span>
+            }
+
+        </div>
+
+        @if (attention.Any())
+        {
+            <div class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-5">
+
+                @foreach (var item in attention)
+                {
+                    var route = new Dictionary<string, string>
+                    {
+                        ["Filter.Status"] = ((int)item.Status).ToString()
+                    };
+
+                    <a asp-area="Admin"
+                       asp-controller="Articles"
+                       asp-action="Index"
+                       asp-all-route-data="route"
+                       class="group flex flex-col rounded-xl border p-4 transition @ToneCard(item.Tone)">
+
+                        <span class="flex items-center justify-between gap-2">
+
+                            <span class="text-2xl font-bold @ToneText(item.Tone)">@item.Count</span>
+
+                            <i data-lucide="@item.Icon" class="h-4 w-4 @ToneText(item.Tone) opacity-70"></i>
+
+                        </span>
+
+                        <span class="mt-1 text-sm font-semibold @ToneText(item.Tone)">@item.Label</span>
+
+                        <span class="mt-0.5 text-xs text-ink-muted">@item.Hint</span>
+
+                        <span class="mt-3 inline-flex items-center gap-1 text-xs font-semibold @ToneText(item.Tone) opacity-0 transition group-hover:opacity-100">
+                            Open list
+                            <i data-lucide="arrow-right" class="h-3 w-3"></i>
+                        </span>
+
+                    </a>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="mt-4 flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-4">
+
+                <i data-lucide="circle-check" class="h-5 w-5 text-green-600"></i>
+
+                <div>
+
+                    <p class="text-sm font-semibold text-green-800">
+                        Queue is clear
+                    </p>
+
+                    <p class="text-xs text-green-700">
+                        Nothing waiting for review, nothing overdue, no open drafts.
+                    </p>
+
+                </div>
+
+            </div>
+        }
+
+    </section>
+
     <!-- Quick Actions -->
     <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
 

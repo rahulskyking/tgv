@@ -1,7 +1,50 @@
 ﻿@using TheGameVoice.Domain.Enums
 @using TheGameVoice.Domain.Common.Extensions
 @using TheGameVoice.Infrastructure.Identity
+@using TheGameVoice.Application.Modules.Articles.Filters
 @model TheGameVoice.Web.Areas.Admin.ViewModels.Articles.ArticleIndexViewModel
+
+@{
+    // Keeps every other active filter when a tab or a column header is clicked.
+    Dictionary<string, string> RouteWith(
+        ArticleStatus? status = null,
+        ArticleSort? sort = null,
+        bool keepStatus = true)
+    {
+        var route = new Dictionary<string, string>();
+
+        var effectiveStatus = status ?? (keepStatus ? Model.Filter.Status : null);
+
+        if (effectiveStatus.HasValue)
+        {
+            route["Filter.Status"] = ((int)effectiveStatus.Value).ToString();
+        }
+
+        if (!string.IsNullOrWhiteSpace(Model.Filter.Search))
+        {
+            route["Filter.Search"] = Model.Filter.Search;
+        }
+
+        if (Model.Filter.Segment.HasValue)
+        {
+            route["Filter.Segment"] = ((int)Model.Filter.Segment.Value).ToString();
+        }
+
+        if (Model.Filter.CategoryId.HasValue)
+        {
+            route["Filter.CategoryId"] = Model.Filter.CategoryId.Value.ToString();
+        }
+
+        if (Model.Filter.AuthorId.HasValue)
+        {
+            route["Filter.AuthorId"] = Model.Filter.AuthorId.Value.ToString();
+        }
+
+        route["Filter.SortBy"] = ((int)(sort ?? Model.Filter.SortBy)).ToString();
+
+        return route;
+    }
+}
 
 <div class="space-y-6">
 
@@ -99,6 +142,40 @@
             </p>
 
         </div>
+
+    </div>
+
+    <!-- Quick status tabs: the three filters most people use every day -->
+
+    <div class="mb-5 flex flex-wrap items-center gap-2">
+
+        @{
+            var tabs = new (string Label, ArticleStatus? Status, int Count)[]
+            {
+                ("All", null, Model.Summary.TotalArticles),
+                ("Drafts", ArticleStatus.Draft, Model.Summary.DraftArticles),
+                ("In review", ArticleStatus.ReviewPending, Model.Summary.ReviewPendingArticles),
+                ("Scheduled", ArticleStatus.Scheduled, Model.Summary.ScheduledArticles),
+                ("Published", ArticleStatus.Published, Model.Summary.PublishedArticles),
+                ("Rejected", ArticleStatus.Rejected, Model.Summary.RejectedArticles),
+                ("Archived", ArticleStatus.Archived, Model.Summary.ArchivedArticles)
+            };
+        }
+
+        @foreach (var tab in tabs)
+        {
+            var isActive = Model.Filter.Status == tab.Status;
+
+            <a asp-action="Index"
+               asp-all-route-data="RouteWith(status: tab.Status, keepStatus: false)"
+               class="tgv-tab @(isActive ? "is-active" : string.Empty)">
+
+                @tab.Label
+
+                <span class="tgv-tab__count">@tab.Count.ToString("N0")</span>
+
+            </a>
+        }
 
     </div>
 
@@ -254,11 +331,29 @@
 
                 <tr>
 
+                    <th class="px-4 py-4 text-left">
+                        <input type="checkbox"
+                               data-bulk-master
+                               class="h-4 w-4 rounded border-line-strong"
+                               aria-label="Select all articles on this page" />
+                    </th>
+
                     <th class="px-6 py-4 text-left">
                         Thumbnail
                     </th>
                     <th class="px-6 py-4 text-left">
-                        Title
+                        @{
+                            var titleSorted = Model.Filter.SortBy == ArticleSort.Title;
+                        }
+                        <a asp-action="Index"
+                           asp-all-route-data="RouteWith(sort: ArticleSort.Title)"
+                           class="tgv-sort">
+                            Title
+                            @if (titleSorted)
+                            {
+                                <span class="tgv-sort__arrow">&#9650;</span>
+                            }
+                        </a>
                     </th>
                     <th class="px-6 py-4 text-left">
                         Author
@@ -274,15 +369,46 @@
                     </th>
 
                     <th class="px-6 py-4 text-left">
-                        Created
+                        @{
+                            var newestSorted = Model.Filter.SortBy == ArticleSort.Latest;
+                        }
+                        <a asp-action="Index"
+                           asp-all-route-data="RouteWith(sort: newestSorted ? ArticleSort.Oldest : ArticleSort.Latest)"
+                           class="tgv-sort">
+                            Created
+                            @if (newestSorted)
+                            {
+                                <span class="tgv-sort__arrow">&#9660;</span>
+                            }
+                            else if (Model.Filter.SortBy == ArticleSort.Oldest)
+                            {
+                                <span class="tgv-sort__arrow">&#9650;</span>
+                            }
+                        </a>
                     </th>
 
                     <th class="px-6 py-4 text-left">
-                        Published
+                        <a asp-action="Index"
+                           asp-all-route-data="RouteWith(sort: ArticleSort.Updated)"
+                           class="tgv-sort">
+                            Published
+                            @if (Model.Filter.SortBy == ArticleSort.Updated)
+                            {
+                                <span class="tgv-sort__arrow">&#9660;</span>
+                            }
+                        </a>
                     </th>
 
                     <th class="px-6 py-4 text-right">
-                        Views
+                        <a asp-action="Index"
+                           asp-all-route-data="RouteWith(sort: ArticleSort.MostViewed)"
+                           class="tgv-sort">
+                            Views
+                            @if (Model.Filter.SortBy == ArticleSort.MostViewed)
+                            {
+                                <span class="tgv-sort__arrow">&#9660;</span>
+                            }
+                        </a>
                     </th>
 
                     <th class="px-6 py-4 text-left">
@@ -298,6 +424,14 @@
                 @foreach (var article in Model.Articles.Items)
                 {
                     <tr class="border-b">
+
+                        <td class="px-4 py-4">
+                            <input type="checkbox"
+                                   data-bulk-item
+                                   value="@article.Id"
+                                   class="h-4 w-4 rounded border-line-strong"
+                                   aria-label="Select @article.Title" />
+                        </td>
                         <td class="px-6 py-4">
 
                             @if (article.FeaturedImage != null)
@@ -697,6 +831,76 @@
         </div>
 
     </div>
+
+    <!-- BULK ACTION BAR (appears when rows are selected) -->
+
+    <form method="post"
+          asp-action="BulkAction"
+          class="tgv-bulk-bar"
+          data-bulk-bar>
+
+        <span data-bulk-ids></span>
+
+        <span class="tgv-bulk-bar__count" data-bulk-count>0</span>
+
+        <span class="text-sm font-semibold text-ink">selected</span>
+
+        <span class="mx-1 h-5 w-px bg-line"></span>
+
+        <button type="submit"
+                name="action"
+                value="publish"
+                data-confirm="The selected articles will go live immediately."
+                data-confirm-title="Publish selected articles?"
+                data-confirm-action="Publish"
+                data-confirm-tone="primary">
+            Publish
+        </button>
+
+        <button type="submit"
+                name="action"
+                value="review">
+            Send to review
+        </button>
+
+        <button type="submit"
+                name="action"
+                value="draft">
+            Move to draft
+        </button>
+
+        <button type="submit"
+                name="action"
+                value="archive"
+                data-confirm="Archived articles disappear from the public site. You can restore them later."
+                data-confirm-title="Archive selected articles?"
+                data-confirm-action="Archive">
+            Archive
+        </button>
+
+        <span class="mx-1 h-5 w-px bg-line"></span>
+
+        <button type="submit"
+                name="action"
+                value="section-pc">
+            &#8594; PC / Console
+        </button>
+
+        <button type="submit"
+                name="action"
+                value="section-mobile">
+            &#8594; Mobile
+        </button>
+
+        <button type="button"
+                class="ml-1 rounded-lg px-2 py-2 text-ink-faint hover:text-ink"
+                data-bulk-clear
+                aria-label="Clear selection">
+            &times;
+        </button>
+
+    </form>
+
 </div>
 
 

@@ -63,12 +63,15 @@
 
                         <form asp-action="Delete"
                               asp-route-id="@item.Id"
-                              method="post"
-                              onsubmit="return confirm('Delete this media permanently?');">
+                              method="post">
 
                             @Html.AntiForgeryToken()
 
                             <button type="submit"
+                                    data-confirm="Any article still using it will show a broken image."
+                                    data-confirm-title="Delete this file?"
+                                    data-confirm-action="Delete"
+                                    data-confirm-tone="danger"
                                     class="rounded-lg bg-red-600 px-3 py-1 text-xs text-black">
                                 Delete
                             </button>

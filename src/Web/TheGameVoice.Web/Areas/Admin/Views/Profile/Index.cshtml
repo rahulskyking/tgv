@@ -1,0 +1,343 @@
+@model TheGameVoice.Web.Areas.Admin.ViewModels.Profile.MyProfileViewModel
+
+@{
+    ViewData["Title"] = "My profile";
+}
+
+<div class="mx-auto max-w-5xl space-y-6">
+
+    <!-- HEADER CARD -->
+
+    <div class="overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+
+        <div class="h-24 bg-primary/10"></div>
+
+        <div class="-mt-10 flex flex-col gap-4 px-6 pb-6 sm:flex-row sm:items-end sm:justify-between">
+
+            <div class="flex items-end gap-4">
+
+                @if (!string.IsNullOrWhiteSpace(Model.AvatarImagePath))
+                {
+                    <img src="@Model.AvatarImagePath"
+                         alt="@Model.FullName"
+                         class="h-20 w-20 rounded-2xl border-4 border-surface object-cover" />
+                }
+                else
+                {
+                    <div class="flex h-20 w-20 items-center justify-center rounded-2xl border-4 border-surface bg-primary text-2xl font-black text-black">
+                        @Model.Initials
+                    </div>
+                }
+
+                <div class="pb-1">
+
+                    <h1 class="text-fluid-3xl font-bold leading-tight text-ink">
+                        @Model.FullName
+                    </h1>
+
+                    <p class="mt-0.5 text-sm text-ink-muted">
+                        @@@Model.UserName
+                        <span class="mx-1.5 text-ink-faint">·</span>
+                        <span class="rounded-full bg-surface-raised px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-ink-mid">
+                            @Model.Role
+                        </span>
+                    </p>
+
+                </div>
+
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Slug))
+            {
+                <a href="/author/@Model.Slug"
+                   target="_blank"
+                   rel="noopener"
+                   class="inline-flex items-center gap-2 self-start rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-primary hover:text-primary sm:self-auto">
+
+                    <i data-lucide="external-link" class="h-4 w-4"></i>
+
+                    View public page
+
+                </a>
+            }
+
+        </div>
+
+    </div>
+
+    <!-- STATS -->
+
+    <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Published</p>
+            <p class="mt-1.5 text-2xl font-bold text-green-600">@Model.PublishedArticles.ToString("N0")</p>
+        </div>
+
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Drafts</p>
+            <p class="mt-1.5 text-2xl font-bold text-ink">@Model.DraftArticles.ToString("N0")</p>
+        </div>
+
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">In review</p>
+            <p class="mt-1.5 text-2xl font-bold text-amber-600">@Model.PendingArticles.ToString("N0")</p>
+        </div>
+
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Total views</p>
+            <p class="mt-1.5 text-2xl font-bold text-primary">@Model.TotalViews.ToString("N0")</p>
+        </div>
+
+    </div>
+
+    @if (Model.LastPublishedAtUtc.HasValue)
+    {
+        <p class="text-sm text-ink-muted">
+            Last published
+            <strong class="text-ink">@Model.LastPublishedAtUtc.Value.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</strong>
+        </p>
+    }
+
+    <!-- PROFILE FORM -->
+
+    <form method="post"
+          asp-action="Index"
+          data-dirty-guard
+          class="space-y-6">
+
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="AvatarImageId" id="avatar-image-id" />
+
+        <div asp-validation-summary="ModelOnly"
+             class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 empty:hidden"></div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+
+            <!-- LEFT: the public profile -->
+
+            <div class="space-y-6 lg:col-span-2">
+
+                <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+
+                    <h2 class="text-base font-semibold text-ink">Public profile</h2>
+
+                    <p class="mt-1 text-sm text-ink-muted">
+                        This is what readers see on your author page and next to every article.
+                    </p>
+
+                    <div class="mt-5 grid gap-5 sm:grid-cols-2">
+
+                        <div>
+                            <label asp-for="FullName" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="FullName" class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="FullName" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="Email" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="Email" class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="Email" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-5">
+                        <label asp-for="Slug" class="mb-2 block text-sm font-medium text-ink"></label>
+                        <div class="flex items-center overflow-hidden rounded-xl border border-default bg-surface">
+                            <span class="shrink-0 border-r border-line bg-surface-muted px-3 py-3 text-sm text-ink-faint">/author/</span>
+                            <input asp-for="Slug" placeholder="leave empty to generate from your name"
+                                   class="w-full bg-transparent px-3 py-3 text-ink outline-none" />
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <label asp-for="Bio" class="mb-2 block text-sm font-medium text-ink"></label>
+                        <textarea asp-for="Bio" rows="4"
+                                  maxlength="600"
+                                  placeholder="Two or three lines about you — what you cover, why readers should trust you."
+                                  class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink"></textarea>
+                        <span asp-validation-for="Bio" class="mt-1 block text-xs text-red-600"></span>
+                    </div>
+
+                </div>
+
+                <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+
+                    <h2 class="text-base font-semibold text-ink">Links</h2>
+
+                    <div class="mt-5 grid gap-5 sm:grid-cols-3">
+
+                        <div>
+                            <label asp-for="TwitterUrl" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="TwitterUrl" placeholder="https://x.com/…"
+                                   class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="TwitterUrl" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="YouTubeUrl" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="YouTubeUrl" placeholder="https://youtube.com/@@…"
+                                   class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="YouTubeUrl" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="WebsiteUrl" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="WebsiteUrl" placeholder="https://…"
+                                   class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="WebsiteUrl" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT: avatar + save -->
+
+            <aside class="space-y-6 xl:sticky xl:top-6 xl:self-start">
+
+                <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+
+                    <h2 class="text-base font-semibold text-ink">Avatar</h2>
+
+                    <div class="mt-4 flex items-center gap-4">
+
+                        <img id="avatar-preview"
+                             src="@Model.AvatarImagePath"
+                             alt=""
+                             class="h-16 w-16 rounded-xl object-cover @(string.IsNullOrWhiteSpace(Model.AvatarImagePath) ? "hidden" : string.Empty)" />
+
+                        <div id="avatar-placeholder"
+                             class="flex h-16 w-16 items-center justify-center rounded-xl bg-surface-raised text-lg font-bold text-ink-faint @(string.IsNullOrWhiteSpace(Model.AvatarImagePath) ? string.Empty : "hidden")">
+                            @Model.Initials
+                        </div>
+
+                        <button type="button"
+                                id="open-avatar-picker"
+                                class="rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-primary hover:text-primary">
+                            Choose image
+                        </button>
+
+                    </div>
+
+                    @if (Model.MediaItems.Any())
+                    {
+                        <div id="avatar-picker" class="mt-4 hidden max-h-64 grid-cols-3 gap-2 overflow-y-auto">
+
+                            @foreach (var item in Model.MediaItems)
+                            {
+                                <button type="button"
+                                        class="avatar-option overflow-hidden rounded-lg border border-line transition hover:border-primary"
+                                        data-id="@item.Id"
+                                        data-path="@item.FilePath"
+                                        title="@item.FileName">
+                                    <img src="@item.FilePath" alt="@item.FileName" class="h-16 w-full object-cover" />
+                                </button>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+
+                <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+
+                    <button type="submit"
+                            data-save-button
+                            class="w-full rounded-xl bg-primary px-4 py-3 font-semibold text-black transition hover:bg-primary-hover">
+
+                        Save profile
+
+                        <span class="ml-1 text-xs font-normal opacity-70">Ctrl+S</span>
+
+                    </button>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </form>
+
+    <!-- PASSWORD -->
+
+    <form method="post"
+          asp-action="ChangePassword"
+          class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+
+        <h2 class="text-base font-semibold text-ink">Change password</h2>
+
+        <div class="mt-5 grid gap-5 sm:grid-cols-3">
+
+            <div>
+                <label class="mb-2 block text-sm font-medium text-ink">Current password</label>
+                <input type="password" name="CurrentPassword" autocomplete="current-password"
+                       class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+            </div>
+
+            <div>
+                <label class="mb-2 block text-sm font-medium text-ink">New password</label>
+                <input type="password" name="NewPassword" autocomplete="new-password"
+                       class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+            </div>
+
+            <div>
+                <label class="mb-2 block text-sm font-medium text-ink">Confirm new password</label>
+                <input type="password" name="ConfirmPassword" autocomplete="new-password"
+                       class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+            </div>
+
+        </div>
+
+        <button type="submit"
+                data-confirm="You will stay signed in on this device, but any other session will need the new password."
+                data-confirm-title="Change your password?"
+                data-confirm-action="Change password"
+                data-confirm-tone="primary"
+                class="mt-5 rounded-xl border border-line px-5 py-2.5 text-sm font-semibold text-ink transition hover:bg-surface-muted">
+            Update password
+        </button>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var open = document.getElementById("open-avatar-picker");
+            var picker = document.getElementById("avatar-picker");
+            var field = document.getElementById("avatar-image-id");
+            var preview = document.getElementById("avatar-preview");
+            var placeholder = document.getElementById("avatar-placeholder");
+
+            if (!open || !picker) {
+                return;
+            }
+
+            open.addEventListener("click", function () {
+                picker.classList.toggle("hidden");
+                picker.classList.toggle("grid");
+            });
+
+            picker.querySelectorAll(".avatar-option").forEach(function (button) {
+                button.addEventListener("click", function () {
+                    field.value = button.dataset.id;
+
+                    preview.src = button.dataset.path;
+                    preview.classList.remove("hidden");
+                    placeholder.classList.add("hidden");
+
+                    picker.classList.add("hidden");
+                    picker.classList.remove("grid");
+
+                    field.dispatchEvent(new Event("change", { bubbles: true }));
+                });
+            });
+        })();
+    </script>
+}

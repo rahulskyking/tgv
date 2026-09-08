@@ -510,8 +510,155 @@
                 @apply whitespace-normal;
             }
     }
-}
 
+
+    /* ---------- TOASTS ---------------------------------------------------- */
+
+    .tgv-toasts {
+        @apply pointer-events-none fixed right-4 top-4 z-[200] flex w-[min(380px,calc(100vw-2rem))] flex-col gap-2;
+    }
+
+    .tgv-toast {
+        @apply pointer-events-auto flex items-start gap-3 rounded-xl border border-line
+               bg-surface p-3.5 shadow-lg;
+        animation: tgv-toast-in .22s ease-out;
+    }
+
+    .tgv-toast--leaving {
+        @apply pointer-events-none opacity-0;
+        transition: opacity .2s ease, transform .2s ease;
+        transform: translateX(12px);
+    }
+
+    .tgv-toast__icon {
+        @apply mt-0.5 h-5 w-5 shrink-0;
+    }
+
+    .tgv-toast__text {
+        @apply flex-1 text-sm leading-snug text-ink;
+    }
+
+    .tgv-toast__close {
+        @apply -mt-1 shrink-0 rounded px-1.5 text-xl leading-none text-ink-faint hover:text-ink;
+    }
+
+    .tgv-toast--success { @apply border-green-200; }
+    .tgv-toast--success .tgv-toast__icon { @apply text-green-600; }
+    .tgv-toast--error { @apply border-red-200; }
+    .tgv-toast--error .tgv-toast__icon { @apply text-red-600; }
+    .tgv-toast--warning { @apply border-amber-200; }
+    .tgv-toast--warning .tgv-toast__icon { @apply text-amber-600; }
+    .tgv-toast--info { @apply border-blue-200; }
+    .tgv-toast--info .tgv-toast__icon { @apply text-blue-600; }
+
+    @keyframes tgv-toast-in {
+        from { opacity: 0; transform: translateX(16px); }
+        to { opacity: 1; transform: none; }
+    }
+
+
+    /* ---------- CONFIRM DIALOG -------------------------------------------- */
+
+    .tgv-dialog-overlay {
+        @apply fixed inset-0 z-[300] hidden items-center justify-center bg-black/50 p-4;
+    }
+
+        .tgv-dialog-overlay.is-open {
+            @apply flex;
+        }
+
+    .tgv-dialog {
+        @apply w-full max-w-md rounded-2xl border border-line bg-surface p-6 shadow-2xl;
+        animation: tgv-dialog-in .18s ease-out;
+    }
+
+    .tgv-dialog__title {
+        @apply text-lg font-bold text-ink;
+    }
+
+    .tgv-dialog__text {
+        @apply mt-2 text-sm leading-relaxed text-ink-mid;
+    }
+
+    .tgv-dialog__actions {
+        @apply mt-6 flex justify-end gap-3;
+    }
+
+    .tgv-dialog__cancel {
+        @apply rounded-lg border border-line px-4 py-2 text-sm font-semibold text-ink
+               transition hover:bg-surface-muted;
+    }
+
+    .tgv-dialog__ok {
+        @apply rounded-lg px-4 py-2 text-sm font-semibold text-white transition;
+    }
+
+    .tgv-dialog__ok--danger { @apply bg-red-600 hover:bg-red-700; }
+    .tgv-dialog__ok--primary { @apply bg-primary text-black hover:bg-primary-hover; }
+
+    @keyframes tgv-dialog-in {
+        from { opacity: 0; transform: translateY(8px) scale(.98); }
+        to { opacity: 1; transform: none; }
+    }
+
+
+    /* ---------- BULK ACTION BAR ------------------------------------------- */
+
+    .tgv-bulk-bar {
+        @apply pointer-events-none fixed bottom-5 left-1/2 z-[150] flex -translate-x-1/2
+               translate-y-4 items-center gap-3 rounded-2xl border border-line bg-surface
+               px-4 py-3 opacity-0 shadow-2xl transition;
+    }
+
+        .tgv-bulk-bar.is-visible {
+            @apply pointer-events-auto translate-y-0 opacity-100;
+        }
+
+    .tgv-bulk-bar__count {
+        @apply rounded-full bg-primary px-2.5 py-1 text-xs font-bold text-black;
+    }
+
+    .tgv-bulk-bar button[type="submit"] {
+        @apply rounded-lg border border-line px-3 py-2 text-xs font-semibold uppercase
+               tracking-wide text-ink transition hover:bg-surface-muted;
+    }
+
+    tr.is-selected {
+        @apply bg-primary/5;
+    }
+
+
+    /* ---------- FILTER / SORT CHROME -------------------------------------- */
+
+    .tgv-tab {
+        @apply inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-2
+               text-xs font-bold uppercase tracking-wide text-ink-muted transition
+               hover:border-primary hover:text-ink;
+    }
+
+        .tgv-tab.is-active {
+            @apply border-primary bg-primary text-black;
+        }
+
+    .tgv-tab__count {
+        @apply rounded-full bg-surface-raised px-1.5 py-0.5 text-[10px] font-bold text-ink-mid;
+    }
+
+    .tgv-tab.is-active .tgv-tab__count {
+        @apply bg-black/15 text-black;
+    }
+
+    .tgv-sort {
+        @apply inline-flex items-center gap-1 text-left font-semibold text-ink
+               transition hover:text-primary;
+    }
+
+    .tgv-sort__arrow {
+        @apply text-[10px] text-primary;
+    }
+
+
+}
 
 @layer utilities {
 

@@ -135,15 +135,36 @@
                     Games
                 </a>
 
-                <a asp-area="Admin"
-                   asp-controller="Users"
-                   asp-action="Index"
-                   class="@NavClass("Users")">
-                    <i data-lucide="users" class="h-4 w-4"></i>
-                    Users
-                </a>
+                @*  Users is Admin/SuperAdmin only — showing it to an author
+                    just hands them a 403. *@
+                @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+                {
+                    <a asp-area="Admin"
+                       asp-controller="Users"
+                       asp-action="Index"
+                       class="@NavClass("Users")">
+                        <i data-lucide="users" class="h-4 w-4"></i>
+                        Users
+                    </a>
+                }
 
                 <div class="mt-4 border-t border-gray-800 pt-4">
+
+                    <a asp-area="Admin"
+                       asp-controller="Profile"
+                       asp-action="Index"
+                       class="@NavClass("Profile")">
+                        <i data-lucide="user-circle" class="h-4 w-4"></i>
+                        My profile
+                    </a>
+
+                    <a asp-area="Admin"
+                       asp-controller="Auth"
+                       asp-action="Logout"
+                       class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-gray-800 hover:text-white">
+                        <i data-lucide="log-out" class="h-4 w-4"></i>
+                        Sign out
+                    </a>
 
                     @{
                         ViewData["ThemeToggleClass"] = "tgv-theme-toggle--sidebar";
@@ -165,6 +186,8 @@
 
         <main class="tgv-admin-main">
 
+            <partial name="~/Views/Shared/Components/_Alerts.cshtml" />
+
             @RenderBody()
 
         </main>
@@ -180,6 +203,7 @@
     <script src="~/js/article.js?v=1.0"></script>
     <script src="~/js/tomselect.js?v=1.0"></script>
     <script src="~/js/theme.js" asp-append-version="true"></script>
+    <script src="~/js/admin-ux.js" asp-append-version="true"></script>
     <script src="~/js/admin-nav.js" asp-append-version="true"></script>
 
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -364,7 +388,44 @@
                 .value = "";
         }
 
-                tinymce.init({
+        function tgvIsDark() {
+            return document.documentElement.getAttribute("data-theme") === "dark";
+        }
+
+        function tgvEditorSkin() {
+            return tgvIsDark()
+                ? { skin: "oxide-dark", content_css: "dark" }
+                : { skin: "oxide", content_css: "default" };
+        }
+
+        // Re-create the editor when the theme flips, otherwise a dark admin
+        // keeps a blinding white editor iframe.
+        document.addEventListener("click", function (event) {
+            if (!event.target.closest("[data-theme-toggle]")) {
+                return;
+            }
+
+            window.setTimeout(function () {
+                var editor = window.tinymce && window.tinymce.get("editor");
+
+                if (!editor) {
+                    return;
+                }
+
+                var content = editor.getContent();
+
+                editor.remove();
+
+                tinymce.init(Object.assign({}, window.tgvEditorConfig, tgvEditorSkin()))
+                    .then(function (editors) {
+                        if (editors && editors[0]) {
+                            editors[0].setContent(content);
+                        }
+                    });
+            }, 60);
+        });
+
+                tinymce.init(window.tgvEditorConfig = Object.assign({
 
             selector: '#editor',
 
@@ -415,7 +476,7 @@
                         }
                     });
             }
-        });
+        }, tgvEditorSkin()));
 
     </script>
    
@@ -648,5 +709,7 @@
 
         });
     </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
