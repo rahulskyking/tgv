@@ -4,11 +4,6 @@
     var isMobileMode =
         Model.CurrentSegment == GameSegment.Mobile;
 
-    var sectionLabel =
-        isMobileMode
-            ? "Mobile Gaming"
-            : "PC / Console Gaming";
-
     var primaryCategories =
         Model.Categories
             .Take(7)
@@ -38,30 +33,11 @@
 
                     <a asp-controller="Home"
                        asp-action="Index"
-                       class="block">
+                       class="block text-fluid-3xl font-black leading-none tracking-tight text-primary">
 
-                        <span class="text-fluid-3xl font-black tracking-tight text-primary">
-
-                            TheGameVoice
-
-                        </span>
-
-                        <span class="block text-[11px] font-bold uppercase tracking-[0.2em] text-ink-faint">
-
-                            @sectionLabel
-
-                        </span>
+                        TheGameVoice
 
                     </a>
-
-                    <!-- SITE MODE TOGGLE (under the logo) -->
-
-                    <div class="mt-2">
-
-                        <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
-                                 model="Model" />
-
-                    </div>
 
                 </div>
 
@@ -93,9 +69,12 @@
 
             </div>
 
-            <!-- SEARCH + THEME -->
+            <!-- SECTION + SEARCH + THEME -->
 
             <div class="flex items-center gap-3">
+
+                <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
+                         model="Model" />
 
                 <form method="get"
                       asp-controller="Search"
@@ -143,19 +122,10 @@
         <div class="flex h-16 items-center justify-between gap-3 lg:hidden">
 
             <a asp-controller="Home"
-               asp-action="Index">
+               asp-action="Index"
+               class="text-2xl font-black leading-none tracking-tight text-primary">
 
-                <span class="text-2xl font-black tracking-tight text-primary">
-
-                    TheGameVoice
-
-                </span>
-
-                <span class="block text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
-
-                    @sectionLabel
-
-                </span>
+                TheGameVoice
 
             </a>
 
@@ -213,8 +183,12 @@
 
             <div class="mb-6 flex items-center justify-between gap-3">
 
+                @{ ViewData["SiteModeLabels"] = true; }
+
                 <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
                          model="Model" />
+
+                @{ ViewData["SiteModeLabels"] = null; }
 
                 <partial name="~/Views/Shared/Components/_ThemeToggle.cshtml" />
 
