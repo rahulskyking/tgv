@@ -1,15 +1,23 @@
 @model TheGameVoice.Web.ViewModels.Shared.NavigationViewModel
 
 @*
-    Site mode toggle: flips the entire public site between PC / Console
+    Section switcher: flips the entire public site between PC / Console
     gaming and Mobile gaming. The choice is stored in the tgv_mode cookie
     by SiteModeController and every public page reads it back through
     ISiteSegmentAccessor.
+
+    Two variants:
+      default                        compact icon pill (site header)
+      ViewData["SiteModeLabels"]=true  icon + text (mobile menu, where
+                                       there is room and no tooltips)
 *@
 
 @{
     var isMobileMode =
         Model.CurrentSegment == GameSegment.Mobile;
+
+    var showLabels =
+        ViewData["SiteModeLabels"] as bool? == true;
 
     var pcUrl =
         Url.Action(
@@ -23,11 +31,19 @@
             "SiteMode",
             new { mode = "mobile", returnUrl = Model.ReturnUrl });
 
-    const string activeClass =
-        "rounded-full bg-primary px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-black";
+    const string baseClass =
+        "inline-flex items-center gap-2 rounded-full font-bold uppercase tracking-wide transition";
 
-    const string inactiveClass =
-        "rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-ink-muted transition hover:text-ink";
+    var sizeClass =
+        showLabels
+            ? "px-3.5 py-2 text-xs"
+            : "px-2.5 py-2";
+
+    var activeClass =
+        $"{baseClass} {sizeClass} bg-primary text-black";
+
+    var inactiveClass =
+        $"{baseClass} {sizeClass} text-ink-muted hover:bg-surface hover:text-ink";
 }
 
 <div class="inline-flex items-center gap-1 rounded-full border border-default bg-surface-raised p-1"
@@ -37,18 +53,54 @@
     <a href="@pcUrl"
        class="@(isMobileMode ? inactiveClass : activeClass)"
        aria-current="@(isMobileMode ? "false" : "true")"
-       title="PC and console gaming coverage">
+       aria-label="Switch to PC and console gaming"
+       title="PC / Console gaming">
 
-        PC / Console
+        @* monitor *@
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-4 w-4"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             aria-hidden="true">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8M12 17v4" />
+        </svg>
+
+        @if (showLabels)
+        {
+            <span>PC / Console</span>
+        }
 
     </a>
 
     <a href="@mobileUrl"
        class="@(isMobileMode ? activeClass : inactiveClass)"
        aria-current="@(isMobileMode ? "true" : "false")"
-       title="Mobile gaming coverage">
+       aria-label="Switch to mobile gaming"
+       title="Mobile gaming">
 
-        Mobile
+        @* smartphone *@
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-4 w-4"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             aria-hidden="true">
+            <rect x="7" y="2" width="10" height="20" rx="2" />
+            <path d="M11 18h2" />
+        </svg>
+
+        @if (showLabels)
+        {
+            <span>Mobile</span>
+        }
 
     </a>
 
