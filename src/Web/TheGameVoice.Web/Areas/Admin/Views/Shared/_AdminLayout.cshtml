@@ -34,6 +34,11 @@
         })();
     </script>
 
+    <meta charset="utf-8" />
+    @*  Was missing entirely — without it phones render the admin at a
+        980px virtual width and zoom out. *@
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
 
     <link rel="stylesheet"
@@ -46,6 +51,9 @@
     <link rel="stylesheet"
           href="~/css/theme-utilities.css"
           asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/css/theme-responsive.css"
+          asp-append-version="true" />
     @*  Dark theme layer — must be the LAST stylesheet. *@
     <link rel="stylesheet"
           href="~/css/theme-dark.css"
@@ -57,9 +65,28 @@
 
 <body class="bg-gray-100">
 
-    <div class="flex min-h-screen">
+    <!-- MOBILE TOP BAR (hidden from 1024px up) -->
 
-        <aside class="w-64 bg-gray-900 text-white">
+    <div class="tgv-admin-topbar">
+
+        <button type="button"
+                class="tgv-admin-burger"
+                data-admin-nav-toggle
+                aria-label="Open menu"
+                aria-expanded="false"
+                aria-controls="admin-sidebar">
+            <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+
+        <span class="text-lg font-bold">TGV Admin</span>
+
+    </div>
+
+    <div class="tgv-admin-backdrop" data-admin-nav-close></div>
+
+    <div class="tgv-admin-shell flex min-h-screen">
+
+        <aside id="admin-sidebar" class="tgv-admin-sidebar w-64 bg-gray-900 text-white">
 
             <div class="p-4 text-2xl font-bold">
                 TGV Admin
@@ -149,7 +176,7 @@
 
         </aside>
 
-        <main class="flex-1 p-6">
+        <main class="tgv-admin-main">
 
             @RenderBody()
 
@@ -166,6 +193,7 @@
     <script src="~/js/article.js?v=1.0"></script>
     <script src="~/js/tomselect.js?v=1.0"></script>
     <script src="~/js/theme.js" asp-append-version="true"></script>
+    <script src="~/js/admin-nav.js" asp-append-version="true"></script>
 
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
