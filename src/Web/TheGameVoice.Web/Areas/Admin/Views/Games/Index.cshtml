@@ -85,12 +85,15 @@
 
                                 <form asp-action="Delete"
                                       asp-route-id="@game.Id"
-                                      method="post"
-                                      onsubmit="return confirm('Delete this game?');">
+                                      method="post">
 
                                     @Html.AntiForgeryToken()
 
                                     <button type="submit"
+                                            data-confirm="Articles linked to it will lose the link. This cannot be undone."
+                                            data-confirm-title="Delete this game?"
+                                            data-confirm-action="Delete"
+                                            data-confirm-tone="danger"
                                             class="text-red-600 hover:text-red-800">
                                         Delete
                                     </button>

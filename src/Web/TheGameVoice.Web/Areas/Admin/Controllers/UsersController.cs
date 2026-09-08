@@ -290,13 +290,14 @@ public class UsersController : BaseAdminController
         user.FullName =
             model.FullName;
 
-        if (string.IsNullOrWhiteSpace(model.Slug))
-        {
-            await _slugService
-          .GenerateAuthorSlugAsync(
-              model.FullName);
-        }
-      
+        // Bug: the generated slug used to be thrown away, so users saved
+        // without a slug had no public author page at all.
+        user.Slug =
+            string.IsNullOrWhiteSpace(model.Slug)
+                ? await _slugService
+                    .GenerateAuthorSlugAsync(model.FullName)
+                : model.Slug.Trim().ToLowerInvariant();
+
 
         user.Bio = model.Bio;
 

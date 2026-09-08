@@ -73,6 +73,8 @@
 
     @await Component.InvokeAsync("Navigation")
 
+    <partial name="~/Views/Shared/Components/_Alerts.cshtml" />
+
     <main>
 
         @RenderBody()
@@ -83,6 +85,9 @@
         "~/Views/Shared/Layout/_Footer.cshtml")
 
     <script src="~/js/theme.js" asp-append-version="true"></script>
+    @*  Shared UX helpers: toast dismissal + data-confirm dialogs. The dirty
+        guard / bulk-select parts simply find no matching markup here. *@
+    <script src="~/js/admin-ux.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync(
         "Scripts",

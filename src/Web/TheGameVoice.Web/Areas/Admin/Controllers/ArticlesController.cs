@@ -499,6 +499,8 @@ public class ArticlesController : BaseAdminController
         await _unitOfWork.SaveChangesAsync();
         _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
+        TempData["Success"] = $"\"{article.Title}\" is live.";
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -558,6 +560,8 @@ public class ArticlesController : BaseAdminController
         await _unitOfWork.SaveChangesAsync();
         _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
+        TempData["Success"] = $"\"{article.Title}\" archived.";
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -574,6 +578,114 @@ public class ArticlesController : BaseAdminController
 
         await _unitOfWork.SaveChangesAsync();
         _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
+
+        TempData["Success"] = $"\"{article.Title}\" restored as a draft.";
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    /// <summary>
+    /// Applies one workflow action to every selected article in the list.
+    /// Saves an editor from opening twenty articles one by one.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = $"{Roles.Editor},{Roles.Admin},{Roles.SuperAdmin}")]
+    public async Task<IActionResult> BulkAction(
+        string action,
+        List<Guid> ids)
+    {
+        if (ids == null || ids.Count == 0)
+        {
+            TempData["Error"] = "No articles were selected.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        var isAdmin =
+            User.IsInRole(Roles.Admin) ||
+            User.IsInRole(Roles.SuperAdmin);
+
+        if (action == "archive" && !isAdmin)
+        {
+            TempData["Error"] = "Only an administrator can archive articles.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        var affected = 0;
+
+        foreach (var id in ids)
+        {
+            var article = await _unitOfWork.Articles.GetByIdAsync(id);
+
+            if (article == null)
+            {
+                continue;
+            }
+
+            switch (action)
+            {
+                case "publish":
+                    article.Status = ArticleStatus.Published;
+                    article.PublishedAt = DateTime.UtcNow;
+                    article.PublishedById = currentUser?.Id;
+                    article.ScheduledPublishAt = null;
+                    article.ScheduledById = null;
+                    break;
+
+                case "review":
+                    article.Status = ArticleStatus.ReviewPending;
+                    break;
+
+                case "draft":
+                    article.Status = ArticleStatus.Draft;
+                    article.ScheduledPublishAt = null;
+                    article.ScheduledById = null;
+                    break;
+
+                case "archive":
+                    article.Status = ArticleStatus.Archived;
+                    break;
+
+                case "section-pc":
+                    article.Segment = GameSegment.PcConsole;
+                    break;
+
+                case "section-mobile":
+                    article.Segment = GameSegment.Mobile;
+                    break;
+
+                default:
+                    TempData["Error"] = "Unknown bulk action.";
+
+                    return RedirectToAction(nameof(Index));
+            }
+
+            _unitOfWork.Articles.Update(article);
+
+            affected++;
+        }
+
+        await _unitOfWork.SaveChangesAsync();
+
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
+
+        var label = action switch
+        {
+            "publish" => "published",
+            "review" => "sent to review",
+            "draft" => "moved to draft",
+            "archive" => "archived",
+            "section-pc" => "moved to PC / Console",
+            "section-mobile" => "moved to Mobile",
+            _ => "updated"
+        };
+
+        TempData["Success"] =
+            $"{affected} article{(affected == 1 ? string.Empty : "s")} {label}.";
 
         return RedirectToAction(nameof(Index));
     }

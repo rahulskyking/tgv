@@ -1,0 +1,52 @@
+@*
+    Flash messages.
+
+    Controllers already set TempData["Success"] / TempData["Error"] in 19
+    places, but only 5 views ever rendered them — most messages were simply
+    lost. This partial lives in the layout, so every message is shown
+    everywhere, as a dismissible toast.
+
+    Supported keys: Success, Error, Warning, Info.
+*@
+
+@{
+    // Glyph is a fallback: the admin runs lucide.createIcons() which swaps
+    // the <i> for an SVG, but the public layout has no lucide, so the plain
+    // character is what shows there.
+    var toasts = new List<(string Key, string Kind, string Icon, string Glyph)>
+    {
+        ("Success", "success", "check-circle",   "\u2713"),
+        ("Error",   "error",   "alert-circle",   "\u2715"),
+        ("Warning", "warning", "alert-triangle", "!"),
+        ("Info",    "info",    "info",           "i")
+    };
+}
+
+<div class="tgv-toasts" aria-live="polite" aria-atomic="true">
+
+    @foreach (var toast in toasts)
+    {
+        var message = TempData[toast.Key] as string;
+
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            continue;
+        }
+
+        <div class="tgv-toast tgv-toast--@toast.Kind" role="status">
+
+            <i data-lucide="@toast.Icon" class="tgv-toast__icon">@toast.Glyph</i>
+
+            <p class="tgv-toast__text">@message</p>
+
+            <button type="button"
+                    class="tgv-toast__close"
+                    data-toast-close
+                    aria-label="Dismiss">
+                &times;
+            </button>
+
+        </div>
+    }
+
+</div>
