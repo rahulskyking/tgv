@@ -1,0 +1,370 @@
+/* =========================================================================
+   TheGameVoice — DARK THEME
+   =========================================================================
+
+   How this works
+   --------------
+   1. TOKENS  — `html[data-theme="dark"]` re-points the existing --tgv-*
+                design tokens at a dark palette. Anything already written
+                against those tokens (theme.css, theme-utilities.css,
+                .article-content, .tgv-* classes) flips automatically.
+
+   2. BRIDGE  — the views also use hardcoded Tailwind colours
+                (bg-white, text-slate-900, border-slate-200 ...). Instead of
+                editing ~40 .cshtml files with dark: variants, this file
+                re-maps just those utilities inside the dark scope.
+                Specificity is 0-2-0 ([data-theme] + .class) so it always
+                beats Tailwind's 0-1-0 utilities, whatever the load order.
+
+   Nothing here runs in light mode — the light design is untouched.
+
+   Deliberately NOT re-mapped (already dark by design):
+     bg-black, bg-slate-900, bg-gray-900, bg-gray-800,
+     text-white, text-slate-300/200, text-gray-300, border-gray-700/800
+     ...these are the admin sidebar, hero overlays and footer.
+   ========================================================================= */
+
+
+/* ---------- 1. TOKENS ---------------------------------------------------- */
+
+html[data-theme="dark"] {
+    /* Tell the browser: dark scrollbars, dark native form controls */
+    color-scheme: dark;
+
+    /* Brand — slightly brighter violet so it stays vivid on a dark surface */
+    --tgv-primary: #8b5cf6;
+    --tgv-primary-hover: #a78bfa;
+
+    /* Backgrounds */
+    --tgv-background: #0d1117;
+    --tgv-surface: #161b22;
+    /* Raised / subtle rows (was slate-50 / slate-100 in light) */
+    --tgv-surface-2: #1c2330;
+    --tgv-surface-3: #232c3b;
+
+    /* Text */
+    --tgv-text: #e8eef7;
+    --tgv-text-soft: #c3cede;
+    --tgv-text-muted: #8b9aae;
+    --tgv-text-faint: #6f7f94;
+
+    /* Borders */
+    --tgv-border: #232b36;
+    --tgv-border-strong: #303a49;
+
+    /* Shadows need to be much heavier to read on dark */
+    --tgv-shadow: 0 4px 16px rgba(0, 0, 0, .45);
+}
+
+
+/* ---------- 2. BASE ------------------------------------------------------ */
+
+html[data-theme="dark"] body {
+    background-color: var(--tgv-background);
+    color: var(--tgv-text);
+}
+
+/* Tailwind's page background utilities used on <body> */
+html[data-theme="dark"] .bg-slate-50,
+html[data-theme="dark"] .bg-gray-50 {
+    background-color: var(--tgv-surface-2);
+}
+
+html[data-theme="dark"] body.bg-slate-50,
+html[data-theme="dark"] body.bg-gray-100,
+html[data-theme="dark"] body.bg-gray-50 {
+    background-color: var(--tgv-background);
+}
+
+/* Smooth flip — the class is added by theme.js only for the moment of the
+   switch, so normal browsing has zero transition cost. */
+html.tgv-theme-switching,
+html.tgv-theme-switching *,
+html.tgv-theme-switching *::before,
+html.tgv-theme-switching *::after {
+    transition: background-color .22s ease,
+                border-color .22s ease,
+                color .22s ease,
+                fill .22s ease !important;
+}
+
+
+/* ---------- 3. BRIDGE: surfaces ----------------------------------------- */
+
+html[data-theme="dark"] .bg-white {
+    background-color: var(--tgv-surface);
+}
+
+html[data-theme="dark"] .bg-slate-100,
+html[data-theme="dark"] .bg-gray-100 {
+    background-color: var(--tgv-surface-3);
+}
+
+html[data-theme="dark"] .bg-slate-200,
+html[data-theme="dark"] .bg-gray-200 {
+    background-color: var(--tgv-border-strong);
+}
+
+/* Hover surfaces (table rows, list items, ghost buttons) */
+html[data-theme="dark"] .hover\:bg-slate-50:hover,
+html[data-theme="dark"] .hover\:bg-gray-50:hover {
+    background-color: var(--tgv-surface-2);
+}
+
+html[data-theme="dark"] .hover\:bg-slate-100:hover,
+html[data-theme="dark"] .hover\:bg-gray-100:hover {
+    background-color: var(--tgv-surface-3);
+}
+
+html[data-theme="dark"] .hover\:bg-white:hover {
+    background-color: var(--tgv-surface);
+}
+
+/* Admin uses violet-tinted hover rows */
+html[data-theme="dark"] .hover\:bg-violet-50:hover {
+    background-color: rgba(139, 92, 246, .12);
+}
+
+
+/* ---------- 3. BRIDGE: text --------------------------------------------- */
+
+html[data-theme="dark"] .text-slate-900,
+html[data-theme="dark"] .text-slate-800 {
+    color: var(--tgv-text);
+}
+
+html[data-theme="dark"] .text-slate-700,
+html[data-theme="dark"] .text-gray-700,
+html[data-theme="dark"] .text-gray-800,
+html[data-theme="dark"] .text-gray-900 {
+    color: var(--tgv-text-soft);
+}
+
+html[data-theme="dark"] .text-slate-600,
+html[data-theme="dark"] .text-slate-500,
+html[data-theme="dark"] .text-gray-600,
+html[data-theme="dark"] .text-gray-500 {
+    color: var(--tgv-text-muted);
+}
+
+html[data-theme="dark"] .text-slate-400,
+html[data-theme="dark"] .text-gray-400 {
+    color: var(--tgv-text-faint);
+}
+
+html[data-theme="dark"] .hover\:text-slate-900:hover {
+    color: var(--tgv-text);
+}
+
+/* Headings that were pinned to near-black */
+html[data-theme="dark"] .text-\[\#0f172a\] {
+    color: var(--tgv-text);
+}
+
+
+/* ---------- 3. BRIDGE: borders, dividers, rings -------------------------- */
+
+html[data-theme="dark"] .border-slate-100,
+html[data-theme="dark"] .border-slate-200,
+html[data-theme="dark"] .border-gray-100,
+html[data-theme="dark"] .border-gray-200,
+html[data-theme="dark"] .border-b,
+html[data-theme="dark"] .border-t,
+html[data-theme="dark"] .border-l,
+html[data-theme="dark"] .border-r,
+html[data-theme="dark"] .border {
+    border-color: var(--tgv-border);
+}
+
+/* Anything explicitly using the design token keeps working, but the two
+   rules above would beat it — restore precedence for the token classes. */
+html[data-theme="dark"] .border-default {
+    border-color: var(--tgv-border);
+}
+
+html[data-theme="dark"] .border-primary,
+html[data-theme="dark"] .focus\:border-primary:focus {
+    border-color: var(--tgv-primary);
+}
+
+html[data-theme="dark"] .border-slate-300,
+html[data-theme="dark"] .border-gray-300,
+html[data-theme="dark"] .hover\:border-slate-300:hover {
+    border-color: var(--tgv-border-strong);
+}
+
+html[data-theme="dark"] .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+html[data-theme="dark"] .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
+html[data-theme="dark"] .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+html[data-theme="dark"] .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: var(--tgv-border);
+}
+
+html[data-theme="dark"] .ring-slate-300,
+html[data-theme="dark"] .ring-white {
+    --tw-ring-color: var(--tgv-border-strong);
+}
+
+
+/* ---------- 3. BRIDGE: gradients ---------------------------------------- */
+
+/* Light fades used on the About hero and the review summary card */
+html[data-theme="dark"] .to-white {
+    --tw-gradient-to: var(--tgv-surface) var(--tw-gradient-to-position);
+}
+
+html[data-theme="dark"] .via-white {
+    --tw-gradient-to: rgb(22 27 34 / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tgv-surface) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+
+html[data-theme="dark"] .from-\[\#f8f5ff\] {
+    --tw-gradient-from: #1a1430 var(--tw-gradient-from-position);
+    --tw-gradient-to: rgb(26 20 48 / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+
+/* ---------- 4. FORM CONTROLS -------------------------------------------- */
+
+html[data-theme="dark"] input[type="text"],
+html[data-theme="dark"] input[type="search"],
+html[data-theme="dark"] input[type="email"],
+html[data-theme="dark"] input[type="password"],
+html[data-theme="dark"] input[type="number"],
+html[data-theme="dark"] input[type="url"],
+html[data-theme="dark"] input[type="date"],
+html[data-theme="dark"] input[type="datetime-local"],
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+    background-color: var(--tgv-surface-2);
+    border-color: var(--tgv-border-strong);
+    color: var(--tgv-text);
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+    color: var(--tgv-text-faint);
+}
+
+html[data-theme="dark"] input:focus,
+html[data-theme="dark"] select:focus,
+html[data-theme="dark"] textarea:focus {
+    border-color: var(--tgv-primary);
+    outline: none;
+}
+
+html[data-theme="dark"] option {
+    background-color: var(--tgv-surface-2);
+    color: var(--tgv-text);
+}
+
+html[data-theme="dark"] input[type="checkbox"],
+html[data-theme="dark"] input[type="radio"] {
+    accent-color: var(--tgv-primary);
+}
+
+
+/* ---------- 5. MISC POLISH ---------------------------------------------- */
+
+/* Cards keep their depth: shadows are invisible on dark, so lean on borders */
+html[data-theme="dark"] .shadow-sm,
+html[data-theme="dark"] .shadow,
+html[data-theme="dark"] .shadow-md,
+html[data-theme="dark"] .shadow-lg {
+    box-shadow: var(--tgv-shadow);
+}
+
+/* Full-bleed white overlays (mobile menu) */
+html[data-theme="dark"] #mobile-menu-overlay {
+    background-color: var(--tgv-background);
+}
+
+/* Images feel harsh at full brightness on a dark page */
+html[data-theme="dark"] .article-content img {
+    filter: brightness(.92);
+}
+
+/* Status / badge chips: keep the hue, drop the glare */
+html[data-theme="dark"] .bg-green-100 { background-color: rgba(34, 197, 94, .16); }
+html[data-theme="dark"] .text-green-800 { color: #6ee7a8; }
+html[data-theme="dark"] .bg-amber-100 { background-color: rgba(245, 158, 11, .16); }
+html[data-theme="dark"] .text-amber-800 { color: #fbbf6e; }
+html[data-theme="dark"] .bg-amber-50 { background-color: rgba(245, 158, 11, .10); }
+html[data-theme="dark"] .border-amber-200 { border-color: rgba(245, 158, 11, .32); }
+html[data-theme="dark"] .bg-red-100 { background-color: rgba(239, 68, 68, .16); }
+html[data-theme="dark"] .text-red-800 { color: #fca5a5; }
+html[data-theme="dark"] .bg-red-50 { background-color: rgba(239, 68, 68, .10); }
+html[data-theme="dark"] .border-red-200 { border-color: rgba(239, 68, 68, .32); }
+html[data-theme="dark"] .text-red-600,
+html[data-theme="dark"] .text-red-700 { color: #f87171; }
+html[data-theme="dark"] .bg-blue-100 { background-color: rgba(59, 130, 246, .16); }
+html[data-theme="dark"] .text-blue-800 { color: #93c5fd; }
+html[data-theme="dark"] .bg-indigo-100 { background-color: rgba(99, 102, 241, .18); }
+html[data-theme="dark"] .text-indigo-800 { color: #a5b4fc; }
+html[data-theme="dark"] .bg-teal-100 { background-color: rgba(20, 184, 166, .18); }
+html[data-theme="dark"] .text-teal-800 { color: #5eead4; }
+html[data-theme="dark"] .bg-orange-100 { background-color: rgba(250, 116, 62, .18); }
+html[data-theme="dark"] .bg-green-50 { background-color: rgba(34, 197, 94, .10); }
+html[data-theme="dark"] .border-green-200 { border-color: rgba(34, 197, 94, .32); }
+html[data-theme="dark"] .text-green-600 { color: #4ade80; }
+html[data-theme="dark"] .bg-slate-400 { background-color: var(--tgv-text-faint); }
+
+
+/* ---------- 6. THEME TOGGLE BUTTON --------------------------------------- */
+
+.tgv-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 9999px;
+    border: 1px solid var(--tgv-border);
+    background-color: transparent;
+    color: var(--tgv-text-muted);
+    cursor: pointer;
+    transition: color .15s ease, border-color .15s ease, background-color .15s ease;
+}
+
+    .tgv-theme-toggle:hover {
+        color: var(--tgv-primary);
+        border-color: var(--tgv-primary);
+    }
+
+    .tgv-theme-toggle svg {
+        width: 18px;
+        height: 18px;
+    }
+
+/* Show the sun in dark mode (click = go light) and the moon in light mode. */
+.tgv-theme-toggle .tgv-icon-sun {
+    display: none;
+}
+
+html[data-theme="dark"] .tgv-theme-toggle .tgv-icon-sun {
+    display: block;
+}
+
+html[data-theme="dark"] .tgv-theme-toggle .tgv-icon-moon {
+    display: none;
+}
+
+/* Variant used inside the dark admin sidebar */
+.tgv-theme-toggle--sidebar {
+    width: 100%;
+    height: auto;
+    gap: .75rem;
+    justify-content: flex-start;
+    padding: .625rem .75rem;
+    border-radius: .5rem;
+    border-color: transparent;
+    color: #d1d5db;
+    font-size: .875rem;
+}
+
+    .tgv-theme-toggle--sidebar:hover {
+        background-color: #1f2937;
+        border-color: transparent;
+        color: #ffffff;
+    }

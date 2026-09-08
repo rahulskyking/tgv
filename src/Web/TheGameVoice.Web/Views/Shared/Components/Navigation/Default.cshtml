@@ -93,18 +93,24 @@
 
             </div>
 
-            <!-- SEARCH -->
+            <!-- SEARCH + THEME -->
 
-            <form method="get"
-                  asp-controller="Search"
-                  asp-action="Index">
+            <div class="flex items-center gap-3">
 
-                <input type="text"
-                       name="query"
-                       placeholder="Search articles..."
-                       class="w-56 rounded-full border border-default bg-white px-5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-primary" />
+                <form method="get"
+                      asp-controller="Search"
+                      asp-action="Index">
 
-            </form>
+                    <input type="text"
+                           name="query"
+                           placeholder="Search articles..."
+                           class="w-56 rounded-full border border-default bg-white px-5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-primary" />
+
+                </form>
+
+                <partial name="~/Views/Shared/Components/_ThemeToggle.cshtml" />
+
+            </div>
 
         </div>
 
@@ -156,6 +162,8 @@
             <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
                      model="Model" />
 
+            <partial name="~/Views/Shared/Components/_ThemeToggle.cshtml" />
+
             <button id="mobile-menu-button"
                     type="button"
                     class="flex h-10 w-10 items-center justify-center rounded-md border border-default bg-white">
@@ -197,12 +205,14 @@
 
         <div class="py-8">
 
-            <!-- SITE MODE TOGGLE -->
+            <!-- SITE MODE + THEME -->
 
-            <div class="mb-6">
+            <div class="mb-6 flex items-center justify-between gap-3">
 
                 <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
                          model="Model" />
+
+                <partial name="~/Views/Shared/Components/_ThemeToggle.cshtml" />
 
             </div>
 
