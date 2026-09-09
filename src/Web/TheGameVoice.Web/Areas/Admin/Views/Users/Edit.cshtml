@@ -1,246 +1,358 @@
 @model TheGameVoice.Web.Areas.Admin.ViewModels.Users.EditUserViewModel
 
-<div class="space-y-6">
+@{
+    ViewData["Title"] = "Edit user";
+}
 
-    <div class="flex items-center justify-between">
+<div class="mx-auto max-w-5xl space-y-6">
 
-        <h1 class="text-fluid-3xl font-bold">
-            Edit User
-        </h1>
+    <!-- HEADER CARD -->
 
-        <a asp-action="Index"
-           class="rounded-xl border px-4 py-2">
+    <div class="overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
 
-            Back
+        <div class="h-24 bg-primary/10"></div>
 
-        </a>
+        <div class="-mt-10 flex flex-col gap-4 px-6 pb-6 sm:flex-row sm:items-end sm:justify-between">
 
-    </div>
+            <div class="flex items-end gap-4">
 
-    <form method="post"
-          class="space-y-6 rounded-2xl bg-surface p-6 shadow-sm">
-
-        <div>
-
-            <label class="mb-2 block font-medium">
-
-                Full Name
-
-            </label>
-
-            <input asp-for="FullName"
-                   class="w-full rounded-xl border px-4 py-3" />
-
-            <span asp-validation-for="FullName"
-                  class="text-red-500 text-sm"></span>
-
-        </div>
-
-        <div>
-
-            <label class="mb-2 block font-medium">
-
-                Username
-
-            </label>
-
-            <input asp-for="UserName"
-                   class="w-full rounded-xl border px-4 py-3" />
-
-            <span asp-validation-for="UserName"
-                  class="text-red-500 text-sm"></span>
-
-        </div>
-
-        <div>
-
-            <label class="mb-2 block font-medium">
-
-                Email
-
-            </label>
-
-            <input asp-for="Email"
-                   class="w-full rounded-xl border px-4 py-3" />
-
-            <span asp-validation-for="Email"
-                  class="text-red-500 text-sm"></span>
-
-        </div>
-
-       
-
-        <div>
-
-            <label class="mb-2 block font-medium">
-
-                Role
-
-            </label>
-
-            <select asp-for="Role"
-                    class="w-full rounded-xl border px-4 py-3">
-
-                <option value="">
-                    Select Role
-                </option>
-
-                @foreach (var role in Model.Roles)
+                @if (!string.IsNullOrWhiteSpace(Model.AvatarImagePath))
                 {
-                    <option value="@role.Value">
-                        @role.Text
-                    </option>
+                    <img src="@Model.AvatarImagePath"
+                         alt="@Model.FullName"
+                         class="h-20 w-20 rounded-2xl border-4 border-surface object-cover" />
+                }
+                else
+                {
+                    <div class="flex h-20 w-20 items-center justify-center rounded-2xl border-4 border-surface bg-primary text-2xl font-black text-black">
+                        @Model.Initials
+                    </div>
                 }
 
-            </select>
+                <div class="pb-1">
 
-            <span asp-validation-for="Role"
-                  class="text-red-500 text-sm"></span>
+                    <h1 class="text-fluid-3xl font-bold leading-tight text-ink">
+                        @Model.FullName
+                    </h1>
 
-        </div>
-        <hr class="my-6" />
+                    <p class="mt-0.5 text-sm text-ink-muted">
+                        @@Model.UserName
+                        <span class="mx-1.5 text-ink-faint">·</span>
+                        <span class="rounded-full bg-surface-raised px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-ink-mid">
+                            @Model.Role
+                        </span>
+                        <span class="mx-1.5 text-ink-faint">·</span>
 
-        <h2 class="text-xl font-semibold">
+                        @if (Model.IsActive)
+                        {
+                            <span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-bold text-green-700">
+                                Active
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
+                                Inactive
+                            </span>
+                        }
 
-            Author Profile
+                    </p>
 
-        </h2>
+                </div>
 
-        <div>
+            </div>
 
-            <label class="mb-2 block font-medium">
+            <div class="flex items-center gap-2">
 
-                Slug
-
-            </label>
-
-            <input asp-for="Slug"
-                   class="w-full rounded-xl border px-4 py-3" />
-
-        </div>
-
-        <div>
-
-            <label class="mb-2 block font-medium">
-
-                Bio
-
-            </label>
-
-            <textarea asp-for="Bio"
-                      rows="5"
-                      class="w-full rounded-xl border px-4 py-3"></textarea>
-
-        </div>
-        <div>
-
-            <label class="mb-2 block font-medium">
-
-                Avatar
-
-            </label>
-
-            <select asp-for="AvatarImageId"
-                    id="avatar-image-select"
-                    class="w-full rounded-xl border px-4 py-3">
-
-                <option value="">
-                    Select Avatar
-                </option>
-
-                @foreach (var media in Model.MediaItems)
+                @if (!string.IsNullOrWhiteSpace(Model.Slug))
                 {
-                    <option value="@media.Id"
-                            data-image="@media.FilePath">
+                    <a href="/author/@Model.Slug"
+                       target="_blank"
+                       rel="noopener"
+                       class="inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-primary hover:text-primary">
 
-                        @media.FileName
+                        <i data-lucide="external-link" class="h-4 w-4"></i>
 
-                    </option>
+                        View public page
+
+                    </a>
                 }
 
-            </select>
+                <a asp-action="Index"
+                   class="inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-surface-muted">
 
-        </div>
-        <div id="avatar-preview"
-             class="mt-4 overflow-hidden rounded-xl border bg-surface-muted">
+                    Back
 
-            <img id="avatar-preview-image"
-                 class="hidden h-48 w-full object-cover" />
-
-            <div id="avatar-preview-placeholder"
-                 class="flex h-48 items-center justify-center text-sm text-ink-muted">
-
-                No avatar selected
+                </a>
 
             </div>
 
         </div>
-        <div>
 
-            <label class="mb-2 block font-medium">
+    </div>
 
-                Twitter / X
+    <!-- STATS -->
 
-            </label>
+    <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
 
-            <input asp-for="TwitterUrl"
-                   class="w-full rounded-xl border px-4 py-3" />
-
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Published</p>
+            <p class="mt-1.5 text-2xl font-bold text-green-600">@Model.PublishedArticles.ToString("N0")</p>
         </div>
 
-        <div>
-
-            <label class="mb-2 block font-medium">
-
-                YouTube
-
-            </label>
-
-            <input asp-for="YouTubeUrl"
-                   class="w-full rounded-xl border px-4 py-3" />
-
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Drafts</p>
+            <p class="mt-1.5 text-2xl font-bold text-ink">@Model.DraftArticles.ToString("N0")</p>
         </div>
 
-        <div>
-            <label class="mb-2 block font-medium">
-
-                Website
-
-            </label>
-
-            <input asp-for="WebsiteUrl"
-                   class="w-full rounded-xl border px-4 py-3" />
-
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">In review</p>
+            <p class="mt-1.5 text-2xl font-bold text-amber-600">@Model.PendingArticles.ToString("N0")</p>
         </div>
 
-        <div>
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Total views</p>
+            <p class="mt-1.5 text-2xl font-bold text-primary">@Model.TotalViews.ToString("N0")</p>
+        </div>
 
-            <label class="mb-2 block font-medium">
+    </div>
 
-                Steam
+    @if (Model.LastPublishedAtUtc.HasValue)
+    {
+        <p class="text-sm text-ink-muted">
+            Last published
+            <strong class="text-ink">@Model.LastPublishedAtUtc.Value.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</strong>
+        </p>
+    }
 
-            </label>
+    <!-- EDIT FORM -->
 
-            <input asp-for="SteamUrl"
-                   placeholder="https://steamcommunity.com/id/…"
-                   class="w-full rounded-xl border px-4 py-3" />
+    <form method="post"
+          asp-action="Edit"
+          data-dirty-guard
+          class="space-y-6">
 
-            <span asp-validation-for="SteamUrl"
-                  class="text-red-500 text-sm"></span>
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="AvatarImageId" id="avatar-image-id" />
+
+        <div asp-validation-summary="ModelOnly"
+             class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 empty:hidden"></div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+
+            <!-- LEFT: account + public profile + links -->
+
+            <div class="space-y-6 lg:col-span-2">
+
+                <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+
+                    <h2 class="text-base font-semibold text-ink">Account</h2>
+
+                    <p class="mt-1 text-sm text-ink-muted">
+                        Sign-in identity and access level.
+                    </p>
+
+                    <div class="mt-5 grid gap-5 sm:grid-cols-2">
+
+                        <div>
+                            <label asp-for="FullName" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="FullName" class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="FullName" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="UserName" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="UserName" class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="UserName" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-5 grid gap-5 sm:grid-cols-2">
+
+                        <div>
+                            <label asp-for="Email" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="Email" class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="Email" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="Role" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <select asp-for="Role"
+                                    class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink">
+                                <option value="">Select role</option>
+                                @foreach (var role in Model.Roles)
+                                {
+                                    <option value="@role.Value">@role.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Role" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                    </div>
+
+                    <label class="mt-5 flex items-center gap-2 text-sm font-medium text-ink">
+                        <input asp-for="IsActive"
+                               type="checkbox"
+                               class="h-4 w-4 rounded border" />
+                        Active account (can sign in to the admin)
+                    </label>
+
+                </div>
+
+                <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+
+                    <h2 class="text-base font-semibold text-ink">Public profile</h2>
+
+                    <p class="mt-1 text-sm text-ink-muted">
+                        What readers see on the author page and next to every article.
+                    </p>
+
+                    <div class="mt-5">
+                        <label asp-for="Slug" class="mb-2 block text-sm font-medium text-ink"></label>
+                        <div class="flex items-center overflow-hidden rounded-xl border border-default bg-surface">
+                            <span class="shrink-0 border-r border-line bg-surface-muted px-3 py-3 text-sm text-ink-faint">/author/</span>
+                            <input asp-for="Slug" placeholder="leave empty to generate from the name"
+                                   class="w-full bg-transparent px-3 py-3 text-ink outline-none" />
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <label asp-for="Bio" class="mb-2 block text-sm font-medium text-ink"></label>
+                        <textarea asp-for="Bio" rows="4"
+                                  maxlength="600"
+                                  placeholder="Two or three lines about this author."
+                                  class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink"></textarea>
+                        <span asp-validation-for="Bio" class="mt-1 block text-xs text-red-600"></span>
+                    </div>
+
+                </div>
+
+                <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+
+                    <h2 class="text-base font-semibold text-ink">Links</h2>
+
+                    <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
+                        <div>
+                            <label asp-for="TwitterUrl" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="TwitterUrl" placeholder="https://x.com/…"
+                                   class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="TwitterUrl" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="YouTubeUrl" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="YouTubeUrl" placeholder="https://youtube.com/@@…"
+                                   class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="YouTubeUrl" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="WebsiteUrl" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="WebsiteUrl" placeholder="https://…"
+                                   class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="WebsiteUrl" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="SteamUrl" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="SteamUrl" placeholder="https://steamcommunity.com/id/…"
+                                   class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="SteamUrl" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT: avatar + actions -->
+
+            <aside class="space-y-6 xl:sticky xl:top-6 xl:self-start">
+
+                <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+
+                    <h2 class="text-base font-semibold text-ink">Avatar</h2>
+
+                    <div class="mt-4 flex items-center gap-4">
+
+                        <img id="avatar-preview"
+                             src="@Model.AvatarImagePath"
+                             alt=""
+                             class="h-16 w-16 rounded-xl object-cover @(string.IsNullOrWhiteSpace(Model.AvatarImagePath) ? "hidden" : string.Empty)" />
+
+                        <div id="avatar-placeholder"
+                             class="flex h-16 w-16 items-center justify-center rounded-xl bg-surface-raised text-lg font-bold text-ink-faint @(string.IsNullOrWhiteSpace(Model.AvatarImagePath) ? string.Empty : "hidden")">
+                            @Model.Initials
+                        </div>
+
+                        <button type="button"
+                                id="open-avatar-picker"
+                                class="rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-primary hover:text-primary">
+                            Choose image
+                        </button>
+
+                    </div>
+
+                    @if (Model.MediaItems.Any())
+                    {
+                        <div id="avatar-picker" class="mt-4 hidden max-h-64 grid-cols-3 gap-2 overflow-y-auto">
+
+                            @foreach (var item in Model.MediaItems)
+                            {
+                                <button type="button"
+                                        class="avatar-option overflow-hidden rounded-lg border border-line transition hover:border-primary"
+                                        data-id="@item.Id"
+                                        data-path="@item.FilePath"
+                                        title="@item.FileName">
+                                    <img src="@item.FilePath" alt="@item.FileName" class="h-16 w-full object-cover" />
+                                </button>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+
+                <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+
+                    <button type="submit"
+                            data-save-button
+                            class="w-full rounded-xl bg-primary px-4 py-3 font-semibold text-black transition hover:bg-primary-hover">
+
+                        Save user
+
+                        <span class="ml-1 text-xs font-normal opacity-70">Ctrl+S</span>
+
+                    </button>
+
+                </div>
+
+                <div class="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+
+                    <h2 class="text-base font-semibold text-ink">Account access</h2>
+
+                    <p class="mt-1 text-sm text-ink-muted">
+                        Set a new temporary password for this user.
+                    </p>
+
+                    <a asp-action="ResetPassword"
+                       asp-route-id="@Model.Id"
+                       class="mt-4 inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-surface-muted">
+
+                        <i data-lucide="key-round" class="h-4 w-4"></i>
+
+                        Reset password
+
+                    </a>
+
+                </div>
+
+            </aside>
 
         </div>
-        <label class="flex items-center gap-2 text-sm font-medium">
-            <input asp-for="IsActive"
-                   type="checkbox"
-                   class="h-4 w-4 rounded border" />
-            Active account
-        </label>
-        <button type="submit"
-                class="rounded-xl bg-primary px-6 py-3 text-black">
-
-            Save User
-
-        </button>
 
     </form>
 
@@ -249,30 +361,35 @@
 @section Scripts {
     <script>
         (function () {
-            var select = document.getElementById("avatar-image-select");
-            var img = document.getElementById("avatar-preview-image");
-            var placeholder = document.getElementById("avatar-preview-placeholder");
+            var open = document.getElementById("open-avatar-picker");
+            var picker = document.getElementById("avatar-picker");
+            var field = document.getElementById("avatar-image-id");
+            var preview = document.getElementById("avatar-preview");
+            var placeholder = document.getElementById("avatar-placeholder");
 
-            if (!select || !img || !placeholder) {
+            if (!open || !picker) {
                 return;
             }
 
-            function render() {
-                var option = select.options[select.selectedIndex];
-                var path = option ? option.dataset.image : "";
+            open.addEventListener("click", function () {
+                picker.classList.toggle("hidden");
+                picker.classList.toggle("grid");
+            });
 
-                if (path) {
-                    img.src = path;
-                    img.classList.remove("hidden");
+            picker.querySelectorAll(".avatar-option").forEach(function (button) {
+                button.addEventListener("click", function () {
+                    field.value = button.dataset.id;
+
+                    preview.src = button.dataset.path;
+                    preview.classList.remove("hidden");
                     placeholder.classList.add("hidden");
-                } else {
-                    img.classList.add("hidden");
-                    placeholder.classList.remove("hidden");
-                }
-            }
 
-            select.addEventListener("change", render);
-            render();
+                    picker.classList.add("hidden");
+                    picker.classList.remove("grid");
+
+                    field.dispatchEvent(new Event("change", { bubbles: true }));
+                });
+            });
         })();
     </script>
 }
