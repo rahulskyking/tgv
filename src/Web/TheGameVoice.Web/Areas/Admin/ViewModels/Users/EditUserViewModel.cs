@@ -48,4 +48,24 @@ public class EditUserViewModel
         set;
     }
     = new();
+
+    /* ---- read-only context, mirrors the self-service profile ---- */
+
+    public int PublishedArticles { get; set; }
+
+    public int DraftArticles { get; set; }
+
+    public int PendingArticles { get; set; }
+
+    public long TotalViews { get; set; }
+
+    public DateTime? LastPublishedAtUtc { get; set; }
+
+    public string Initials =>
+        string.Join(
+            string.Empty,
+            (FullName ?? string.Empty)
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Take(2)
+                .Select(part => char.ToUpperInvariant(part[0])));
 }

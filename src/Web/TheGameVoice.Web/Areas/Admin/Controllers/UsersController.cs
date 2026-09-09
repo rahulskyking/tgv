@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
+using TheGameVoice.Application.Modules.Articles.Filters;
+using TheGameVoice.Domain.Enums;
 using TheGameVoice.Infrastructure.Identity;
 using TheGameVoice.Infrastructure.Identity.Entities;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Media;
@@ -189,16 +191,6 @@ public class UsersController : BaseAdminController
         var roles =
             await _userManager.GetRolesAsync(user);
 
-        var mediaItems =
-                 (await _unitOfWork.Media.GetAllAsync())
-                 .Select(x => new MediaPickerItemViewModel
-                 {
-                     Id = x.Id,
-                     FileName = x.FileName,
-                     FilePath = x.FilePath
-                 })
-                 .ToList();
-
         var model =
             new EditUserViewModel
             {
@@ -207,8 +199,6 @@ public class UsersController : BaseAdminController
                 FullName = user.FullName,
 
                 UserName = user.UserName ?? "",
-
-                
 
                 Email = user.Email ?? "",
 
@@ -219,8 +209,6 @@ public class UsersController : BaseAdminController
                 Bio = user.Bio,
 
                 AvatarImageId = user.AvatarImageId,
-
-                MediaItems = mediaItems,
 
                 TwitterUrl = user.TwitterUrl,
 
@@ -248,10 +236,8 @@ public class UsersController : BaseAdminController
             Roles.Admin)
              ];
 
+        await HydrateReadOnlyContextAsync(model, user);
 
-  
-
-        
         return View(model);
     }
 
@@ -276,6 +262,15 @@ public class UsersController : BaseAdminController
             Roles.Admin,
             Roles.Admin)
              ];
+
+            var failed =
+                await _userManager.FindByIdAsync(
+                    model.Id.ToString());
+
+            if (failed != null)
+            {
+                await HydrateReadOnlyContextAsync(model, failed);
+            }
 
             return View(model);
         }
@@ -437,6 +432,56 @@ public class UsersController : BaseAdminController
 
         return RedirectToAction(
             nameof(Index));
+    }
+
+    /// <summary>
+    /// Fills the read-only context (media picker, avatar preview, article
+    /// stats and last-published date) that the edit view renders around the
+    /// editable fields. Used by both the GET and the validation-failure POST,
+    /// so the rich profile layout never renders with empty data.
+    /// </summary>
+    private async Task HydrateReadOnlyContextAsync(
+        EditUserViewModel model,
+        ApplicationUser user)
+    {
+        var mediaItems =
+            (await _unitOfWork.Media.GetAllAsync())
+                .Select(x => new MediaPickerItemViewModel
+                {
+                    Id = x.Id,
+                    FileName = x.FileName,
+                    FilePath = x.FilePath
+                })
+                .ToList();
+
+        model.MediaItems = mediaItems;
+        model.AvatarImagePath =
+            mediaItems.FirstOrDefault(x => x.Id == user.AvatarImageId)
+                ?.FilePath;
+
+        var summary =
+            await _unitOfWork.Articles.GetSummaryAsync(
+                new ArticleFilter { AuthorId = user.Id });
+
+        var lastPublished =
+            await _unitOfWork.Articles.GetPagedAsync(
+                new ArticleFilter
+                {
+                    AuthorId = user.Id,
+                    Status = ArticleStatus.Published,
+                    SortBy = ArticleSort.Latest,
+                    Page = 1,
+                    PageSize = 10
+                });
+
+        model.PublishedArticles = summary.PublishedArticles;
+        model.DraftArticles = summary.DraftArticles;
+        model.PendingArticles = summary.ReviewPendingArticles;
+        model.TotalViews = summary.TotalViews;
+        model.LastPublishedAtUtc =
+            lastPublished.Items
+                .Select(x => x.PublishedAt)
+                .FirstOrDefault();
     }
 
 
