@@ -1,7 +1,61 @@
-@model IReadOnlyList<TheGameVoice.Web.Areas.Admin.ViewModels.Users.UserListItemViewModel>
+@model TheGameVoice.Web.Areas.Admin.ViewModels.Users.UserIndexViewModel
 
 @{
     ViewData["Title"] = "Users";
+
+    // Keeps the active search / role / status filters when a column header is
+    // clicked, and toggles direction when the same column is clicked again.
+    Dictionary<string, string> RouteWith(string? sort = null, string? dir = null)
+    {
+        var route = new Dictionary<string, string>();
+
+        if (!string.IsNullOrWhiteSpace(Model.Query))
+        {
+            route["q"] = Model.Query;
+        }
+
+        if (!string.IsNullOrWhiteSpace(Model.Role))
+        {
+            route["role"] = Model.Role;
+        }
+
+        if (!string.IsNullOrWhiteSpace(Model.Status))
+        {
+            route["status"] = Model.Status;
+        }
+
+        if (!string.IsNullOrWhiteSpace(sort))
+        {
+            route["sort"] = sort;
+        }
+
+        if (!string.IsNullOrWhiteSpace(dir))
+        {
+            route["dir"] = dir;
+        }
+
+        return route;
+    }
+
+    string NextDir(string key)
+    {
+        if (Model.Sort != key)
+        {
+            return key is "name" or "role" ? "asc" : "desc";
+        }
+
+        return Model.Dir == "asc" ? "desc" : "asc";
+    }
+
+    // Sort keys as constants so they can be referenced inside HTML attributes
+    // without embedded double-quotes (which would terminate the attribute).
+    const string SName = "name";
+    const string SRole = "role";
+    const string SStatus = "status";
+    const string SPublished = "published";
+    const string SInProgress = "inprogress";
+    const string SRejected = "rejected";
+    const string SViews = "views";
 }
 
 <div class="space-y-6">
@@ -29,33 +83,107 @@
 
     </div>
 
+    <!-- FILTER BAR -->
+
+    <form method="get"
+          asp-action="Index"
+          class="flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-surface p-4 shadow-sm">
+
+        <div class="relative min-w-[220px] flex-1">
+
+            <i data-lucide="search"
+               class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint"></i>
+
+            <input type="search"
+                   name="q"
+                   value="@Model.Query"
+                   placeholder="Search name, username or email…"
+                   class="w-full rounded-xl border border-default bg-surface py-2.5 pl-9 pr-9 text-sm text-ink outline-none transition focus:border-primary focus:ring-2 focus:ring-orange-200" />
+
+            @if (!string.IsNullOrWhiteSpace(Model.Query))
+            {
+                <a asp-action="Index"
+                   asp-all-route-data="RouteWith()"
+                   title="Clear search"
+                   class="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-ink-faint transition hover:bg-surface-muted hover:text-ink">
+
+                    <i data-lucide="x" class="h-4 w-4"></i>
+
+                </a>
+            }
+
+        </div>
+
+        <select name="role"
+                onchange="this.form.submit()"
+                class="cursor-pointer rounded-xl border border-default bg-surface px-3 py-2.5 text-sm font-medium text-ink outline-none transition focus:border-primary">
+
+            <option value="">All roles</option>
+
+            @foreach (var r in Model.AvailableRoles)
+            {
+                <option value="@r" selected="@(Model.Role == r)">@r</option>
+            }
+
+        </select>
+
+        <select name="status"
+                onchange="this.form.submit()"
+                class="cursor-pointer rounded-xl border border-default bg-surface px-3 py-2.5 text-sm font-medium text-ink outline-none transition focus:border-primary">
+
+            <option value="">All statuses</option>
+            <option value="active" selected="@(Model.Status == "active")">Active</option>
+            <option value="inactive" selected="@(Model.Status == "inactive")">Inactive</option>
+
+        </select>
+
+        @if (Model.HasFilters)
+        {
+            <a asp-action="Index"
+               class="inline-flex items-center gap-1.5 rounded-xl border border-line px-3 py-2.5 text-sm font-medium text-ink-muted transition hover:bg-surface-muted hover:text-ink">
+
+                <i data-lucide="rotate-ccw" class="h-3.5 w-3.5"></i>
+
+                Reset
+
+            </a>
+        }
+
+    </form>
+
     <!-- SUMMARY -->
 
     <div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
 
         <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
-            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Team members</p>
-            <p class="mt-1.5 text-2xl font-bold text-ink">@Model.Count.ToString("N0")</p>
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Users shown</p>
+            <p class="mt-1.5 text-2xl font-bold text-ink">
+                @Model.Items.Count.ToString("N0")
+                @if (Model.HasFilters)
+                {
+                    <span class="text-sm font-medium text-ink-faint">/ @Model.TotalTeamSize.ToString("N0")</span>
+                }
+            </p>
         </div>
 
         <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
             <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Active now</p>
-            <p class="mt-1.5 text-2xl font-bold text-green-600">@Model.Count(x => x.IsActive).ToString("N0")</p>
+            <p class="mt-1.5 text-2xl font-bold text-green-600">@Model.ActiveUsers.ToString("N0")</p>
         </div>
 
         <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
             <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Done (published)</p>
-            <p class="mt-1.5 text-2xl font-bold text-green-600">@Model.Sum(x => x.PublishedArticles).ToString("N0")</p>
+            <p class="mt-1.5 text-2xl font-bold text-green-600">@Model.TotalDone.ToString("N0")</p>
         </div>
 
         <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
             <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">In progress</p>
-            <p class="mt-1.5 text-2xl font-bold text-amber-600">@Model.Sum(x => x.InProgressArticles).ToString("N0")</p>
+            <p class="mt-1.5 text-2xl font-bold text-amber-600">@Model.TotalInProgress.ToString("N0")</p>
         </div>
 
         <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
             <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Total views</p>
-            <p class="mt-1.5 text-2xl font-bold text-primary">@Model.Sum(x => x.TotalViews).ToString("N0")</p>
+            <p class="mt-1.5 text-2xl font-bold text-primary">@Model.TotalViews.ToString("N0")</p>
         </div>
 
     </div>
@@ -73,31 +201,87 @@
                     <tr class="text-left text-xs font-semibold uppercase tracking-wide text-ink-faint">
 
                         <th class="px-5 py-4">
-                            User
+                            <a asp-action="Index"
+                               asp-all-route-data="RouteWith(sort: SName, dir: NextDir(SName))"
+                               class="tgv-sort">
+                                User
+                                @if (Model.Sort == "name")
+                                {
+                                    <span class="tgv-sort__arrow">@(Model.Dir == "asc" ? "&#9650;" : "&#9660;")</span>
+                                }
+                            </a>
                         </th>
 
                         <th class="px-5 py-4">
-                            Role
+                            <a asp-action="Index"
+                               asp-all-route-data="RouteWith(sort: SRole, dir: NextDir(SRole))"
+                               class="tgv-sort">
+                                Role
+                                @if (Model.Sort == "role")
+                                {
+                                    <span class="tgv-sort__arrow">@(Model.Dir == "asc" ? "&#9650;" : "&#9660;")</span>
+                                }
+                            </a>
                         </th>
 
                         <th class="px-5 py-4">
-                            Status
+                            <a asp-action="Index"
+                               asp-all-route-data="RouteWith(sort: SStatus, dir: NextDir(SStatus))"
+                               class="tgv-sort">
+                                Status
+                                @if (Model.Sort == "status")
+                                {
+                                    <span class="tgv-sort__arrow">@(Model.Dir == "asc" ? "&#9650;" : "&#9660;")</span>
+                                }
+                            </a>
                         </th>
 
                         <th class="px-5 py-4 text-right">
-                            Done
+                            <a asp-action="Index"
+                               asp-all-route-data="RouteWith(sort: SPublished, dir: NextDir(SPublished))"
+                               class="tgv-sort">
+                                Done
+                                @if (Model.Sort == "published")
+                                {
+                                    <span class="tgv-sort__arrow">@(Model.Dir == "asc" ? "&#9650;" : "&#9660;")</span>
+                                }
+                            </a>
                         </th>
 
                         <th class="px-5 py-4 text-right">
-                            In progress
+                            <a asp-action="Index"
+                               asp-all-route-data="RouteWith(sort: SInProgress, dir: NextDir(SInProgress))"
+                               class="tgv-sort">
+                                In progress
+                                @if (Model.Sort == "inprogress")
+                                {
+                                    <span class="tgv-sort__arrow">@(Model.Dir == "asc" ? "&#9650;" : "&#9660;")</span>
+                                }
+                            </a>
                         </th>
 
                         <th class="px-5 py-4 text-right">
-                            Rejected
+                            <a asp-action="Index"
+                               asp-all-route-data="RouteWith(sort: SRejected, dir: NextDir(SRejected))"
+                               class="tgv-sort">
+                                Rejected
+                                @if (Model.Sort == "rejected")
+                                {
+                                    <span class="tgv-sort__arrow">@(Model.Dir == "asc" ? "&#9650;" : "&#9660;")</span>
+                                }
+                            </a>
                         </th>
 
                         <th class="px-5 py-4 text-right">
-                            Views
+                            <a asp-action="Index"
+                               asp-all-route-data="RouteWith(sort: SViews, dir: NextDir(SViews))"
+                               class="tgv-sort">
+                                Views
+                                @if (Model.Sort == "views")
+                                {
+                                    <span class="tgv-sort__arrow">@(Model.Dir == "asc" ? "&#9650;" : "&#9660;")</span>
+                                }
+                            </a>
                         </th>
 
                         <th class="px-5 py-4 text-right">
@@ -110,7 +294,7 @@
 
                 <tbody class="divide-y divide-line-subtle">
 
-                    @foreach (var user in Model)
+                    @foreach (var user in Model.Items)
                     {
                         <tr class="transition hover:bg-surface-muted">
 
@@ -285,6 +469,32 @@
                 </tbody>
 
             </table>
+
+            @if (Model.Items.Count == 0)
+            {
+                <div class="flex flex-col items-center justify-center px-6 py-16 text-center">
+
+                    <i data-lucide="user-search" class="h-10 w-10 text-ink-faint"></i>
+
+                    <p class="mt-4 text-sm font-semibold text-ink">
+                        No users match your filters
+                    </p>
+
+                    <p class="mt-1 text-sm text-ink-muted">
+                        Try a different search, or clear the filters to see everyone.
+                    </p>
+
+                    <a asp-action="Index"
+                       class="mt-5 inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-surface-muted">
+
+                        <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
+
+                        Clear filters
+
+                    </a>
+
+                </div>
+            }
 
         </div>
 
