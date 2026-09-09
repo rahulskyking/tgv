@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -228,6 +228,8 @@ public class UsersController : BaseAdminController
 
                 WebsiteUrl = user.WebsiteUrl,
 
+                SteamUrl = user.SteamUrl,
+
                 Role = roles.FirstOrDefault() ?? ""
             };
 
@@ -308,6 +310,9 @@ public class UsersController : BaseAdminController
         user.YouTubeUrl = model.YouTubeUrl;
 
         user.WebsiteUrl = model.WebsiteUrl;
+
+        user.SteamUrl = model.SteamUrl;
+
         user.UserName =
             model.UserName;
 

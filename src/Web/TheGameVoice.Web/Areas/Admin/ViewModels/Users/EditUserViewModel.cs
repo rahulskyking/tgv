@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Media;
 
@@ -36,6 +36,9 @@ public class EditUserViewModel
     public string? YouTubeUrl { get; set; }
 
     public string? WebsiteUrl { get; set; }
+
+    [Url]
+    public string? SteamUrl { get; set; }
 
     public string? AvatarImagePath { get; set; }
 

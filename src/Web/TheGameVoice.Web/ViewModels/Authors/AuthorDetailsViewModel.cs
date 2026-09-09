@@ -1,4 +1,4 @@
-﻿using TheGameVoice.Domain.Entities;
+using TheGameVoice.Domain.Entities;
 
 namespace TheGameVoice.Web.ViewModels.Authors;
 
@@ -16,6 +16,8 @@ public class AuthorDetailsViewModel
     public string? YouTubeUrl { get; set; }
 
     public string? WebsiteUrl { get; set; }
+
+    public string? SteamUrl { get; set; }
 
     public string? AvatarImagePath { get; set; }
 
