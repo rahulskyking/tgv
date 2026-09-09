@@ -42,6 +42,16 @@ public interface IArticleRepository
         Guid articleId,
         GameSegment? segment = null);
 
+    /// <summary>
+    /// Published articles that share at least one tag with the given article,
+    /// ordered by the number of shared tags (then recency). Falls back to an
+    /// empty list when the article has no tags.
+    /// </summary>
+    Task<IReadOnlyList<Article>>
+    GetRelatedByTagsAsync(
+        Guid articleId,
+        GameSegment? segment = null);
+
     Task<IReadOnlyList<Article>>
     SearchAsync(
         string query,

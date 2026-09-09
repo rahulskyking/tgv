@@ -1,3 +1,4 @@
+@using System.Text.Json
 @model TheGameVoice.Web.ViewModels.News.ArticleDetailsViewModel
 
 @{
@@ -23,6 +24,14 @@
 
     var seoImage =
         article.FeaturedImage?.FilePath;
+
+    var shareUrl = canonicalUrl;
+
+    var encodedUrl =
+        System.Uri.EscapeDataString(canonicalUrl);
+
+    var encodedTitle =
+        System.Uri.EscapeDataString(article.Title);
 }
 
 @section Head
@@ -80,6 +89,74 @@
         <meta name="twitter:image"
               content="@seoImage" />
     }
+
+    <!-- Structured data -->
+    @{
+        var ld = new Dictionary<string, object?>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = article.IsReview ? "Review" : "NewsArticle",
+            ["headline"] = seoTitle,
+            ["description"] = seoDescription,
+            ["url"] = canonicalUrl,
+            ["mainEntityOfPage"] = canonicalUrl,
+            ["datePublished"] = article.PublishedAt?.ToString("O"),
+            ["dateModified"] =
+                (article.LastModifiedAt ?? article.PublishedAt)?.ToString("O"),
+            ["author"] = new Dictionary<string, object?>
+            {
+                ["@type"] = "Person",
+                ["name"] = Model.AuthorName
+            },
+            ["publisher"] = new Dictionary<string, object?>
+            {
+                ["@type"] = "Organization",
+                ["name"] = "TheGameVoice"
+            }
+        };
+
+        if (!string.IsNullOrWhiteSpace(seoImage))
+        {
+            ld["image"] = seoImage;
+        }
+
+        if (article.IsReview)
+        {
+            // Google's Review type wants `name`, not `headline`.
+            ld["name"] = article.Title;
+
+            var reviewedGame =
+                article.ArticleGames?
+                    .Select(x => x.Game?.Name)
+                    .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+
+            if (!string.IsNullOrWhiteSpace(reviewedGame))
+            {
+                ld["itemReviewed"] = new Dictionary<string, object?>
+                {
+                    ["@type"] = "VideoGame",
+                    ["name"] = reviewedGame
+                };
+            }
+
+            if (article.ReviewScore.HasValue)
+            {
+                ld["reviewRating"] = new Dictionary<string, object?>
+                {
+                    ["@type"] = "Rating",
+                    ["ratingValue"] = article.ReviewScore.Value,
+                    ["bestRating"] = 10,
+                    ["worstRating"] = 0
+                };
+            }
+        }
+
+        var jsonLd = JsonSerializer.Serialize(ld);
+    }
+
+    <script type="application/ld+json">
+        @Html.Raw(jsonLd)
+    </script>
 }
 
 
@@ -175,35 +252,115 @@
             }
 
             <div class="mt-5 border-t border-line pt-4">
-                <div class="flex items-center gap-4">
+                <div class="flex flex-wrap items-center justify-between gap-4">
 
-                    @if (Model.AuthorAvatarUrl != null)
-                    {
-                        <img src="@Model.AuthorAvatarUrl"
-                             alt="@Model.AuthorName"
-                             class="h-9 w-9 rounded-full object-cover border border-line" />
-                    }
-                    else
-                    {
-                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-raised text-sm font-bold text-ink-mid">
+                    <div class="flex items-center gap-4">
 
-                            @Model.AuthorName.Substring(0, 1)
+                        @if (Model.AuthorAvatarUrl != null)
+                        {
+                            <img src="@Model.AuthorAvatarUrl"
+                                 alt="@Model.AuthorName"
+                                 class="h-9 w-9 rounded-full object-cover border border-line" />
+                        }
+                        else
+                        {
+                            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-raised text-sm font-bold text-ink-mid">
+
+                                @Model.AuthorName.Substring(0, 1)
+
+                            </div>
+                        }
+
+                        <div>
+                            <div class="text-sm font-semibold text-ink">
+                                By @Model.AuthorName
+                            </div>
+
+                            <div class="text-xs text-ink-muted">
+                                @(Model.Article.PublishedAt?
+                                                            .ToLocalTime()
+                                                            .ToString("dd MMM yyyy"))
+                                •
+                                @readingTime min read
+                            </div>
 
                         </div>
-                    }
 
-                    <div>
-                        <div class="text-sm font-semibold text-ink">
-                            By @Model.AuthorName
-                        </div>
+                    </div>
 
-                        <div class="text-xs text-ink-muted">
-                            @(Model.Article.PublishedAt?
-                                                        .ToLocalTime()
-                                                        .ToString("dd MMM yyyy"))
-                            •
-                            @readingTime min read
-                        </div>
+                    <div class="flex items-center gap-2">
+
+                        <span class="mr-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+                            Share
+                        </span>
+
+                        <a href="https://twitter.com/intent/tweet?url=@encodedUrl&text=@encodedTitle"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           aria-label="Share on X"
+                           title="Share on X"
+                           class="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink-muted transition hover:border-black hover:bg-black hover:text-white">
+
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
+                            </svg>
+
+                        </a>
+
+                        <a href="https://api.whatsapp.com/send?text=@encodedTitle%20@encodedUrl"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           aria-label="Share on WhatsApp"
+                           title="Share on WhatsApp"
+                           class="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink-muted transition hover:border-[#25D366] hover:bg-[#25D366] hover:text-white">
+
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                            </svg>
+
+                        </a>
+
+                        <a href="https://www.reddit.com/submit?url=@encodedUrl&title=@encodedTitle"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           aria-label="Share on Reddit"
+                           title="Share on Reddit"
+                           class="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink-muted transition hover:border-[#FF4500] hover:bg-[#FF4500] hover:text-white">
+
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.182 1.206.472 1.217-.865 2.868-1.44 4.674-1.5l.86-3.731a.81.81 0 01.523-.672l2.737-.722a1.25 1.25 0 01.234-.362zM8.18 12.501a1.257 1.257 0 100 2.514 1.257 1.257 0 000-2.514zm7.512 0a1.257 1.257 0 100 2.514 1.257 1.257 0 000-2.514zM6.9 16.53c.388.724 1.567 1.322 3.17 1.322 1.6 0 2.788-.6 3.178-1.322a.31.31 0 00-.264-.47.31.31 0 00-.222.092c-.64.536-1.56.857-2.69.857-1.137 0-2.06-.325-2.697-.865a.31.31 0 00-.487.376z" />
+                            </svg>
+
+                        </a>
+
+                        <a href="https://t.me/share/url?url=@encodedUrl&text=@encodedTitle"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           aria-label="Share on Telegram"
+                           title="Share on Telegram"
+                           class="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink-muted transition hover:border-[#26A5E4] hover:bg-[#26A5E4] hover:text-white">
+
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+                            </svg>
+
+                        </a>
+
+                        <button type="button"
+                                data-copy-link
+                                data-url="@canonicalUrl"
+                                aria-label="Copy link"
+                                title="Copy link"
+                                class="flex h-9 items-center gap-1.5 rounded-full border border-line px-3 text-xs font-semibold text-ink-muted transition hover:border-primary hover:text-primary">
+
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+                            </svg>
+
+                            <span data-copy-label>Copy</span>
+
+                        </button>
 
                     </div>
 
@@ -333,5 +490,33 @@
                     progress))
             + "%";
 
+    });
+</script>
+
+<script>
+    document.querySelectorAll("[data-copy-link]").forEach((button) => {
+        button.addEventListener("click", async () => {
+            const url = button.dataset.url;
+            const label = button.querySelector("[data-copy-label]");
+
+            try {
+                await navigator.clipboard.writeText(url);
+            } catch {
+                window.prompt("Copy link:", url);
+                return;
+            }
+
+            if (!label) return;
+
+            const original = label.textContent;
+
+            label.textContent = "Copied!";
+            button.classList.add("text-green-600");
+
+            setTimeout(() => {
+                label.textContent = original;
+                button.classList.remove("text-green-600");
+            }, 2000);
+        });
     });
 </script>

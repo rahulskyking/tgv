@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TheGameVoice.Application.Constants;
@@ -80,6 +80,36 @@ _cacheService;
                                 article.CategoryId,
                                 article.Id,
                                 relatedSegment);
+
+                    var relatedByTags =
+                        await _articleRepository
+                            .GetRelatedByTagsAsync(
+                                article.Id,
+                                relatedSegment);
+
+                    var trendingArticles =
+                        await _articleRepository
+                            .GetMostReadAsync(
+                                5,
+                                relatedSegment);
+
+                    // Contextual list: tag matches are the strongest signal,
+                    // so they come first; category matches fill any gaps.
+                    var mergedRelated =
+                        new List<Article>();
+
+                    var seen =
+                        new HashSet<Guid>();
+
+                    foreach (var candidate in
+                        relatedByTags.Concat(relatedArticles))
+                    {
+                        if (seen.Add(candidate.Id))
+                        {
+                            mergedRelated.Add(candidate);
+                        }
+                    }
+
                     var author =
                          await _userManager
                              .Users
@@ -91,7 +121,9 @@ _cacheService;
                     {
                         Article = article,
 
-                        RelatedArticles = relatedArticles,
+                        RelatedArticles = mergedRelated,
+
+                        TrendingArticles = trendingArticles,
 
                         AuthorName =
                         author?.FullName
