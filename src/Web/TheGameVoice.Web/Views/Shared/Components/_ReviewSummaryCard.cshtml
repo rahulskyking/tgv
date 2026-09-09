@@ -1,4 +1,4 @@
-﻿@model TheGameVoice.Domain.Entities.Article
+@model TheGameVoice.Domain.Entities.Article
 
 @if (Model.IsReview)
 {
@@ -11,6 +11,21 @@
         .Where(x => x.Type == TheGameVoice.Domain.Enums.ReviewPointType.Bad)
         .OrderBy(x => x.DisplayOrder)
         .ToList();
+
+    // Score drives a 0-10 segmented meter and a verdict tone (green / amber
+    // / red) so readers can judge the result at a glance.
+    var score = Model.ReviewScore ?? 0m;
+    var filledSegments = (int)Math.Round(score);
+
+    string VerdictTextTone() =>
+        score >= 8m ? "text-emerald-600"
+        : score >= 6m ? "text-amber-600"
+        : "text-red-600";
+
+    string VerdictMeterTone() =>
+        score >= 8m ? "bg-emerald-500"
+        : score >= 6m ? "bg-amber-500"
+        : "bg-red-500";
 
     <section class="mt-fluid-10 overflow-hidden rounded-[28px] border border-line bg-surface shadow-xl shadow-[#7c3aed]/5">
 
@@ -126,6 +141,18 @@
                             <div class="text-8xl font-black leading-none drop-shadow-lg">
                                 @(Model.ReviewScore?.ToString("0.0"))
                             </div>
+
+                            <div class="mt-3 text-xs font-bold uppercase tracking-[0.3em] text-white/60">
+                                out of 10
+                            </div>
+
+                            <div class="mt-4 flex items-center gap-1.5" aria-hidden="true">
+                                @for (var i = 1; i <= 10; i++)
+                                {
+                                    <span class="h-1.5 flex-1 rounded-full @(i <= filledSegments ? "bg-white" : "bg-white/20")"></span>
+                                }
+                            </div>
+
                             <div class="mt-4 text-lg font-black uppercase tracking-[0.35em] text-white/90">
                                 @Model.ReviewVerdict
                             </div>
@@ -176,7 +203,7 @@
                     <div class="text-[10px] font-bold uppercase tracking-[0.25em] text-[#7c3aed]">
                         Overall Verdict
                     </div>
-                    <h3 class="mt-1 text-xl font-black text-ink">
+                    <h3 class="mt-1 text-xl font-black @VerdictTextTone()">
                         @Model.ReviewVerdict
                     </h3>
                 </div>
@@ -184,10 +211,15 @@
                     <div class="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
                         Final Rating
                     </div>
-                    <div class="text-fluid-3xl font-black text-[#7c3aed]">
+                    <div class="text-fluid-3xl font-black @VerdictTextTone()">
                         @(Model.ReviewScore?.ToString("0.0"))<span class="text-xl text-ink-faint">/10</span>
                     </div>
                 </div>
+            </div>
+
+            <div class="mt-4 h-2 w-full overflow-hidden rounded-full bg-surface-raised" aria-hidden="true">
+                <div class="h-full rounded-full @VerdictMeterTone()"
+                     style="width: @(Math.Min(100, Math.Max(0, (double)(score / 10m * 100m))).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture))%;"></div>
             </div>
         </div>
 
