@@ -294,12 +294,88 @@
     }
 
 
+    /* ---------- 5. ACTION MENU DROPDOWNS ---------------------------------- */
+    /*  Usage:  <button type="button" data-menu-button> ⋯ </button>
+                <div data-menu class="hidden …"> items </div>               */
+
+    function initActionMenus() {
+        var openMenu = null;
+
+        function close() {
+            if (openMenu) {
+                openMenu.classList.add("hidden");
+                openMenu.style.removeProperty("position");
+                openMenu.style.removeProperty("top");
+                openMenu.style.removeProperty("right");
+            }
+
+            openMenu = null;
+        }
+
+        document.addEventListener("click", function (event) {
+            var button = event.target.closest("[data-menu-button]");
+
+            if (!button) {
+                close();
+                return;
+            }
+
+            event.stopPropagation();
+
+            var wrapper = button.closest("[data-menu-wrapper]");
+            var menu = wrapper ? wrapper.querySelector("[data-menu]") : null;
+
+            if (!menu) {
+                return;
+            }
+
+            var willOpen = menu.classList.contains("hidden");
+
+            close();
+
+            if (!willOpen) {
+                return;
+            }
+
+            // Pin to the viewport so the menu escapes any scroll container
+            // (the table lives inside overflow-x-auto, which would clip it).
+            menu.classList.remove("hidden");
+
+            var rect = button.getBoundingClientRect();
+            var menuHeight = menu.offsetHeight;
+            var spaceBelow = window.innerHeight - rect.bottom;
+
+            menu.style.position = "fixed";
+            menu.style.right = (window.innerWidth - rect.right) + "px";
+
+            if (spaceBelow < menuHeight && rect.top > menuHeight) {
+                menu.style.top = (rect.top - menuHeight - 4) + "px";
+            } else {
+                menu.style.top = (rect.bottom + 4) + "px";
+            }
+
+            openMenu = menu;
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                close();
+            }
+        });
+
+        // Keep it pinned to its row while the page scrolls.
+        window.addEventListener("scroll", close, true);
+        window.addEventListener("resize", close);
+    }
+
+
     /* ---------- BOOT ------------------------------------------------------ */
 
     function boot() {
         initToasts();
         initDirtyGuard();
         initBulk();
+        initActionMenus();
     }
 
     if (document.readyState === "loading") {
