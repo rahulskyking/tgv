@@ -177,6 +177,44 @@ public class ArticleRepository
             .ToListAsync();
     }
 
+    public async Task<IReadOnlyList<Article>>
+    GetRelatedByTagsAsync(
+        Guid articleId,
+        GameSegment? segment = null)
+    {
+        var tagIds = await _context.ArticleTags
+            .Where(x => x.ArticleId == articleId)
+            .Select(x => x.TagId)
+            .ToListAsync();
+
+        if (tagIds.Count == 0)
+        {
+            return Array.Empty<Article>();
+        }
+
+        var query = _context.Articles
+            .Include(x => x.FeaturedImage)
+            .Include(x => x.Category)
+            .Where(x =>
+                x.Status == ArticleStatus.Published &&
+                x.Id != articleId &&
+                x.ArticleTags.Any(t => tagIds.Contains(t.TagId)));
+
+        // Most shared tags first, then newest.
+        return await ApplySegment(query, segment)
+            .Select(x => new
+            {
+                Article = x,
+                MatchCount = x.ArticleTags
+                    .Count(t => tagIds.Contains(t.TagId))
+            })
+            .OrderByDescending(x => x.MatchCount)
+            .ThenByDescending(x => x.Article.PublishedAt)
+            .Select(x => x.Article)
+            .Take(8)
+            .ToListAsync();
+    }
+
     public async Task<IReadOnlyList<Article>> SearchAsync(
         string query,
         GameSegment? segment = null)
