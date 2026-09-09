@@ -143,6 +143,24 @@
             DashboardActivityType.Archived => "Archived",
             _ => "Updated"
         };
+
+    private static string ToneCard(string tone)
+        => tone switch
+        {
+            "danger" => "border-red-200 bg-red-50 hover:border-red-300",
+            "warning" => "border-amber-200 bg-amber-50 hover:border-amber-300",
+            "info" => "border-blue-200 bg-blue-50 hover:border-blue-300",
+            _ => "border-line bg-surface-raised hover:border-line-strong"
+        };
+
+    private static string ToneText(string tone)
+        => tone switch
+        {
+            "danger" => "text-red-700",
+            "warning" => "text-amber-700",
+            "info" => "text-blue-700",
+            _ => "text-ink"
+        };
 }
 
 @{
@@ -285,64 +303,7 @@
     else
     {
 
-    @*  NEEDS ATTENTION ------------------------------------------------
-        The dashboard used to open with a wall of totals. This band is the
-        opposite: only things that need a human, each one a link straight to
-        the filtered list. It hides itself completely when the queue is clean.
-    *@
-    @{
-        var health = Model.ScheduleHealth;
-
-        var attention = new List<(string Key, int Count, string Label, string Hint, string Icon, string Tone, ArticleStatus Status)>();
-
-        if (health.OverdueCount > 0)
-        {
-            attention.Add(("overdue", health.OverdueCount, "Overdue",
-                "Scheduled time has passed", "alarm-clock", "danger", ArticleStatus.Scheduled));
-        }
-
-        if (Model.Kpis.PendingReviewArticles > 0)
-        {
-            attention.Add(("review", Model.Kpis.PendingReviewArticles, "Waiting for review",
-                "Sitting in the editor queue", "inbox", "warning", ArticleStatus.ReviewPending));
-        }
-
-        if (Model.Kpis.RejectedArticles > 0)
-        {
-            attention.Add(("rejected", Model.Kpis.RejectedArticles, "Sent back",
-                "Rejected, needs a rewrite", "circle-x", "danger", ArticleStatus.Rejected));
-        }
-
-        if (health.DueTodayCount > 0)
-        {
-            attention.Add(("today", health.DueTodayCount, "Going live today",
-                "Publishes automatically", "calendar-clock", "info", ArticleStatus.Scheduled));
-        }
-
-        if (Model.Kpis.DraftArticles > 0)
-        {
-            attention.Add(("drafts", Model.Kpis.DraftArticles, "Unfinished drafts",
-                "Never submitted", "pencil-line", "muted", ArticleStatus.Draft));
-        }
-
-        string ToneCard(string tone) => tone switch
-        {
-            "danger" => "border-red-200 bg-red-50 hover:border-red-300",
-            "warning" => "border-amber-200 bg-amber-50 hover:border-amber-300",
-            "info" => "border-blue-200 bg-blue-50 hover:border-blue-300",
-            _ => "border-line bg-surface-raised hover:border-line-strong"
-        };
-
-        string ToneText(string tone) => tone switch
-        {
-            "danger" => "text-red-700",
-            "warning" => "text-amber-700",
-            "info" => "text-blue-700",
-            _ => "text-ink"
-        };
-    }
-
-    <section class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
+        <section class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
 
             <div class="flex flex-wrap items-center justify-between gap-3">
 
