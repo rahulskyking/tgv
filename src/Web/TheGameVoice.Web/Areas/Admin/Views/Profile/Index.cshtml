@@ -166,7 +166,7 @@
 
                     <h2 class="text-base font-semibold text-ink">Links</h2>
 
-                    <div class="mt-5 grid gap-5 sm:grid-cols-3">
+                    <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
 
                         <div>
                             <label asp-for="TwitterUrl" class="mb-2 block text-sm font-medium text-ink"></label>
@@ -187,6 +187,13 @@
                             <input asp-for="WebsiteUrl" placeholder="https://…"
                                    class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
                             <span asp-validation-for="WebsiteUrl" class="mt-1 block text-xs text-red-600"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="SteamUrl" class="mb-2 block text-sm font-medium text-ink"></label>
+                            <input asp-for="SteamUrl" placeholder="https://steamcommunity.com/id/…"
+                                   class="w-full rounded-xl border border-default bg-surface px-4 py-3 text-ink" />
+                            <span asp-validation-for="SteamUrl" class="mt-1 block text-xs text-red-600"></span>
                         </div>
 
                     </div>

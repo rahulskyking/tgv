@@ -43,6 +43,10 @@ public class MyProfileViewModel
     [Display(Name = "Website")]
     public string? WebsiteUrl { get; set; }
 
+    [Url]
+    [Display(Name = "Steam")]
+    public string? SteamUrl { get; set; }
+
     public List<MediaPickerItemViewModel> MediaItems { get; set; }
         = new();
 

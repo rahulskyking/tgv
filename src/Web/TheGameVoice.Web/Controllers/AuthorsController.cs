@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Infrastructure.Identity.Entities;
@@ -84,6 +84,9 @@ public class AuthorsController : Controller
 
                 WebsiteUrl =
                     author.WebsiteUrl,
+
+                SteamUrl =
+                    author.SteamUrl,
 
                 AvatarImagePath =
                     avatarPath,

@@ -1,4 +1,4 @@
-﻿@model TheGameVoice.Web.ViewModels.Authors.AuthorDetailsViewModel
+@model TheGameVoice.Web.ViewModels.Authors.AuthorDetailsViewModel
 
 <div class="tgv-container py-fluid-12">
 
@@ -65,6 +65,17 @@
                                class="text-primary">
 
                                 Website
+
+                            </a>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.SteamUrl))
+                        {
+                            <a href="@Model.SteamUrl"
+                               target="_blank"
+                               class="text-primary">
+
+                                Steam
 
                             </a>
                         }

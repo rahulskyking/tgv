@@ -68,6 +68,7 @@ public class ProfileController : BaseAdminController
             invalid.TwitterUrl = model.TwitterUrl;
             invalid.YouTubeUrl = model.YouTubeUrl;
             invalid.WebsiteUrl = model.WebsiteUrl;
+            invalid.SteamUrl = model.SteamUrl;
             invalid.AvatarImageId = model.AvatarImageId;
 
             return View(invalid);
@@ -79,6 +80,7 @@ public class ProfileController : BaseAdminController
         user.TwitterUrl = model.TwitterUrl;
         user.YouTubeUrl = model.YouTubeUrl;
         user.WebsiteUrl = model.WebsiteUrl;
+        user.SteamUrl = model.SteamUrl;
 
         // A writer without a slug has no public page, so always make sure
         // there is one.
@@ -195,6 +197,7 @@ public class ProfileController : BaseAdminController
             TwitterUrl = user.TwitterUrl,
             YouTubeUrl = user.YouTubeUrl,
             WebsiteUrl = user.WebsiteUrl,
+            SteamUrl = user.SteamUrl,
             Role = roles.FirstOrDefault() ?? "—",
 
             MediaItems = media
