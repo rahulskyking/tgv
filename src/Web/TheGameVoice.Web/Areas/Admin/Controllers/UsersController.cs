@@ -26,17 +26,20 @@ public class UsersController : BaseAdminController
         _roleManager;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISlugService _slugService;
+    private readonly IDashboardService _dashboardService;
 
     public UsersController(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole<Guid>> roleManager,
         IUnitOfWork unitOfWork,
-        ISlugService slugService)
+        ISlugService slugService,
+        IDashboardService dashboardService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _unitOfWork = unitOfWork;
         _slugService = slugService;
+        _dashboardService = dashboardService;
     }
 
     [HttpGet]
@@ -44,6 +47,20 @@ public class UsersController : BaseAdminController
     {
         var users =
             _userManager.Users.ToList();
+
+        // One aggregated pass for per-author lifetime stats (no N+1).
+        var authorStats =
+            await _dashboardService.GetAuthorPerformanceAsync();
+
+        var statsByAuthor =
+            authorStats.ToDictionary(x => x.AuthorId);
+
+        // One pass for avatar file paths.
+        var media =
+            await _unitOfWork.Media.GetAllAsync();
+
+        var avatarPaths =
+            media.ToDictionary(x => x.Id, x => x.FilePath);
 
         var model =
             new List<UserListItemViewModel>();
@@ -53,6 +70,18 @@ public class UsersController : BaseAdminController
             var roles =
                 await _userManager
                     .GetRolesAsync(user);
+
+            statsByAuthor.TryGetValue(user.Id, out var stats);
+
+            string? avatarPath = null;
+
+            if (user.AvatarImageId.HasValue &&
+                avatarPaths.TryGetValue(
+                    user.AvatarImageId.Value,
+                    out var path))
+            {
+                avatarPath = path;
+            }
 
             model.Add(
                 new UserListItemViewModel
@@ -72,9 +101,36 @@ public class UsersController : BaseAdminController
 
                     Role =
                         roles.FirstOrDefault()
-                        ?? "-"
+                        ?? "-",
+
+                    AvatarImagePath = avatarPath,
+
+                    PublishedArticles =
+                        stats?.PublishedArticles ?? 0,
+
+                    DraftArticles =
+                        stats?.DraftArticles ?? 0,
+
+                    ReviewPendingArticles =
+                        stats?.ReviewPendingArticles ?? 0,
+
+                    ScheduledArticles =
+                        stats?.ScheduledArticles ?? 0,
+
+                    RejectedArticles =
+                        stats?.RejectedArticles ?? 0,
+
+                    TotalViews =
+                        stats?.TotalViews ?? 0
                 });
         }
+
+        model =
+            model
+                .OrderByDescending(x => x.IsActive)
+                .ThenByDescending(x => x.PublishedArticles)
+                .ThenBy(x => x.FullName)
+                .ToList();
 
         return View(model);
     }

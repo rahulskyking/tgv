@@ -20,4 +20,12 @@ public interface IDashboardService
         Guid authorId,
         DashboardFilter filter,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Lifetime publishing KPIs for every author with at least one article,
+    /// aggregated in a single database pass. Used to render per-user stats on
+    /// the admin Users list without N+1 queries.
+    /// </summary>
+    Task<IReadOnlyList<AuthorKpiData>> GetAuthorPerformanceAsync(
+        CancellationToken cancellationToken = default);
 }

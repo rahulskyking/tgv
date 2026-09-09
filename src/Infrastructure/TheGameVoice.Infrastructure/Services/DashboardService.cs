@@ -420,6 +420,75 @@ public class DashboardService : IDashboardService
         };
     }
 
+    public async Task<IReadOnlyList<AuthorKpiData>> GetAuthorPerformanceAsync(
+        CancellationToken cancellationToken = default)
+    {
+        // One grouped scan over all articles -> per-author lifetime KPIs.
+        var aggregates = await _context.Articles
+            .AsNoTracking()
+            .GroupBy(a => a.AuthorId)
+            .Select(g => new
+            {
+                AuthorId = g.Key,
+                TotalArticles = g.Count(),
+                PublishedArticles =
+                    g.Count(a => a.Status == ArticleStatus.Published),
+                DraftArticles =
+                    g.Count(a => a.Status == ArticleStatus.Draft),
+                ReviewPendingArticles =
+                    g.Count(a => a.Status == ArticleStatus.ReviewPending),
+                ScheduledArticles =
+                    g.Count(a => a.Status == ArticleStatus.Scheduled),
+                RejectedArticles =
+                    g.Count(a => a.Status == ArticleStatus.Rejected),
+                TotalViews = g.Sum(a => (long)a.ViewCount)
+            })
+            .ToListAsync(cancellationToken);
+
+        var userIds = aggregates
+            .Select(x => x.AuthorId)
+            .Distinct()
+            .ToList();
+
+        var userNames = new Dictionary<Guid, string>();
+
+        if (userIds.Count > 0)
+        {
+            var users = await _context.Users
+                .AsNoTracking()
+                .Where(u => userIds.Contains(u.Id))
+                .Select(u => new { u.Id, u.FullName })
+                .ToListAsync(cancellationToken);
+
+            userNames = users.ToDictionary(u => u.Id, u => u.FullName);
+        }
+
+        return aggregates
+            .Select(x => new AuthorKpiData
+            {
+                AuthorId = x.AuthorId,
+                AuthorName =
+                    userNames.TryGetValue(x.AuthorId, out var name) &&
+                    !string.IsNullOrWhiteSpace(name)
+                        ? name
+                        : "Unknown Author",
+                TotalArticles = x.TotalArticles,
+                PublishedArticles = x.PublishedArticles,
+                DraftArticles = x.DraftArticles,
+                ReviewPendingArticles = x.ReviewPendingArticles,
+                ScheduledArticles = x.ScheduledArticles,
+                RejectedArticles = x.RejectedArticles,
+                TotalViews = x.TotalViews,
+                AverageViewsPerPublishedArticle =
+                    x.PublishedArticles > 0
+                        ? (double)x.TotalViews / x.PublishedArticles
+                        : 0
+            })
+            .OrderByDescending(x => x.PublishedArticles)
+            .ThenByDescending(x => x.TotalViews)
+            .ToList();
+    }
+
     public async Task<AuthorStatsData?> GetAuthorStatsAsync(
         Guid authorId,
         DashboardFilter filter,

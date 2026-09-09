@@ -1,15 +1,27 @@
-﻿@model IReadOnlyList<TheGameVoice.Web.Areas.Admin.ViewModels.Users.UserListItemViewModel>
+@model IReadOnlyList<TheGameVoice.Web.Areas.Admin.ViewModels.Users.UserListItemViewModel>
+
+@{
+    ViewData["Title"] = "Users";
+}
 
 <div class="space-y-6">
 
-    <div class="flex items-center justify-between">
+    <div class="flex flex-wrap items-center justify-between gap-3">
 
-        <h1 class="text-fluid-3xl font-bold">
-            Users
-        </h1>
+        <div>
+            <h1 class="text-fluid-3xl font-bold text-ink">
+                Users
+            </h1>
+
+            <p class="mt-1 text-sm text-ink-muted">
+                Team overview — who is publishing and how much is still in the pipeline.
+            </p>
+        </div>
 
         <a asp-action="Create"
-           class="rounded-xl bg-primary px-4 py-3 text-black">
+           class="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-black transition hover:bg-primary-hover">
+
+            <i data-lucide="user-plus" class="h-4 w-4"></i>
 
             Create User
 
@@ -17,127 +29,264 @@
 
     </div>
 
-    <div class="overflow-hidden rounded-2xl bg-surface shadow-sm">
+    <!-- SUMMARY -->
 
-        <table class="w-full">
+    <div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
 
-            <thead class="bg-surface-raised">
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Team members</p>
+            <p class="mt-1.5 text-2xl font-bold text-ink">@Model.Count.ToString("N0")</p>
+        </div>
 
-                <tr>
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Active now</p>
+            <p class="mt-1.5 text-2xl font-bold text-green-600">@Model.Count(x => x.IsActive).ToString("N0")</p>
+        </div>
 
-                    <th class="px-6 py-4 text-left">
-                        Name
-                    </th>
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Done (published)</p>
+            <p class="mt-1.5 text-2xl font-bold text-green-600">@Model.Sum(x => x.PublishedArticles).ToString("N0")</p>
+        </div>
 
-                    <th class="px-6 py-4 text-left">
-                        Username
-                    </th>
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">In progress</p>
+            <p class="mt-1.5 text-2xl font-bold text-amber-600">@Model.Sum(x => x.InProgressArticles).ToString("N0")</p>
+        </div>
 
-                    <th class="px-6 py-4 text-left">
-                        Email
-                    </th>
+        <div class="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <p class="text-xs font-medium uppercase tracking-wide text-ink-faint">Total views</p>
+            <p class="mt-1.5 text-2xl font-bold text-primary">@Model.Sum(x => x.TotalViews).ToString("N0")</p>
+        </div>
 
-                    <th class="px-6 py-4 text-left">
-                        Role
-                    </th>
+    </div>
 
-                    <th class="px-6 py-4 text-left">
-                        Status
-                    </th>
+    <!-- TABLE -->
 
-                </tr>
+    <div class="overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
 
-            </thead>
+        <div class="overflow-x-auto">
 
-            <tbody>
+            <table class="w-full min-w-[900px]">
 
-                @foreach (var user in Model)
-                {
-                    <tr class="border-t">
+                <thead class="bg-surface-raised">
 
-                        <td class="px-6 py-4">
-                            @user.FullName
-                        </td>
+                    <tr class="text-left text-xs font-semibold uppercase tracking-wide text-ink-faint">
 
-                        <td class="px-6 py-4">
-                            @user.UserName
-                        </td>
+                        <th class="px-5 py-4">
+                            User
+                        </th>
 
-                        <td class="px-6 py-4">
-                            @user.Email
-                        </td>
+                        <th class="px-5 py-4">
+                            Role
+                        </th>
 
-                        <td class="px-6 py-4">
-                            @user.Role
-                        </td>
+                        <th class="px-5 py-4">
+                            Status
+                        </th>
 
-                        <td class="px-6 py-4">
+                        <th class="px-5 py-4 text-right">
+                            Done
+                        </th>
 
-                            @if (user.IsActive)
-                            {
-                                <span class="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">
+                        <th class="px-5 py-4 text-right">
+                            In progress
+                        </th>
 
-                                    Active
+                        <th class="px-5 py-4 text-right">
+                            Rejected
+                        </th>
 
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="rounded-full bg-red-100 px-3 py-1 text-sm text-red-700">
+                        <th class="px-5 py-4 text-right">
+                            Views
+                        </th>
 
-                                    Inactive
-
-                                </span>
-                            }
-
-                        </td>
-                    <td class="px-6 py-4">
-
-                        <div class="flex gap-4">
-
-                            <a asp-action="Edit"
-                               asp-route-id="@user.Id"
-                               class="text-primary">
-
-                                Edit
-
-                            </a>
-                                <a asp-action="ResetPassword"
-                                   asp-route-id="@user.Id"
-                                   class="text-orange-600">
-
-                                    Reset Password
-
-                                </a>
-                            <form asp-action="ToggleStatus"
-                                  asp-route-id="@user.Id"
-                                  method="post">
-
-                                @Html.AntiForgeryToken()
-
-                                <button type="submit"
-                                        data-confirm="A disabled user cannot sign in to the admin."
-                                        data-confirm-title="Change this account status?"
-                                        data-confirm-action="Continue"
-                                        data-confirm-tone="danger">
-
-                                    @(user.IsActive? "Deactivate" : "Activate")
-
-                                </button>
-
-                                </form>
-
-                            </div>
-
-                        </td>
-
+                        <th class="px-5 py-4 text-right">
+                            Actions
+                        </th>
 
                     </tr>
-                }
 
-            </tbody>
+                </thead>
 
-        </table>
+                <tbody class="divide-y divide-line-subtle">
+
+                    @foreach (var user in Model)
+                    {
+                        <tr class="transition hover:bg-surface-muted">
+
+                            <td class="px-5 py-4">
+
+                                <div class="flex items-center gap-3">
+
+                                    @if (!string.IsNullOrWhiteSpace(user.AvatarImagePath))
+                                    {
+                                        <img src="@user.AvatarImagePath"
+                                             alt="@user.FullName"
+                                             class="h-10 w-10 shrink-0 rounded-full object-cover" />
+                                    }
+                                    else
+                                    {
+                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100 text-sm font-bold text-[#fa743e]">
+                                            @user.Initials
+                                        </div>
+                                    }
+
+                                    <div class="min-w-0">
+
+                                        <div class="truncate text-sm font-semibold text-ink">
+                                            @user.FullName
+                                        </div>
+
+                                        <div class="truncate text-xs text-ink-muted">
+                                            @@@user.UserName · @user.Email
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td class="px-5 py-4">
+
+                                @{
+                                    var roleTone = user.Role switch
+                                    {
+                                        "SuperAdmin" or "Admin" => "bg-purple-100 text-purple-700",
+                                        "Editor" => "bg-blue-100 text-blue-700",
+                                        _ => "bg-surface-raised text-ink-mid"
+                                    };
+                                }
+
+                                <span class="rounded-full px-2.5 py-1 text-xs font-bold @roleTone">
+                                    @user.Role
+                                </span>
+
+                            </td>
+
+                            <td class="px-5 py-4">
+
+                                @if (user.IsActive)
+                                {
+                                    <span class="rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-green-700">
+                                        Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="rounded-full bg-red-100 px-2.5 py-1 text-xs font-bold text-red-700">
+                                        Inactive
+                                    </span>
+                                }
+
+                            </td>
+
+                            <td class="px-5 py-4 text-right">
+
+                                @if (user.PublishedArticles > 0)
+                                {
+                                    <span class="text-sm font-semibold tabular-nums text-green-600">
+                                        @user.PublishedArticles.ToString("N0")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-sm tabular-nums text-ink-faint">—</span>
+                                }
+
+                            </td>
+
+                            <td class="px-5 py-4 text-right">
+
+                                @if (user.InProgressArticles > 0)
+                                {
+                                    <span class="text-sm font-semibold tabular-nums text-amber-600"
+                                          title="@user.DraftArticles drafts · @user.ReviewPendingArticles in review · @user.ScheduledArticles scheduled">
+                                        @user.InProgressArticles.ToString("N0")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-sm tabular-nums text-ink-faint">—</span>
+                                }
+
+                            </td>
+
+                            <td class="px-5 py-4 text-right">
+
+                                @if (user.RejectedArticles > 0)
+                                {
+                                    <span class="text-sm font-semibold tabular-nums text-red-600">
+                                        @user.RejectedArticles.ToString("N0")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-sm tabular-nums text-ink-faint">—</span>
+                                }
+
+                            </td>
+
+                            <td class="px-5 py-4 text-right text-sm tabular-nums text-ink-mid">
+                                @user.TotalViews.ToString("N0")
+                            </td>
+
+                            <td class="px-5 py-4">
+
+                                <div class="flex items-center justify-end gap-3 whitespace-nowrap">
+
+                                    <a asp-area="Admin"
+                                       asp-controller="Dashboard"
+                                       asp-action="Author"
+                                       asp-route-id="@user.Id"
+                                       class="text-sm font-medium text-primary hover:text-primary-hover">
+                                        Stats
+                                    </a>
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@user.Id"
+                                       class="text-sm font-medium text-primary hover:text-primary-hover">
+                                        Edit
+                                    </a>
+
+                                    <a asp-action="ResetPassword"
+                                       asp-route-id="@user.Id"
+                                       class="text-sm font-medium text-orange-600 hover:text-orange-700">
+                                        Reset
+                                    </a>
+
+                                    <form asp-action="ToggleStatus"
+                                          asp-route-id="@user.Id"
+                                          method="post"
+                                          class="inline">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                data-confirm="A disabled user cannot sign in to the admin."
+                                                data-confirm-title="Change this account status?"
+                                                data-confirm-action="Continue"
+                                                data-confirm-tone="danger"
+                                                class="text-sm font-medium text-ink-muted hover:text-ink">
+
+                                            @(user.IsActive ? "Deactivate" : "Activate")
+
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 
