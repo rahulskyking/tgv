@@ -5,6 +5,7 @@ using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Interfaces.Persistence;
 using TheGameVoice.Application.Interfaces.Services;
 using TheGameVoice.Domain.Common.Extensions;
+using TheGameVoice.Domain.Entities;
 using TheGameVoice.Domain.Enums;
 using TheGameVoice.Infrastructure.Identity.Entities;
 using TheGameVoice.Web.Services;
