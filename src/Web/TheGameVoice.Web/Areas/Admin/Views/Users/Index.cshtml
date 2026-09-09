@@ -415,49 +415,87 @@
                                 @user.TotalViews.ToString("N0")
                             </td>
 
-                            <td class="px-5 py-4">
+                            <td class="px-5 py-4 text-right">
 
-                                <div class="flex items-center justify-end gap-3 whitespace-nowrap">
+                                <div data-menu-wrapper
+                                     class="relative inline-block">
 
-                                    <a asp-area="Admin"
-                                       asp-controller="Dashboard"
-                                       asp-action="Author"
-                                       asp-route-id="@user.Id"
-                                       class="text-sm font-medium text-primary hover:text-primary-hover">
-                                        Stats
-                                    </a>
+                                    <button type="button"
+                                            data-menu-button
+                                            title="Actions"
+                                            aria-haspopup="true"
+                                            class="rounded-lg p-2 text-ink-muted transition hover:bg-surface-raised hover:text-ink">
 
-                                    <a asp-action="Edit"
-                                       asp-route-id="@user.Id"
-                                       class="text-sm font-medium text-primary hover:text-primary-hover">
-                                        Edit
-                                    </a>
+                                        <i data-lucide="ellipsis-vertical" class="h-5 w-5"></i>
 
-                                    <a asp-action="ResetPassword"
-                                       asp-route-id="@user.Id"
-                                       class="text-sm font-medium text-orange-600 hover:text-orange-700">
-                                        Reset
-                                    </a>
+                                    </button>
 
-                                    <form asp-action="ToggleStatus"
-                                          asp-route-id="@user.Id"
-                                          method="post"
-                                          class="inline">
+                                    <div data-menu
+                                         class="absolute right-0 z-50 mt-2 hidden w-52 overflow-hidden rounded-xl border border-line bg-surface text-left shadow-2xl">
 
-                                        @Html.AntiForgeryToken()
+                                        <div class="border-b border-line-subtle bg-surface-muted px-4 py-2.5">
+                                            <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-ink-faint">
+                                                Actions
+                                            </p>
+                                        </div>
 
-                                        <button type="submit"
-                                                data-confirm="A disabled user cannot sign in to the admin."
-                                                data-confirm-title="Change this account status?"
-                                                data-confirm-action="Continue"
-                                                data-confirm-tone="danger"
-                                                class="text-sm font-medium text-ink-muted hover:text-ink">
+                                        <a asp-area="Admin"
+                                           asp-controller="Dashboard"
+                                           asp-action="Author"
+                                           asp-route-id="@user.Id"
+                                           class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-ink transition hover:bg-surface-muted">
 
-                                            @(user.IsActive ? "Deactivate" : "Activate")
+                                            <i data-lucide="bar-chart-3" class="h-4 w-4 text-ink-mid"></i>
 
-                                        </button>
+                                            View stats
 
-                                    </form>
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@user.Id"
+                                           class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-ink transition hover:bg-surface-muted">
+
+                                            <i data-lucide="square-pen" class="h-4 w-4 text-ink-mid"></i>
+
+                                            Edit profile
+
+                                        </a>
+
+                                        <a asp-action="ResetPassword"
+                                           asp-route-id="@user.Id"
+                                           class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-ink transition hover:bg-surface-muted">
+
+                                            <i data-lucide="key-round" class="h-4 w-4 text-ink-mid"></i>
+
+                                            Reset password
+
+                                        </a>
+
+                                        <div class="border-t border-line-subtle"></div>
+
+                                        <form asp-action="ToggleStatus"
+                                              asp-route-id="@user.Id"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    data-confirm="A disabled user cannot sign in to the admin."
+                                                    data-confirm-title="Change this account status?"
+                                                    data-confirm-action="Continue"
+                                                    data-confirm-tone="danger"
+                                                    class="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium @(user.IsActive ? "text-red-600 hover:bg-red-50" : "text-green-600 hover:bg-green-50")">
+
+                                                <i data-lucide="@(user.IsActive ? "user-x" : "user-check")"
+                                                   class="h-4 w-4"></i>
+
+                                                @(user.IsActive ? "Deactivate" : "Activate")
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
 
                                 </div>
 
