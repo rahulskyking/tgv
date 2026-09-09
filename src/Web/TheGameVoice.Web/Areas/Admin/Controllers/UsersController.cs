@@ -43,7 +43,12 @@ public class UsersController : BaseAdminController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(
+        string? q = null,
+        string? role = null,
+        string? status = null,
+        string? sort = null,
+        string? dir = null)
     {
         var users =
             _userManager.Users.ToList();
@@ -62,7 +67,44 @@ public class UsersController : BaseAdminController
         var avatarPaths =
             media.ToDictionary(x => x.Id, x => x.FilePath);
 
-        var model =
+        // ---- Normalise (and thereby validate) every query-string value ----
+        var query = q?.Trim() ?? string.Empty;
+
+        var roleFilter =
+            string.IsNullOrWhiteSpace(role) ? string.Empty : role.Trim();
+
+        var statusFilter =
+            (status ?? string.Empty).Trim().ToLowerInvariant();
+
+        if (statusFilter is not ("active" or "inactive"))
+        {
+            statusFilter = string.Empty;
+        }
+
+        var sortKey =
+            (sort ?? "published").Trim().ToLowerInvariant();
+
+        if (sortKey is not ("name" or "role" or "status" or "published"
+            or "inprogress" or "rejected" or "views"))
+        {
+            sortKey = "published";
+        }
+
+        var ascending =
+            string.Equals(dir, "asc", StringComparison.OrdinalIgnoreCase);
+
+        if (sortKey is "name" or "role")
+        {
+            // Text columns sort A→Z on first click; numeric columns default
+            // to highest-first.
+            if (string.IsNullOrWhiteSpace(dir))
+            {
+                ascending = true;
+            }
+        }
+
+        // ---- Build the filtered list ----
+        var items =
             new List<UserListItemViewModel>();
 
         foreach (var user in users)
@@ -70,6 +112,30 @@ public class UsersController : BaseAdminController
             var roles =
                 await _userManager
                     .GetRolesAsync(user);
+
+            if (roleFilter.Length > 0 &&
+                !roles.Contains(roleFilter, StringComparer.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (statusFilter == "active" && !user.IsActive)
+            {
+                continue;
+            }
+
+            if (statusFilter == "inactive" && user.IsActive)
+            {
+                continue;
+            }
+
+            if (query.Length > 0 &&
+                !Matches(user.FullName, query) &&
+                !Matches(user.UserName, query) &&
+                !Matches(user.Email, query))
+            {
+                continue;
+            }
 
             statsByAuthor.TryGetValue(user.Id, out var stats);
 
@@ -83,7 +149,7 @@ public class UsersController : BaseAdminController
                 avatarPath = path;
             }
 
-            model.Add(
+            items.Add(
                 new UserListItemViewModel
                 {
                     Id = user.Id,
@@ -125,15 +191,55 @@ public class UsersController : BaseAdminController
                 });
         }
 
-        model =
-            model
-                .OrderByDescending(x => x.IsActive)
-                .ThenByDescending(x => x.PublishedArticles)
-                .ThenBy(x => x.FullName)
-                .ToList();
+        // ---- Sort ----
+        IOrderedEnumerable<UserListItemViewModel> ordered = sortKey switch
+        {
+            "name" => Order(items, x => x.FullName, ascending),
+            "role" => Order(items, x => x.Role, ascending),
+            "status" => Order(items, x => x.IsActive, ascending),
+            "inprogress" => Order(items, x => x.InProgressArticles, ascending),
+            "rejected" => Order(items, x => x.RejectedArticles, ascending),
+            "views" => Order(items, x => x.TotalViews, ascending),
+            _ => Order(items, x => x.PublishedArticles, ascending)
+        };
+
+        items = ordered
+            .ThenBy(x => x.FullName)
+            .ToList();
+
+        var model =
+            new UserIndexViewModel
+            {
+                Items = items,
+                Query = query,
+                Role = roleFilter,
+                Status = statusFilter,
+                Sort = sortKey,
+                Dir = ascending ? "asc" : "desc",
+                TotalTeamSize = users.Count,
+                AvailableRoles =
+                [
+                    Roles.SuperAdmin,
+                    Roles.Admin,
+                    Roles.Editor,
+                    Roles.Author
+                ]
+            };
 
         return View(model);
     }
+
+    private static IOrderedEnumerable<UserListItemViewModel> Order<TKey>(
+        IEnumerable<UserListItemViewModel> source,
+        Func<UserListItemViewModel, TKey> keySelector,
+        bool ascending)
+        => ascending
+            ? source.OrderBy(keySelector)
+            : source.OrderByDescending(keySelector);
+
+    private static bool Matches(string? value, string query)
+        => !string.IsNullOrEmpty(value) &&
+           value.Contains(query, StringComparison.OrdinalIgnoreCase);
 
     [HttpGet]
     public IActionResult Create()
