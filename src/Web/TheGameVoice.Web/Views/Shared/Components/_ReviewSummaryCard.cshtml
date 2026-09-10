@@ -109,85 +109,85 @@
 
         </div>
 
-        <!-- SCORE (full-width horizontal band) -->
+        <!-- SCORE + SUMMARY (full-width purple band) -->
         <div class="relative overflow-hidden bg-gradient-to-r from-[#7c3aed] via-[#6d28d9] to-[#5b21b6] text-white">
             <!-- Background Decoration -->
             <div class="absolute -right-16 -top-16 h-52 w-52 rounded-full bg-surface/10 blur-3xl"></div>
             <div class="absolute -bottom-20 -left-20 h-56 w-56 rounded-full bg-black/20 blur-3xl"></div>
 
-            <div class="relative flex flex-col gap-6 p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
+            <div class="relative p-6 sm:p-8">
 
-                <!-- Score + verdict -->
-                <div class="flex items-center gap-5">
-
-                    <div class="text-7xl font-black leading-none drop-shadow-lg sm:text-8xl">
-                        @(Model.ReviewScore?.ToString("0.0"))
+                <!-- Verdict Summary (above the score) -->
+                @if (!string.IsNullOrWhiteSpace(Model.ReviewSummary))
+                {
+                    <div class="mb-6">
+                        <div class="mb-2 text-[10px] font-bold uppercase tracking-[0.25em] text-white/70">
+                            Verdict Summary
+                        </div>
+                        <p class="text-sm font-medium leading-relaxed text-white/90">
+                            @Model.ReviewSummary
+                        </p>
                     </div>
 
-                    <div>
-                        <div class="text-xs font-bold uppercase tracking-[0.3em] text-white/60">
-                            out of 10
+                    <div class="mb-6 border-t border-white/20"></div>
+                }
+
+                <!-- Score + verdict + meter -->
+                <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+
+                    <!-- Score + verdict -->
+                    <div class="flex items-center gap-5">
+
+                        <div class="text-7xl font-black leading-none drop-shadow-lg sm:text-8xl">
+                            @(Model.ReviewScore?.ToString("0.0"))
                         </div>
 
-                        <div class="mt-1 inline-flex rounded-full bg-surface/15 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em]">
-                            TheGameVoice Score
-                        </div>
-
-                        <div class="mt-2 text-lg font-black uppercase tracking-[0.35em] text-white/90">
-                            @Model.ReviewVerdict
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Segmented meter -->
-                <div class="flex flex-1 items-center gap-1.5 lg:max-w-md" aria-hidden="true">
-                    @for (var i = 1; i <= 10; i++)
-                    {
-                        <span class="h-2 flex-1 rounded-full @(i <= filledSegments ? "bg-white" : "bg-white/20")"></span>
-                    }
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Summary (horizontal band) -->
-        @if (!string.IsNullOrWhiteSpace(Model.ReviewSummary) ||
-             (Model.ArticleGames != null && Model.ArticleGames.Any()))
-        {
-            var game = Model.ArticleGames?.FirstOrDefault()?.Game;
-
-            <div class="border-t border-line bg-surface-muted px-6 py-6 sm:px-8">
-                <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-
-                    @if (!string.IsNullOrWhiteSpace(Model.ReviewSummary))
-                    {
-                        <div class="min-w-0 flex-1">
-                            <div class="mb-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#7c3aed]">
-                                Verdict Summary
+                        <div>
+                            <div class="text-xs font-bold uppercase tracking-[0.3em] text-white/60">
+                                out of 10
                             </div>
-                            <p class="text-sm font-medium leading-relaxed text-ink-soft">
-                                @Model.ReviewSummary
-                            </p>
-                        </div>
-                    }
 
-                    @if (game != null)
-                    {
+                            <div class="mt-1 inline-flex rounded-full bg-surface/15 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em]">
+                                TheGameVoice Score
+                            </div>
+
+                            <div class="mt-2 text-lg font-black uppercase tracking-[0.35em] text-white/90">
+                                @Model.ReviewVerdict
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Segmented meter -->
+                    <div class="flex flex-1 items-center gap-1.5 lg:max-w-md" aria-hidden="true">
+                        @for (var i = 1; i <= 10; i++)
+                        {
+                            <span class="h-2 flex-1 rounded-full @(i <= filledSegments ? "bg-white" : "bg-white/20")"></span>
+                        }
+                    </div>
+
+                </div>
+
+                <!-- View Game Hub -->
+                @if (Model.ArticleGames != null && Model.ArticleGames.Any())
+                {
+                    var game = Model.ArticleGames.First().Game;
+
+                    <div class="mt-6 border-t border-white/20 pt-5">
                         <a asp-controller="Games"
                            asp-action="Details"
                            asp-route-slug="@game.Slug"
-                           class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-xs font-bold uppercase tracking-wide text-black shadow-lg transition-transform duration-300 hover:-translate-y-0.5 hover:bg-primary-hover">
+                           class="inline-flex items-center justify-center gap-2 rounded-xl bg-surface px-5 py-3.5 text-xs font-bold uppercase tracking-wide text-[#7c3aed] shadow-lg transition-transform duration-300 hover:-translate-y-0.5 hover:bg-surface-muted">
                             View Game Hub
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 5l7 7-7 7" />
                             </svg>
                         </a>
-                    }
+                    </div>
+                }
 
-                </div>
             </div>
-        }
+        </div>
 
     </section>
 }
