@@ -19,10 +19,10 @@
     <section class="mt-fluid-10 overflow-hidden rounded-[28px] border border-line bg-surface shadow-xl shadow-[#7c3aed]/5">
 
         <!-- Header -->
-        <div class="flex items-center justify-between border-b border-[#7c3aed]/10 bg-gradient-to-r from-[#7c3aed]/5 to-surface px-6 py-5 sm:px-8">
-            <div class="flex items-center gap-4">
-                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#7c3aed]/10">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#7c3aed]" fill="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center justify-between border-b border-[#7c3aed]/10 bg-gradient-to-r from-[#7c3aed]/5 to-surface px-4 py-4 sm:px-8 sm:py-5">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#7c3aed]/10 sm:h-14 sm:w-14">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#7c3aed] sm:h-7 sm:w-7" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M7 6h10a5 5 0 015 5v2a3 3 0 01-3 3h-1l-2 2H8l-2-2H5a3 3 0 01-3-3v-2a5 5 0 015-5z" />
                     </svg>
                 </div>
@@ -44,25 +44,25 @@
         <div class="grid grid-cols-2 bg-surface-muted">
 
             <!-- GOOD -->
-            <div class="border-b border-line p-6 sm:p-8 md:border-b-0 md:border-r">
-                <div class="mb-6 flex items-center gap-3">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="border-b border-line p-4 sm:p-8 md:border-b-0 md:border-r">
+                <div class="mb-4 flex items-center gap-2.5 sm:mb-6 sm:gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 sm:h-12 sm:w-12">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600 sm:h-6 sm:w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14 9V5a3 3 0 00-6 0v4H5v11h14V9h-5z" />
                         </svg>
                     </div>
                     <div>
-                        <div class="text-xs font-black uppercase tracking-[0.25em] text-emerald-600">
+                        <div class="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-600 sm:text-xs">
                             GOOD
                         </div>
-                        <div class="mt-1 h-1 w-8 rounded-full bg-emerald-500"></div>
+                        <div class="mt-1 h-1 w-6 rounded-full bg-emerald-500 sm:w-8"></div>
                     </div>
                 </div>
-                <div class="space-y-4">
+                <div class="space-y-3 sm:space-y-4">
                     @foreach (var point in goodPoints)
                     {
-                        <div class="group flex items-start gap-3">
-                            <div class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 transition-transform duration-300 group-hover:scale-110">
+                        <div class="group flex items-start gap-2.5 sm:gap-3">
+                            <div class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 transition-transform duration-300 group-hover:scale-110 sm:h-6 sm:w-6">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-emerald-600" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7" />
                                 </svg>
@@ -76,25 +76,25 @@
             </div>
 
             <!-- BAD -->
-            <div class="p-6 sm:p-8">
-                <div class="mb-6 flex items-center gap-3">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="p-4 sm:p-8">
+                <div class="mb-4 flex items-center gap-2.5 sm:mb-6 sm:gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-100 sm:h-12 sm:w-12">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 sm:h-6 sm:w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10 15V19a3 3 0 006 0v-4h3V4H5v11h5z" />
                         </svg>
                     </div>
                     <div>
-                        <div class="text-xs font-black uppercase tracking-[0.25em] text-red-500">
+                        <div class="text-[10px] font-black uppercase tracking-[0.25em] text-red-500 sm:text-xs">
                             BAD
                         </div>
-                        <div class="mt-1 h-1 w-8 rounded-full bg-red-500"></div>
+                        <div class="mt-1 h-1 w-6 rounded-full bg-red-500 sm:w-8"></div>
                     </div>
                 </div>
-                <div class="space-y-4">
+                <div class="space-y-3 sm:space-y-4">
                     @foreach (var point in badPoints)
                     {
-                        <div class="group flex items-start gap-3">
-                            <div class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-100 transition-transform duration-300 group-hover:scale-110">
+                        <div class="group flex items-start gap-2.5 sm:gap-3">
+                            <div class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-100 transition-transform duration-300 group-hover:scale-110 sm:h-6 sm:w-6">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-red-500" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12" />
                                 </svg>
@@ -115,12 +115,12 @@
             <div class="absolute -right-16 -top-16 h-52 w-52 rounded-full bg-surface/10 blur-3xl"></div>
             <div class="absolute -bottom-20 -left-20 h-56 w-56 rounded-full bg-black/20 blur-3xl"></div>
 
-            <div class="relative p-6 sm:p-8">
+            <div class="relative p-5 sm:p-8">
 
                 <!-- Verdict Summary (above the score) -->
                 @if (!string.IsNullOrWhiteSpace(Model.ReviewSummary))
                 {
-                    <div class="mb-6">
+                    <div class="mb-5 sm:mb-6">
                         <div class="mb-2 text-[10px] font-bold uppercase tracking-[0.25em] text-white/70">
                             Verdict Summary
                         </div>
@@ -129,21 +129,21 @@
                         </p>
                     </div>
 
-                    <div class="mb-6 border-t border-white/20"></div>
+                    <div class="mb-5 border-t border-white/20 sm:mb-6"></div>
                 }
 
                 <!-- Score + verdict + meter -->
-                <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                <div class="flex flex-col gap-5 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
 
                     <!-- Score + verdict -->
-                    <div class="flex items-center gap-5">
+                    <div class="flex items-center gap-4 sm:gap-5">
 
-                        <div class="text-7xl font-black leading-none drop-shadow-lg sm:text-8xl">
+                        <div class="text-5xl font-black leading-none drop-shadow-lg sm:text-7xl lg:text-8xl">
                             @(Model.ReviewScore?.ToString("0.0"))
                         </div>
 
                         <div>
-                            <div class="text-xs font-bold uppercase tracking-[0.3em] text-white/60">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/60 sm:text-xs">
                                 out of 10
                             </div>
 
@@ -151,7 +151,7 @@
                                 TheGameVoice Score
                             </div>
 
-                            <div class="mt-2 text-lg font-black uppercase tracking-[0.35em] text-white/90">
+                            <div class="mt-2 text-base font-black uppercase tracking-[0.35em] text-white/90 sm:text-lg">
                                 @Model.ReviewVerdict
                             </div>
                         </div>
@@ -162,7 +162,7 @@
                     <div class="flex flex-1 items-center gap-1.5 lg:max-w-md" aria-hidden="true">
                         @for (var i = 1; i <= 10; i++)
                         {
-                            <span class="h-2 flex-1 rounded-full @(i <= filledSegments ? "bg-white" : "bg-white/20")"></span>
+                            <span class="h-1.5 flex-1 rounded-full sm:h-2 @(i <= filledSegments ? "bg-white" : "bg-white/20")"></span>
                         }
                     </div>
 
@@ -173,11 +173,11 @@
                 {
                     var game = Model.ArticleGames.First().Game;
 
-                    <div class="mt-6 border-t border-white/20 pt-5">
+                    <div class="mt-5 border-t border-white/20 pt-4 sm:mt-6 sm:pt-5">
                         <a asp-controller="Games"
                            asp-action="Details"
                            asp-route-slug="@game.Slug"
-                           class="inline-flex items-center justify-center gap-2 rounded-xl bg-surface px-5 py-3.5 text-xs font-bold uppercase tracking-wide text-[#7c3aed] shadow-lg transition-transform duration-300 hover:-translate-y-0.5 hover:bg-surface-muted">
+                           class="inline-flex items-center justify-center gap-2 rounded-xl bg-surface px-4 py-3 text-xs font-bold uppercase tracking-wide text-[#7c3aed] shadow-lg transition-transform duration-300 hover:-translate-y-0.5 hover:bg-surface-muted sm:px-5 sm:py-3.5">
                             View Game Hub
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 5l7 7-7 7" />
