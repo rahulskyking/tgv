@@ -448,7 +448,7 @@
         buttons were rendering completely unstyled until now. */
     .tgv-button-primary {
         @apply inline-flex items-center justify-center gap-2 rounded-lg bg-primary
-               px-5 py-2.5 text-sm font-semibold text-black transition
+               px-5 py-2.5 text-sm font-semibold text-white transition
                hover:bg-primary-hover focus:outline-none focus:ring-2
                focus:ring-primary/40;
     }
@@ -609,7 +609,7 @@
     }
 
     .tgv-dialog__ok--danger { @apply bg-red-600 hover:bg-red-700; }
-    .tgv-dialog__ok--primary { @apply bg-primary text-black hover:bg-primary-hover; }
+    .tgv-dialog__ok--primary { @apply bg-primary text-white hover:bg-primary-hover; }
 
     @keyframes tgv-dialog-in {
         from { opacity: 0; transform: translateY(8px) scale(.98); }
@@ -654,7 +654,7 @@
         }
 
     .tgv-bulk-bar__count {
-        @apply rounded-full bg-primary px-2.5 py-1 text-xs font-bold text-black;
+        @apply rounded-full bg-primary px-2.5 py-1 text-xs font-bold text-white;
     }
 
     .tgv-bulk-bar button[type="submit"] {
@@ -676,7 +676,7 @@
     }
 
         .tgv-tab.is-active {
-            @apply border-primary bg-primary text-black;
+            @apply border-primary bg-primary text-white;
         }
 
     .tgv-tab__count {
@@ -684,7 +684,7 @@
     }
 
     .tgv-tab.is-active .tgv-tab__count {
-        @apply bg-black/15 text-black;
+        @apply bg-white/15 text-white;
     }
 
     .tgv-sort {
