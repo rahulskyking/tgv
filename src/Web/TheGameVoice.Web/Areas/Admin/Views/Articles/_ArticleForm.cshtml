@@ -590,12 +590,40 @@
 
         </div>
 
+        <div class="mb-6 flex items-center justify-between">
+
+            <input type="text"
+                   id="editor-media-search"
+                   placeholder="Search media..."
+                   class="w-full rounded-xl border px-4 py-3" />
+
+            <input type="file"
+                   id="editor-media-file"
+                   multiple
+                   accept="image/jpeg,image/png,image/webp"
+                   class="hidden" />
+
+            <button type="button"
+                    id="editor-media-upload-btn"
+                    class="ml-4 shrink-0 rounded-xl bg-primary px-4 py-3 text-black">
+
+                Upload New
+
+            </button>
+
+        </div>
+
+        <p id="editor-media-status"
+           class="mb-4 hidden text-sm">
+        </p>
+
         <div id="editor-media-grid"
              class="grid max-h-[600px] grid-cols-2 gap-4 overflow-y-auto md:grid-cols-4">
 
             @foreach (var media in Model.MediaItems)
             {
                 <div class="cursor-pointer overflow-hidden rounded-xl border hover:border-primary"
+                     data-name="@media.FileName"
                      onclick="insertImageIntoEditor('@media.FilePath')">
 
                     <img src="@media.FilePath"

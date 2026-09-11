@@ -496,9 +496,6 @@
             const featuredSelect =
                 document.getElementById("featured-image-select");
 
-            const searchInput =
-                document.getElementById("media-search");
-
             if (!openBtn || !modal || !featuredSelect)
                 return;
 
@@ -571,44 +568,6 @@
                     });
 
                 });
-
-            // Search
-
-            if (searchInput) {
-
-                searchInput.addEventListener("input", () => {
-
-                    const term =
-                        searchInput.value
-                            .toLowerCase()
-                            .trim();
-
-                    document
-                        .querySelectorAll(".media-item")
-                        .forEach(item => {
-
-                            const name =
-                                (item.dataset.name || "")
-                                    .toLowerCase();
-
-                            if (name.includes(term)) {
-
-                                item.classList.remove(
-                                    "hidden");
-
-                            }
-                            else {
-
-                                item.classList.add(
-                                    "hidden");
-
-                            }
-
-                        });
-
-                });
-
-            }
 
         });
 
@@ -705,6 +664,8 @@
                     "cursor-pointer overflow-hidden rounded-xl border " +
                     "hover:border-primary";
 
+                div.dataset.name = fileName;
+
                 div.addEventListener(
                     "click",
                     () => insertImageIntoEditor(filePath));
@@ -744,73 +705,115 @@
 
         document.addEventListener("DOMContentLoaded", () => {
 
-            const uploadBtn =
-                document.getElementById("inline-media-upload-btn");
-
-            const fileInput =
-                document.getElementById("inline-media-file");
-
-            const statusEl =
-                document.getElementById("inline-media-status");
-
-            if (!uploadBtn || !fileInput)
-                return;
-
-            uploadBtn.addEventListener("click", () =>
-                fileInput.click());
-
-            fileInput.addEventListener("change", async () => {
-
-                const files =
-                    Array.from(fileInput.files || []);
-
-                if (files.length === 0)
+            function setStatus(statusEl, text, type)
+            {
+                if (!statusEl)
                     return;
 
-                const formData =
-                    new FormData();
+                statusEl.classList.remove("hidden");
+                statusEl.classList.remove(
+                    "text-ink-muted", "text-red-500", "text-emerald-600");
 
-                files.forEach(f =>
-                    formData.append("files", f));
-
-                uploadBtn.disabled = true;
-
-                if (statusEl)
-                {
-                    statusEl.classList.remove("hidden");
-                    statusEl.classList.remove(
-                        "text-red-500", "text-emerald-600");
+                if (type === "error")
+                    statusEl.classList.add("text-red-500");
+                else if (type === "success")
+                    statusEl.classList.add("text-emerald-600");
+                else
                     statusEl.classList.add("text-ink-muted");
-                    statusEl.textContent = "Uploading...";
-                }
 
-                try
-                {
-                    const response =
-                        await fetch("/Admin/Media/UploadAjax", {
-                            method: "POST",
-                            body: formData
-                        });
+                statusEl.textContent = text;
+            }
 
-                    const result =
-                        await response.json();
+            function bindInlineUpload(btnId, fileId, statusId, onSuccess)
+            {
+                const uploadBtn =
+                    document.getElementById(btnId);
 
-                    if (!result.success)
+                const fileInput =
+                    document.getElementById(fileId);
+
+                const statusEl =
+                    document.getElementById(statusId);
+
+                if (!uploadBtn || !fileInput)
+                    return;
+
+                uploadBtn.addEventListener("click", () =>
+                    fileInput.click());
+
+                fileInput.addEventListener("change", async () => {
+
+                    const files =
+                        Array.from(fileInput.files || []);
+
+                    if (files.length === 0)
+                        return;
+
+                    const formData =
+                        new FormData();
+
+                    files.forEach(f =>
+                        formData.append("files", f));
+
+                    uploadBtn.disabled = true;
+
+                    setStatus(
+                        statusEl,
+                        "Uploading...",
+                        "info");
+
+                    try
                     {
-                        if (statusEl)
+                        const response =
+                            await fetch("/Admin/Media/UploadAjax", {
+                                method: "POST",
+                                body: formData
+                            });
+
+                        const result =
+                            await response.json();
+
+                        if (!result.success)
                         {
-                            statusEl.classList.remove(
-                                "text-ink-muted", "text-emerald-600");
-                            statusEl.classList.add("text-red-500");
-                            statusEl.textContent =
-                                result.message || "Upload failed.";
+                            setStatus(
+                                statusEl,
+                                result.message || "Upload failed.",
+                                "error");
+
+                            return;
                         }
 
-                        return;
+                        result.items.forEach(addMediaItem);
+
+                        if (onSuccess)
+                            onSuccess(result);
+
+                        setStatus(
+                            statusEl,
+                            result.items.length + " image(s) uploaded.",
+                            "success");
                     }
+                    catch (err)
+                    {
+                        setStatus(
+                            statusEl,
+                            "Upload failed.",
+                            "error");
+                    }
+                    finally
+                    {
+                        uploadBtn.disabled = false;
+                        fileInput.value = "";
+                    }
+                });
+            }
 
-                    result.items.forEach(addMediaItem);
-
+            // 1) Featured image media-library modal
+            bindInlineUpload(
+                "inline-media-upload-btn",
+                "inline-media-file",
+                "inline-media-status",
+                (result) => {
                     // Auto-select the first uploaded image as featured.
                     if (result.items.length > 0)
                     {
@@ -827,32 +830,41 @@
                                 new Event("change", { bubbles: true }));
                         }
                     }
+                });
 
-                    if (statusEl)
-                    {
-                        statusEl.classList.remove(
-                            "text-ink-muted", "text-red-500");
-                        statusEl.classList.add("text-emerald-600");
-                        statusEl.textContent =
-                            result.items.length + " image(s) uploaded.";
-                    }
-                }
-                catch (err)
-                {
-                    if (statusEl)
-                    {
-                        statusEl.classList.remove(
-                            "text-ink-muted", "text-emerald-600");
-                        statusEl.classList.add("text-red-500");
-                        statusEl.textContent = "Upload failed.";
-                    }
-                }
-                finally
-                {
-                    uploadBtn.disabled = false;
-                    fileInput.value = "";
-                }
+            // 2) TinyMCE editor "Insert Image" modal
+            bindInlineUpload(
+                "editor-media-upload-btn",
+                "editor-media-file",
+                "editor-media-status");
+        });
+
+        // Search filters for both media modals.
+        function bindMediaSearch(inputId, itemSelector)
+        {
+            const input = document.getElementById(inputId);
+
+            if (!input)
+                return;
+
+            input.addEventListener("input", () => {
+                const term =
+                    input.value.toLowerCase().trim();
+
+                document
+                    .querySelectorAll(itemSelector)
+                    .forEach(item => {
+                        const name =
+                            (item.dataset.name || "").toLowerCase();
+
+                        item.classList.toggle("hidden", !name.includes(term));
+                    });
             });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            bindMediaSearch("media-search", ".media-item");
+            bindMediaSearch("editor-media-search", "#editor-media-grid > div");
         });
 
     </script>
