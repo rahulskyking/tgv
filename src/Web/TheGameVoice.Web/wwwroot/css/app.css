@@ -216,6 +216,21 @@
         letter-spacing: .18em;
     }
 
+
+    /* ---------- FORM TABS (article create/edit) -------------------------- */
+
+    .tgv-form-tab {
+        @apply inline-flex items-center gap-2 border-b-2 border-transparent px-4 py-2.5 text-sm font-semibold text-ink-muted transition;
+    }
+
+    .tgv-form-tab:hover {
+        @apply text-ink;
+    }
+
+    .tgv-form-tab--active {
+        @apply border-primary text-primary;
+    }
+
     .tgv-meta {
         @apply text-sm text-ink-muted;
     }

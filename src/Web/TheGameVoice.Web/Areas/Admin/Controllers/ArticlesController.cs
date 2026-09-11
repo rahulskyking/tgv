@@ -14,6 +14,7 @@ using TheGameVoice.Infrastructure.Identity;
 using TheGameVoice.Infrastructure.Identity.Entities;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Articles;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Media;
+using TheGameVoice.Web.ViewModels.News;
 
 namespace TheGameVoice.Web.Areas.Admin.Controllers;
 
@@ -691,6 +692,10 @@ public class ArticlesController : BaseAdminController
     }
 
     #region Preview
+    /// <summary>
+    /// Preview a SAVED article exactly as it renders on the public site
+    /// (reuses the public News/Details view + layout).
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Preview(Guid id)
     {
@@ -703,9 +708,150 @@ public class ArticlesController : BaseAdminController
             return Forbid();
         }
 
-        return View(article);
+        var model = await BuildPreviewViewModelAsync(article);
+
+        ViewData["IsPreview"] = true;
+        ViewData["CanonicalUrl"] =
+            $"{Request.Scheme}://{Request.Host}/article/{article.Slug}";
+
+        return View("~/Views/News/Details.cshtml", model);
+    }
+
+    /// <summary>
+    /// Preview UNSAVED form content exactly as it renders on the public site.
+    /// Does not persist anything — builds an in-memory Article from the form.
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> Preview(ArticleFormViewModel model)
+    {
+        var article = await BuildPreviewArticleAsync(model);
+
+        var viewModel = await BuildPreviewViewModelAsync(article);
+
+        ViewData["IsPreview"] = true;
+        ViewData["CanonicalUrl"] =
+            $"{Request.Scheme}://{Request.Host}/article/{article.Slug}";
+
+        return View("~/Views/News/Details.cshtml", viewModel);
     }
     #endregion
+
+    private async Task<Article> BuildPreviewArticleAsync(
+        ArticleFormViewModel model)
+    {
+        var article = new Article
+        {
+            Title = model.Title ?? string.Empty,
+            Slug = "preview",
+            Summary = model.Summary ?? string.Empty,
+            Content = model.Content ?? string.Empty,
+            SeoTitle = model.SeoTitle,
+            Status = ArticleStatus.Draft,
+            Segment = model.Segment,
+            PublishedAt = DateTime.UtcNow,
+            AuthorId = model.AuthorId,
+            CategoryId = model.CategoryId,
+            IsReview = model.IsReview,
+            ReviewScore = model.IsReview ? model.ReviewScore : null,
+            ReviewVerdict = model.IsReview ? model.ReviewVerdict : null,
+            ReviewSummary = model.IsReview ? model.ReviewSummary : null
+        };
+
+        if (model.CategoryId != Guid.Empty)
+        {
+            article.Category =
+                await _unitOfWork.Categories.GetByIdAsync(model.CategoryId);
+        }
+
+        if (model.FeaturedImageId.HasValue)
+        {
+            article.FeaturedImageId = model.FeaturedImageId;
+            article.FeaturedImage =
+                await _unitOfWork.Media.GetByIdAsync(model.FeaturedImageId.Value);
+        }
+
+        foreach (var tagId in model.SelectedTagIds ?? new List<Guid>())
+        {
+            var tag = await _unitOfWork.Tags.GetByIdAsync(tagId);
+            if (tag == null) continue;
+
+            article.ArticleTags.Add(new ArticleTag
+            {
+                TagId = tagId,
+                Tag = tag
+            });
+        }
+
+        foreach (var gameId in model.SelectedGameIds ?? new List<Guid>())
+        {
+            var game = await _unitOfWork.Games.GetByIdAsync(gameId);
+            if (game == null) continue;
+
+            article.ArticleGames.Add(new ArticleGame
+            {
+                GameId = gameId,
+                Game = game
+            });
+        }
+
+        var order = 1;
+        foreach (var point in (model.GoodReviewPoints ?? new List<string>())
+                     .Where(x => !string.IsNullOrWhiteSpace(x)))
+        {
+            article.ReviewPoints.Add(new ArticleReviewPoint
+            {
+                ArticleId = article.Id,
+                Type = ReviewPointType.Good,
+                Text = point.Trim(),
+                DisplayOrder = order++
+            });
+        }
+
+        order = 1;
+        foreach (var point in (model.BadReviewPoints ?? new List<string>())
+                     .Where(x => !string.IsNullOrWhiteSpace(x)))
+        {
+            article.ReviewPoints.Add(new ArticleReviewPoint
+            {
+                ArticleId = article.Id,
+                Type = ReviewPointType.Bad,
+                Text = point.Trim(),
+                DisplayOrder = order++
+            });
+        }
+
+        return article;
+    }
+
+    private async Task<ArticleDetailsViewModel> BuildPreviewViewModelAsync(
+        Article article)
+    {
+        var related = article.CategoryId != Guid.Empty
+            ? await _unitOfWork.Articles.GetRelatedArticlesAsync(
+                article.CategoryId,
+                article.Id,
+                null)
+            : new List<Article>();
+
+        var trending =
+            await _unitOfWork.Articles.GetMostReadAsync(5, null);
+
+        var author =
+            await _userManager.Users
+                .Include(x => x.AvatarImage)
+                .FirstOrDefaultAsync(x => x.Id == article.AuthorId);
+
+        return new ArticleDetailsViewModel
+        {
+            Article = article,
+            RelatedArticles = related,
+            TrendingArticles = trending,
+            AuthorName =
+                author?.FullName ?? "TheGameVoice Editorial Team",
+            AuthorAvatarUrl = author?.AvatarImage?.FilePath
+        };
+    }
+
     private async Task SaveReviewPointsAsync(
     Article article,
     ArticleFormViewModel model)
