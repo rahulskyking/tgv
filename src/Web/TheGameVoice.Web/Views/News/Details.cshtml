@@ -446,27 +446,30 @@
 
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
+@if (ViewData["IsPreview"] == null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
 
-        const key =
-            "article-view-@Model.Article.Id";
+            const key =
+                "article-view-@Model.Article.Id";
 
-        if (localStorage.getItem(key))
-            return;
+            if (localStorage.getItem(key))
+                return;
 
-        fetch(
-            "/api/article-views/@Model.Article.Id",
-            {
-                method: "POST"
-            });
+            fetch(
+                "/api/article-views/@Model.Article.Id",
+                {
+                    method: "POST"
+                });
 
-        localStorage.setItem(
-            key,
-            new Date().toISOString());
+            localStorage.setItem(
+                key,
+                new Date().toISOString());
 
-    });
-</script>
+        });
+    </script>
+}
 
 <script>
     window.addEventListener("scroll", () => {
