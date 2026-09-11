@@ -1,4 +1,4 @@
-﻿@model TheGameVoice.Web.ViewModels.Shared.NavigationViewModel
+@model TheGameVoice.Web.ViewModels.Shared.NavigationViewModel
 
 @{
     var isMobileMode =
@@ -73,8 +73,10 @@
 
             <div class="flex items-center gap-3">
 
-                <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
-                         model="Model" />
+                @*  Site-mode (PC / Mobile) toggle — hidden for now, re-enable
+                    later by un-commenting this partial. *@
+                @* <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
+                         model="Model" /> *@
 
                 <form method="get"
                       asp-controller="Search"
@@ -129,12 +131,13 @@
 
             </a>
 
-            <div class="max-xs:hidden">
+            @*  Site-mode toggle hidden for now (see header note). *@
+            @* <div class="max-xs:hidden">
 
                 <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
                          model="Model" />
 
-            </div>
+            </div> *@
 
             <partial name="~/Views/Shared/Components/_ThemeToggle.cshtml" />
 
@@ -179,16 +182,18 @@
 
         <div class="py-8">
 
-            <!-- SITE MODE + THEME -->
+            <!-- THEME -->
 
             <div class="mb-6 flex items-center justify-between gap-3">
 
+                @*  Site-mode toggle hidden for now (see header note).
                 @{ ViewData["SiteModeLabels"] = true; }
 
                 <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
                          model="Model" />
 
                 @{ ViewData["SiteModeLabels"] = null; }
+                *@
 
                 <partial name="~/Views/Shared/Components/_ThemeToggle.cshtml" />
 
