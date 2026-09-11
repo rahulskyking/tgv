@@ -616,6 +616,249 @@
     </script>
     <script>
 
+        // Inline media upload — uploads straight from the article form's
+        // Media Library modal, then adds the new items to every picker so
+        // the admin does not have to save + re-edit to see them.
+        function addMediaItem(item)
+        {
+            const id = item.id;
+            const filePath = String(item.filePath);
+            const fileName = item.fileName;
+            // 1) Media Library modal grid
+            const mediaGrid =
+                document.getElementById("media-grid");
+
+            if (mediaGrid)
+            {
+                const div =
+                    document.createElement("div");
+
+                div.className =
+                    "media-item cursor-pointer overflow-hidden " +
+                    "rounded-xl border-2 border-transparent transition " +
+                    "hover:border-primary";
+
+                div.dataset.id = id;
+                div.dataset.image = filePath;
+                div.dataset.name = fileName;
+
+                div.innerHTML =
+                    `<img src="${filePath}" class="aspect-video w-full object-cover" />` +
+                    `<div class="p-2 text-xs truncate">${fileName}</div>`;
+
+                div.addEventListener("click", () => {
+
+                    document
+                        .querySelectorAll(".media-item")
+                        .forEach(x =>
+                            x.classList.remove("border-primary"));
+
+                    div.classList.add("border-primary");
+
+                    const featuredSelect =
+                        document.getElementById("featured-image-select");
+
+                    if (featuredSelect)
+                    {
+                        featuredSelect.value = id;
+
+                        featuredSelect.dispatchEvent(
+                            new Event("change", { bubbles: true }));
+                    }
+
+                    document
+                        .getElementById("media-picker-modal")
+                        .classList.add("hidden");
+                });
+
+                mediaGrid.insertBefore(div, mediaGrid.firstChild);
+            }
+
+            // 2) Featured Image dropdown
+            const featuredSelect =
+                document.getElementById("featured-image-select");
+
+            if (featuredSelect)
+            {
+                const option =
+                    document.createElement("option");
+
+                option.value = id;
+                option.dataset.image = filePath;
+                option.textContent = fileName;
+
+                // Insert right after the "Select Image" placeholder.
+                featuredSelect.insertBefore(
+                    option,
+                    featuredSelect.options[1] || null);
+            }
+
+            // 3) Editor "Insert Image" modal grid
+            const editorGrid =
+                document.getElementById("editor-media-grid");
+
+            if (editorGrid)
+            {
+                const div =
+                    document.createElement("div");
+
+                div.className =
+                    "cursor-pointer overflow-hidden rounded-xl border " +
+                    "hover:border-primary";
+
+                div.addEventListener(
+                    "click",
+                    () => insertImageIntoEditor(filePath));
+
+                div.innerHTML =
+                    `<img src="${filePath}" class="aspect-video w-full object-cover" />` +
+                    `<div class="p-2 text-xs truncate">${fileName}</div>`;
+
+                editorGrid.insertBefore(div, editorGrid.firstChild);
+            }
+
+            // 4) Gallery picker modal grid
+            const galleryGrid =
+                document.getElementById("gallery-media-grid");
+
+            if (galleryGrid)
+            {
+                const div =
+                    document.createElement("div");
+
+                div.className =
+                    "gallery-media-item cursor-pointer overflow-hidden " +
+                    "rounded-xl border-2 border-transparent transition " +
+                    "hover:border-primary";
+
+                div.dataset.id = id;
+                div.dataset.image = filePath;
+                div.dataset.name = fileName;
+
+                div.innerHTML =
+                    `<img src="${filePath}" class="aspect-video w-full object-cover" />` +
+                    `<div class="p-2 text-xs truncate">${fileName}</div>`;
+
+                galleryGrid.insertBefore(div, galleryGrid.firstChild);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const uploadBtn =
+                document.getElementById("inline-media-upload-btn");
+
+            const fileInput =
+                document.getElementById("inline-media-file");
+
+            const statusEl =
+                document.getElementById("inline-media-status");
+
+            if (!uploadBtn || !fileInput)
+                return;
+
+            uploadBtn.addEventListener("click", () =>
+                fileInput.click());
+
+            fileInput.addEventListener("change", async () => {
+
+                const files =
+                    Array.from(fileInput.files || []);
+
+                if (files.length === 0)
+                    return;
+
+                const formData =
+                    new FormData();
+
+                files.forEach(f =>
+                    formData.append("files", f));
+
+                uploadBtn.disabled = true;
+
+                if (statusEl)
+                {
+                    statusEl.classList.remove("hidden");
+                    statusEl.classList.remove(
+                        "text-red-500", "text-emerald-600");
+                    statusEl.classList.add("text-ink-muted");
+                    statusEl.textContent = "Uploading...";
+                }
+
+                try
+                {
+                    const response =
+                        await fetch("/Admin/Media/UploadAjax", {
+                            method: "POST",
+                            body: formData
+                        });
+
+                    const result =
+                        await response.json();
+
+                    if (!result.success)
+                    {
+                        if (statusEl)
+                        {
+                            statusEl.classList.remove(
+                                "text-ink-muted", "text-emerald-600");
+                            statusEl.classList.add("text-red-500");
+                            statusEl.textContent =
+                                result.message || "Upload failed.";
+                        }
+
+                        return;
+                    }
+
+                    result.items.forEach(addMediaItem);
+
+                    // Auto-select the first uploaded image as featured.
+                    if (result.items.length > 0)
+                    {
+                        const first = result.items[0];
+
+                        const featuredSelect =
+                            document.getElementById("featured-image-select");
+
+                        if (featuredSelect)
+                        {
+                            featuredSelect.value = first.id;
+
+                            featuredSelect.dispatchEvent(
+                                new Event("change", { bubbles: true }));
+                        }
+                    }
+
+                    if (statusEl)
+                    {
+                        statusEl.classList.remove(
+                            "text-ink-muted", "text-red-500");
+                        statusEl.classList.add("text-emerald-600");
+                        statusEl.textContent =
+                            result.items.length + " image(s) uploaded.";
+                    }
+                }
+                catch (err)
+                {
+                    if (statusEl)
+                    {
+                        statusEl.classList.remove(
+                            "text-ink-muted", "text-emerald-600");
+                        statusEl.classList.add("text-red-500");
+                        statusEl.textContent = "Upload failed.";
+                    }
+                }
+                finally
+                {
+                    uploadBtn.disabled = false;
+                    fileInput.value = "";
+                }
+            });
+        });
+
+    </script>
+    <script>
+
         document.addEventListener("DOMContentLoaded", () => {
 
             const addVideoBtn =
