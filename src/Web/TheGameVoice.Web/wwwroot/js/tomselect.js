@@ -1,4 +1,4 @@
-﻿
+
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -16,7 +16,14 @@ document.addEventListener(
                         plugins:
                             [
                                 "remove_button"
-                            ]
+                            ],
+
+                        // Clear the typed search text after picking a tag
+                        // so the leftover word doesn't linger in the box.
+                        onItemAdd: function () {
+                            this.setTextboxValue("");
+                            this.refreshOptions(false);
+                        }
                     });
         }
 
@@ -32,7 +39,14 @@ document.addEventListener(
                         plugins:
                             [
                                 "remove_button"
-                            ]
+                            ],
+
+                        // Clear the typed search text after picking a game
+                        // so the leftover word doesn't linger in the box.
+                        onItemAdd: function () {
+                            this.setTextboxValue("");
+                            this.refreshOptions(false);
+                        }
                     });
         }
 
