@@ -757,6 +757,9 @@
 
                     uploadBtn.disabled = true;
 
+                    window.tgvShowLoading &&
+                        window.tgvShowLoading("Uploading…");
+
                     setStatus(
                         statusEl,
                         "Uploading...",
@@ -804,6 +807,9 @@
                     {
                         uploadBtn.disabled = false;
                         fileInput.value = "";
+
+                        window.tgvHideLoading &&
+                            window.tgvHideLoading();
                     }
                 });
             }
@@ -961,6 +967,66 @@
 
             updatePreview();
 
+        });
+    </script>
+
+    <!-- GLOBAL LOADING OVERLAY (shown during media uploads / long actions) -->
+    <div id="tgv-loading-overlay"
+         class="tgv-loading-overlay"
+         role="status"
+         aria-live="polite">
+
+        <div class="tgv-loading-box">
+
+            <div class="tgv-loading-spinner"></div>
+
+            <p class="tgv-loading-text">Uploading…</p>
+
+        </div>
+
+    </div>
+
+    <script>
+        window.tgvShowLoading = function (message) {
+            var overlay =
+                document.getElementById("tgv-loading-overlay");
+
+            if (!overlay)
+                return;
+
+            var text =
+                overlay.querySelector(".tgv-loading-text");
+
+            if (text && message)
+                text.textContent = message;
+
+            overlay.classList.add("is-open");
+        };
+
+        window.tgvHideLoading = function () {
+            var overlay =
+                document.getElementById("tgv-loading-overlay");
+
+            if (overlay)
+                overlay.classList.remove("is-open");
+        };
+
+        // Any form marked with data-loading shows the overlay on submit
+        // (covers the standalone Media upload page and future full-post
+        // upload forms; also hides it again on back navigation).
+        document.addEventListener("submit", function (event) {
+            var form = event.target.closest("[data-loading]");
+
+            if (!form)
+                return;
+
+            window.tgvShowLoading(
+                form.getAttribute("data-loading") || "Uploading…");
+        });
+
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted)
+                window.tgvHideLoading();
         });
     </script>
 
