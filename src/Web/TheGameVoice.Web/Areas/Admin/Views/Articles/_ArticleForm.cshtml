@@ -488,17 +488,25 @@
                    placeholder="Search media..."
                    class="w-full rounded-xl border px-4 py-3" />
 
-            <a asp-area="Admin"
-               asp-controller="Media"
-               asp-action="Upload"
-               target="_blank"
-               class="ml-4 rounded-xl bg-primary px-4 py-3 text-black">
+            <input type="file"
+                   id="inline-media-file"
+                   multiple
+                   accept="image/jpeg,image/png,image/webp"
+                   class="hidden" />
+
+            <button type="button"
+                    id="inline-media-upload-btn"
+                    class="ml-4 shrink-0 rounded-xl bg-primary px-4 py-3 text-black">
 
                 Upload New
 
-            </a>
+            </button>
 
         </div>
+
+        <p id="inline-media-status"
+           class="mb-4 hidden text-sm">
+        </p>
 
         <div id="media-grid"
              class="grid max-h-[600px] grid-cols-2 gap-4 overflow-y-auto md:grid-cols-4">
@@ -551,7 +559,8 @@
 
         </div>
 
-        <div class="grid max-h-[600px] grid-cols-2 gap-4 overflow-y-auto md:grid-cols-4">
+        <div id="gallery-media-grid"
+             class="grid max-h-[600px] grid-cols-2 gap-4 overflow-y-auto md:grid-cols-4">
 
             @foreach (var media in Model.MediaItems)
             {
@@ -613,7 +622,8 @@
 
         </div>
 
-        <div class="grid max-h-[600px] grid-cols-2 gap-4 overflow-y-auto md:grid-cols-4">
+        <div id="editor-media-grid"
+             class="grid max-h-[600px] grid-cols-2 gap-4 overflow-y-auto md:grid-cols-4">
 
             @foreach (var media in Model.MediaItems)
             {

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TheGameVoice.Application.Constants;
 using TheGameVoice.Application.Interfaces.Persistence;
@@ -152,6 +152,106 @@ _cacheService;
             return View(model);
         }
     }
+    [HttpPost]
+    public async Task<IActionResult> UploadAjax(List<IFormFile> files)
+    {
+        if (files == null || !files.Any())
+        {
+            return Json(new
+            {
+                success = false,
+                message = "Please select at least one image."
+            });
+        }
+
+        var allowedTypes = new[]
+        {
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        };
+
+        foreach (var file in files)
+        {
+            if (file == null || file.Length == 0)
+                continue;
+
+            if (!allowedTypes.Contains(file.ContentType))
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"{file.FileName} is not a supported image."
+                });
+            }
+
+            if (file.Length > 5 * 1024 * 1024)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"{file.FileName} exceeds the 5MB limit."
+                });
+            }
+        }
+
+        var uploaded = new List<object>();
+
+        try
+        {
+            foreach (var file in files)
+            {
+                if (file == null || file.Length == 0)
+                    continue;
+
+                await using var stream = file.OpenReadStream();
+
+                var filePath = await _storageService.UploadAsync(
+                    stream,
+                    file.FileName,
+                    file.ContentType);
+
+                var media = new Media
+                {
+                    FileName = file.FileName,
+                    FilePath = filePath,
+                    ContentType = file.ContentType,
+                    FileSize = file.Length,
+                    IsImage = file.ContentType.StartsWith("image/")
+                };
+
+                await _unitOfWork.Media.AddAsync(media);
+
+                uploaded.Add(new
+                {
+                    id = media.Id,
+                    fileName = media.FileName,
+                    filePath = media.FilePath
+                });
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+
+            _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
+
+            return Json(new
+            {
+                success = true,
+                items = uploaded
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+            return Json(new
+            {
+                success = false,
+                message = "An error occurred while uploading the images."
+            });
+        }
+    }
+
     [HttpGet]
     public async Task<IActionResult> Edit(Guid id)
     {
