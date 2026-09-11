@@ -617,6 +617,30 @@
     }
 
 
+    /* ---------- GLOBAL LOADING OVERLAY ------------------------------------ */
+
+    .tgv-loading-overlay {
+        @apply fixed inset-0 z-[400] hidden items-center justify-center bg-black/60 p-4 backdrop-blur-sm;
+    }
+
+        .tgv-loading-overlay.is-open {
+            @apply flex;
+        }
+
+    .tgv-loading-box {
+        @apply flex flex-col items-center gap-4 rounded-2xl border border-line bg-surface px-8 py-7 shadow-2xl;
+        animation: tgv-dialog-in .18s ease-out;
+    }
+
+    .tgv-loading-spinner {
+        @apply h-10 w-10 animate-spin rounded-full border-4 border-line border-t-primary;
+    }
+
+    .tgv-loading-text {
+        @apply text-sm font-semibold text-ink;
+    }
+
+
     /* ---------- BULK ACTION BAR ------------------------------------------- */
 
     .tgv-bulk-bar {

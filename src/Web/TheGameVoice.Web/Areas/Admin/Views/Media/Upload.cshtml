@@ -1,4 +1,4 @@
-﻿@model TheGameVoice.Web.Areas.Admin.ViewModels.Media.UploadMediaViewModel
+@model TheGameVoice.Web.Areas.Admin.ViewModels.Media.UploadMediaViewModel
 
 <div class="max-w-2xl space-y-6">
 
@@ -11,6 +11,7 @@
           asp-action="Upload"
           method="post"
           enctype="multipart/form-data"
+          data-loading="Uploading images…"
           class="space-y-6">
 
         @Html.AntiForgeryToken()
