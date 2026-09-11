@@ -149,6 +149,23 @@
 
     </div>
 
+    <!-- Tab footer -->
+    <div class="mt-6 flex justify-end">
+
+        <button type="button"
+                data-goto-tab="details"
+                class="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-black transition hover:bg-primary-hover">
+
+            Next: Details
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+
+        </button>
+
+    </div>
+
 </section>
 
 <!-- TAB: DETAILS -->
@@ -339,6 +356,35 @@
 
     </div>
 
+    <!-- Tab footer -->
+    <div class="mt-6 flex items-center justify-between">
+
+        <button type="button"
+                data-goto-tab="content"
+                class="inline-flex items-center gap-2 rounded-xl border border-line px-5 py-3 font-semibold text-ink transition hover:bg-surface-muted">
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5M11 19l-7-7 7-7" />
+            </svg>
+
+            Back
+
+        </button>
+
+        <button type="button"
+                data-goto-tab="media"
+                class="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-black transition hover:bg-primary-hover">
+
+            Next: Media &amp; SEO
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+
+        </button>
+
+    </div>
+
 </section>
 
 <!-- TAB: MEDIA & SEO -->
@@ -420,6 +466,33 @@
             </p>
 
         </div>
+
+    </div>
+
+    <!-- Tab footer -->
+    <div class="mt-6 flex items-center justify-between">
+
+        <button type="button"
+                data-goto-tab="details"
+                class="inline-flex items-center gap-2 rounded-xl border border-line px-5 py-3 font-semibold text-ink transition hover:bg-surface-muted">
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5M11 19l-7-7 7-7" />
+            </svg>
+
+            Back
+
+        </button>
+
+        <button type="submit"
+                data-save-button
+                class="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-black transition hover:bg-primary-hover">
+
+            Save Draft
+
+            <span class="text-xs font-normal opacity-70">Ctrl+S</span>
+
+        </button>
 
     </div>
 
@@ -795,11 +868,25 @@
                 var on = p.getAttribute("data-tab-panel") === name;
                 p.classList.toggle("hidden", !on);
             });
+
+            // Jump to the top of the form so the user lands on the tab
+            // header, not mid-content.
+            var stickyBar = document.querySelector(".sticky.top-0");
+            if (stickyBar) {
+                stickyBar.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
         }
 
         tabs.forEach(function (t) {
             t.addEventListener("click", function () {
                 activate(t.getAttribute("data-tab"));
+            });
+        });
+
+        // "Next" / "Back" buttons inside each tab footer.
+        document.querySelectorAll("[data-goto-tab]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                activate(btn.getAttribute("data-goto-tab"));
             });
         });
     });
