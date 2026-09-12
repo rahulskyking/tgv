@@ -55,6 +55,27 @@
 
     var linkedinShare =
         "https://www.linkedin.com/sharing/share-offsite/?url=" + encodedUrl;
+
+    // Split the article body after the first 2 block elements so the follow
+    // band can sit between paragraphs instead of at the very end.
+    var contentHtml = article.Content ?? string.Empty;
+
+    var blockEnd = new System.Text.RegularExpressions.Regex(
+        @"</(?:p|h[1-6]|figure|blockquote|ul|ol|table|div|pre)>",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    var contentFirst = contentHtml;
+    var contentRest = string.Empty;
+
+    var blockMatches = blockEnd.Matches(contentHtml);
+
+    if (blockMatches.Count >= 2)
+    {
+        var splitAt = blockMatches[1].Index + blockMatches[1].Length;
+
+        contentFirst = contentHtml.Substring(0, splitAt);
+        contentRest = contentHtml.Substring(splitAt);
+    }
 }
 
 @section Head
@@ -95,8 +116,17 @@
         <meta property="og:image"
               content="@seoImage" />
 
+        <meta property="og:image:secure_url"
+              content="@seoImage" />
+
         <meta property="og:image:alt"
               content="@seoTitle" />
+
+        @if (!string.IsNullOrWhiteSpace(article.FeaturedImage?.ContentType))
+        {
+            <meta property="og:image:type"
+                  content="@article.FeaturedImage.ContentType" />
+        }
     }
 
     <!-- Twitter / X -->
@@ -430,7 +460,15 @@
                 <div class="mt-6 rounded-3xl border border-line bg-surface p-6 shadow-sm md:p-10">
                     <div class="article-content">
 
-                        @Html.Raw(Model.Article.Content)
+                        @Html.Raw(contentFirst)
+
+                    </div>
+
+                    <partial name="~/Views/Shared/Components/_FollowTheGameVoice.cshtml" />
+
+                    <div class="article-content">
+
+                        @Html.Raw(contentRest)
 
                     </div>
 
@@ -440,8 +478,6 @@
                     <partial name="~/Views/Shared/Components/_ReviewSummaryCard.cshtml"
                              model="Model.Article" />
                 }
-
-                <partial name="~/Views/Shared/Components/_FollowTheGameVoice.cshtml" />
 
             </main>
 
