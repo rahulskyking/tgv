@@ -698,14 +698,18 @@
 
 
     /* ---------- ANIMATED GLOW (follow band) ------------------------------ */
-    /*  A rotating conic-gradient beam sweeps around the band's edge. Uses a
-        huge square pseudo-element rotated with transform (universally
-        supported) so the glow is always visible, in every browser.           */
+    /*  A rotating conic-gradient beam sweeps around the band's edge, plus a
+        constant soft halo so the band always glows. The beam is a huge square
+        pseudo-element spun with transform (universally supported). The inner
+        card (positioned above) masks the centre, leaving a 3px glowing ring. */
 
     .tgv-follow-glow {
         @apply relative overflow-hidden rounded-xl;
         isolation: isolate;
-        padding: 2px;
+        padding: 3px;
+        box-shadow:
+            0 0 22px -2px rgb(var(--tgv-primary) / 0.5),
+            0 0 10px -1px rgb(var(--tgv-primary) / 0.35);
     }
 
     .tgv-follow-glow::before {
@@ -713,17 +717,18 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        z-index: -1;
-        width: 200vmax;
-        height: 200vmax;
+        z-index: 0;
+        width: 300vmax;
+        height: 300vmax;
         background: conic-gradient(
             from 0deg,
             transparent 0deg,
-            rgb(var(--tgv-primary) / 0.95) 40deg,
-            transparent 90deg,
+            rgb(var(--tgv-primary) / 1) 25deg,
+            rgb(var(--tgv-primary) / 0.45) 60deg,
+            transparent 100deg,
             transparent 360deg
         );
-        animation: tgv-glow-spin 3.5s linear infinite;
+        animation: tgv-glow-spin 2.5s linear infinite;
         pointer-events: none;
     }
 
