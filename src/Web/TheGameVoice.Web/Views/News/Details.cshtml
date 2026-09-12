@@ -56,25 +56,44 @@
     var linkedinShare =
         "https://www.linkedin.com/sharing/share-offsite/?url=" + encodedUrl;
 
-    // Split the article body after the first 2 block elements so the follow
-    // band can sit between paragraphs instead of at the very end.
+    // Split the article body into chunks so the follow band can repeat
+    // between paragraphs on longer articles. First band after 2 blocks,
+    // then every 6 blocks after that.
     var contentHtml = article.Content ?? string.Empty;
 
     var blockEnd = new System.Text.RegularExpressions.Regex(
         @"</(?:p|h[1-6]|figure|blockquote|ul|ol|table|div|pre)>",
         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
-    var contentFirst = contentHtml;
-    var contentRest = string.Empty;
+    var contentParts = new List<string>();
 
     var blockMatches = blockEnd.Matches(contentHtml);
 
-    if (blockMatches.Count >= 2)
+    if (blockMatches.Count > 2)
     {
-        var splitAt = blockMatches[1].Index + blockMatches[1].Length;
+        var splitPoints = new List<int>();
 
-        contentFirst = contentHtml.Substring(0, splitAt);
-        contentRest = contentHtml.Substring(splitAt);
+        for (var i = 1; i < blockMatches.Count; i += 6)
+        {
+            splitPoints.Add(blockMatches[i].Index + blockMatches[i].Length);
+        }
+
+        var last = 0;
+
+        foreach (var point in splitPoints)
+        {
+            contentParts.Add(contentHtml.Substring(last, point - last));
+            last = point;
+        }
+
+        if (last < contentHtml.Length)
+        {
+            contentParts.Add(contentHtml.Substring(last));
+        }
+    }
+    else
+    {
+        contentParts.Add(contentHtml);
     }
 }
 
@@ -458,19 +477,20 @@
                 }
                
                 <div class="mt-6 rounded-3xl border border-line bg-surface p-6 shadow-sm md:p-10">
-                    <div class="article-content">
 
-                        @Html.Raw(contentFirst)
+                    @for (var i = 0; i < contentParts.Count; i++)
+                    {
+                        <div class="article-content">
 
-                    </div>
+                            @Html.Raw(contentParts[i])
 
-                    <partial name="~/Views/Shared/Components/_FollowTheGameVoice.cshtml" />
+                        </div>
 
-                    <div class="article-content">
-
-                        @Html.Raw(contentRest)
-
-                    </div>
+                        @if (i < contentParts.Count - 1)
+                        {
+                            <partial name="~/Views/Shared/Components/_FollowTheGameVoice.cshtml" />
+                        }
+                    }
 
                 </div>
                 @if (Model.Article.IsReview)
