@@ -164,14 +164,6 @@
 }
 
 
-/* Animated border glow (circular motion). @property must live at top level,
-   outside any @layer, so the angle is interpolable. */
-@property --tgv-glow-angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-}
-
 @layer components {
 
     /* ---------- LAYOUT --------------------------------------------------- */
@@ -706,44 +698,38 @@
 
 
     /* ---------- ANIMATED GLOW (follow band) ------------------------------ */
+    /*  A rotating conic-gradient beam sweeps around the band's edge. Uses a
+        huge square pseudo-element rotated with transform (universally
+        supported) so the glow is always visible, in every browser.           */
 
     .tgv-follow-glow {
-        @apply relative overflow-hidden;
+        @apply relative overflow-hidden rounded-xl;
+        isolation: isolate;
+        padding: 2px;
     }
 
     .tgv-follow-glow::before {
         content: "";
         position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        padding: 2px;
+        top: 50%;
+        left: 50%;
+        z-index: -1;
+        width: 200vmax;
+        height: 200vmax;
         background: conic-gradient(
-            from var(--tgv-glow-angle),
-            transparent 0%,
-            rgb(var(--tgv-primary) / 0.9) 12%,
-            transparent 26%,
-            transparent 50%,
-            rgb(var(--tgv-primary) / 0.35) 62%,
-            transparent 78%
+            from 0deg,
+            transparent 0deg,
+            rgb(var(--tgv-primary) / 0.95) 40deg,
+            transparent 90deg,
+            transparent 360deg
         );
-        -webkit-mask:
-            linear-gradient(#fff 0 0) content-box,
-            linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        animation: tgv-glow-spin 4s linear infinite;
+        animation: tgv-glow-spin 3.5s linear infinite;
         pointer-events: none;
     }
 
     @keyframes tgv-glow-spin {
-        to { --tgv-glow-angle: 360deg; }
-    }
-
-    /* Static fallback for browsers without @property support */
-    @supports not (background: conic-gradient(from 0deg, #000, #000)) {
-        .tgv-follow-glow::before {
-            background: none;
-        }
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to   { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
 
