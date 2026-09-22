@@ -23,41 +23,24 @@
         </div>
 
         <div class="p-4 sm:p-5">
-            <div class="mb-2 flex items-center gap-2 text-xs">
-                @if (Model.Category != null)
-                {
-                    <span class="truncate font-semibold uppercase tracking-wide text-primary">
-                        @Model.Category.Name
-                    </span>
-                }
+            @if (Model.Category != null)
+            {
+                <div class="mb-2 truncate text-[11px] font-bold uppercase tracking-[0.15em] text-primary">
+                    @Model.Category.Name
+                </div>
+            }
 
-                @if (Model.PublishedAt.HasValue)
-                {
-                    <span class="text-ink-faint" aria-hidden="true">•</span>
-                    <time datetime="@Model.PublishedAt.Value.ToString("O")"
-                          class="shrink-0 text-ink-muted">
-                        @Model.PublishedAt.Value.ToLocalTime().ToString("dd MMM yyyy")
-                    </time>
-                }
-            </div>
-
-            <h3 class="line-clamp-2 text-base font-bold leading-snug text-ink transition-colors group-hover:text-primary sm:text-lg">
+            <h3 class="line-clamp-3 text-base font-semibold leading-snug text-ink transition-colors group-hover:text-primary">
                 @Model.Title
             </h3>
 
-            @if (!string.IsNullOrWhiteSpace(Model.Summary))
+            @if (Model.PublishedAt.HasValue)
             {
-                <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-muted">
-                    @Model.Summary
-                </p>
+                <time datetime="@Model.PublishedAt.Value.ToString("O")"
+                      class="mt-2 block text-xs text-ink-muted">
+                    @Model.PublishedAt.Value.ToLocalTime().ToString("dd MMM yyyy")
+                </time>
             }
-
-            <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
-                Read article
-                <i data-lucide="arrow-right"
-                   class="h-4 w-4 transition-transform group-hover:translate-x-1"
-                   aria-hidden="true"></i>
-            </span>
         </div>
     </a>
 </article>
