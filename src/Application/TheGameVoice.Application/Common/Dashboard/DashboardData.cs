@@ -32,6 +32,9 @@ public sealed class DashboardData
 
     public DateTime PeriodStartUtc { get; set; }
 
+    /// <summary>Exclusive upper boundary of the selected period.</summary>
+    public DateTime PeriodEndUtc { get; set; }
+
     public DateTime GeneratedAtUtc { get; set; } = DateTime.UtcNow;
 
     public bool ScopeToAuthor { get; set; }

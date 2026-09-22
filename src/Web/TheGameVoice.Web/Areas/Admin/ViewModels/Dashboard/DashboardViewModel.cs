@@ -31,6 +31,10 @@ public class DashboardViewModel
 
     public string SelectedRangeLabel { get; set; } = "Last 30 Days";
 
+    public DateOnly StartDate { get; set; }
+
+    public DateOnly EndDate { get; set; }
+
     public bool ScopeToAuthor { get; set; }
 
     public string? ScopedAuthorName { get; set; }

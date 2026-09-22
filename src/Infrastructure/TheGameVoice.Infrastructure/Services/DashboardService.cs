@@ -31,7 +31,7 @@ public class DashboardService : IDashboardService
         CancellationToken cancellationToken = default)
     {
         var utcNow = DateTime.UtcNow;
-        var periodStart = utcNow.AddDays(-(int)filter.DateRange);
+        var (periodStart, periodEnd) = ResolvePeriod(filter, utcNow);
 
         var scoped = _context.Articles.AsNoTracking();
 
@@ -40,6 +40,12 @@ public class DashboardService : IDashboardService
             var authorId = filter.AuthorId.Value;
             scoped = scoped.Where(a => a.AuthorId == authorId);
         }
+
+        // Every analytical widget uses the same inclusive calendar-date range.
+        // CreatedAt is the stable cohort date: status, views, authors and lists
+        // therefore all describe the same set of articles.
+        scoped = scoped.Where(a =>
+            a.CreatedAt >= periodStart && a.CreatedAt < periodEnd);
 
         // ---- KPI counts: one grouped scan over the Status index ----
         var statusCounts = await scoped
@@ -60,10 +66,10 @@ public class DashboardService : IDashboardService
             .SumAsync(a => (long)a.ViewCount, cancellationToken);
 
         var createdInPeriod = await scoped
-            .CountAsync(a => a.CreatedAt >= periodStart, cancellationToken);
+            .CountAsync(cancellationToken);
 
         var publishedInPeriod = await scoped
-            .CountAsync(a => a.PublishedAt >= periodStart, cancellationToken);
+            .CountAsync(a => a.PublishedAt >= periodStart && a.PublishedAt < periodEnd, cancellationToken);
 
         // ---- Upcoming scheduled publications (next 5, future only) ----
         var upcoming = await scoped
@@ -339,7 +345,7 @@ public class DashboardService : IDashboardService
             .ToList();
 
         var recentActivity = activityRows
-            .Where(x => x.OccurredAtUtc >= periodStart)
+            .Where(x => x.OccurredAtUtc >= periodStart && x.OccurredAtUtc < periodEnd)
             .OrderByDescending(x => x.OccurredAtUtc)
             .Take(10)
             .Select(x => new DashboardActivityData
@@ -414,6 +420,7 @@ public class DashboardService : IDashboardService
             RecentActivity = recentActivity,
             DateRange = filter.DateRange,
             PeriodStartUtc = periodStart,
+            PeriodEndUtc = periodEnd,
             GeneratedAtUtc = utcNow,
             ScopeToAuthor = filter.ScopeToAuthor,
             ScopedAuthorId = filter.AuthorId
@@ -850,6 +857,24 @@ public class DashboardService : IDashboardService
         return counts.TryGetValue(status, out var count)
             ? count
             : 0;
+    }
+
+    private static (DateTime StartUtc, DateTime EndUtc) ResolvePeriod(
+        DashboardFilter filter,
+        DateTime utcNow)
+    {
+        if (filter.StartDate.HasValue && filter.EndDate.HasValue)
+        {
+            var localStart = filter.StartDate.Value.ToDateTime(TimeOnly.MinValue);
+            var localEndExclusive = filter.EndDate.Value.AddDays(1)
+                .ToDateTime(TimeOnly.MinValue);
+
+            return (
+                TimeZoneInfo.ConvertTimeToUtc(localStart, IndiaTimeZone),
+                TimeZoneInfo.ConvertTimeToUtc(localEndExclusive, IndiaTimeZone));
+        }
+
+        return (utcNow.AddDays(-(int)filter.DateRange), utcNow);
     }
 
     private static (DateTime TodayStartUtc, DateTime TomorrowStartUtc)

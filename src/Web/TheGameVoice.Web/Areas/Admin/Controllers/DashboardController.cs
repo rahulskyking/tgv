@@ -29,15 +29,19 @@ public class DashboardController : BaseAdminController
 
     [HttpGet]
     public async Task<IActionResult> Index(
-        DashboardDateRange? range = null,
+        DateOnly? startDate = null,
+        DateOnly? endDate = null,
         CancellationToken cancellationToken = default)
     {
+        var filter = CreateDateFilter(startDate, endDate, out var validationError);
+
+        if (validationError is not null)
+        {
+            TempData["Error"] = validationError;
+        }
+
         try
         {
-            var filter = new DashboardFilter
-            {
-                DateRange = range ?? DashboardDateRange.Last30Days
-            };
 
             var currentUser =
                 await _userManager.GetUserAsync(User);
@@ -64,23 +68,34 @@ public class DashboardController : BaseAdminController
             return View(new DashboardViewModel
             {
                 LoadFailed = true,
-                SelectedRange =
-                    (range ?? DashboardDateRange.Last30Days).ToString()
+                StartDate = filter.StartDate!.Value,
+                EndDate = filter.EndDate!.Value,
+                SelectedRangeLabel = DateRangeLabel(
+                    filter.StartDate.Value, filter.EndDate.Value)
             });
         }
     }
 
     [HttpGet]
     public async Task<IActionResult> Export(
-        DashboardDateRange? range = null,
+        DateOnly? startDate = null,
+        DateOnly? endDate = null,
         CancellationToken cancellationToken = default)
     {
+        var filter = CreateDateFilter(startDate, endDate, out var validationError);
+
+        if (validationError is not null)
+        {
+            TempData["Error"] = validationError;
+            return RedirectToAction(nameof(Index), new
+            {
+                startDate = filter.StartDate,
+                endDate = filter.EndDate
+            });
+        }
+
         try
         {
-            var filter = new DashboardFilter
-            {
-                DateRange = range ?? DashboardDateRange.Last30Days
-            };
 
             var currentUser =
                 await _userManager.GetUserAsync(User);
@@ -113,7 +128,7 @@ public class DashboardController : BaseAdminController
             TempData["Error"] =
                 "The export could not be generated. Please try again.";
 
-            return RedirectToAction(nameof(Index), new { range });
+            return RedirectToAction(nameof(Index), new { startDate, endDate });
         }
     }
 
@@ -226,12 +241,53 @@ public class DashboardController : BaseAdminController
                 })
                 .ToList(),
             SelectedRange = data.DateRange.ToString(),
-            SelectedRangeLabel = RangeLabel(data.DateRange),
+            StartDate = DateOnly.FromDateTime(ToIst(data.PeriodStartUtc)),
+            EndDate = DateOnly.FromDateTime(ToIst(data.PeriodEndUtc.AddTicks(-1))),
+            SelectedRangeLabel = DateRangeLabel(
+                DateOnly.FromDateTime(ToIst(data.PeriodStartUtc)),
+                DateOnly.FromDateTime(ToIst(data.PeriodEndUtc.AddTicks(-1)))),
             ScopeToAuthor = data.ScopeToAuthor,
             ScopedAuthorName = scopedAuthorName,
             GeneratedAtUtc = data.GeneratedAtUtc
         };
     }
+
+    private static DashboardFilter CreateDateFilter(
+        DateOnly? startDate,
+        DateOnly? endDate,
+        out string? validationError)
+    {
+        var today = DateOnly.FromDateTime(ToIst(DateTime.UtcNow));
+        var start = startDate ?? today.AddDays(-29);
+        var end = endDate ?? today;
+        validationError = null;
+
+        if (start > end)
+        {
+            validationError = "The start date must be on or before the end date.";
+            start = today.AddDays(-29);
+            end = today;
+        }
+        else if (end.DayNumber - start.DayNumber > 1825)
+        {
+            validationError = "Choose a date range of five years or less.";
+            start = today.AddDays(-29);
+            end = today;
+        }
+
+        return new DashboardFilter { StartDate = start, EndDate = end };
+    }
+
+    private static DateTime ToIst(DateTime utc)
+        => TimeZoneInfo.ConvertTimeFromUtc(
+            DateTime.SpecifyKind(utc, DateTimeKind.Utc),
+            TimeZoneInfo.FindSystemTimeZoneById(
+                OperatingSystem.IsWindows() ? "India Standard Time" : "Asia/Kolkata"));
+
+    private static string DateRangeLabel(DateOnly start, DateOnly end)
+        => start == end
+            ? start.ToString("dd MMM yyyy")
+            : $"{start:dd MMM yyyy} – {end:dd MMM yyyy}";
 
     private static string RangeLabel(DashboardDateRange range)
         => range switch
@@ -248,9 +304,13 @@ public class DashboardController : BaseAdminController
         sb.AppendLine("TheGameVoice Admin Dashboard");
         sb.AppendLine(
             $"Generated,{data.GeneratedAtUtc:yyyy-MM-dd HH:mm:ss} UTC");
-        sb.AppendLine($"Period,{RangeLabel(data.DateRange)}");
-        sb.AppendLine(
-            $"Period Start,{data.PeriodStartUtc:yyyy-MM-dd HH:mm:ss} UTC");
+        var periodStart = DateOnly.FromDateTime(ToIst(data.PeriodStartUtc));
+        var periodEnd = DateOnly.FromDateTime(
+            ToIst(data.PeriodEndUtc.AddTicks(-1)));
+
+        sb.AppendLine($"Period,{DateRangeLabel(periodStart, periodEnd)}");
+        sb.AppendLine($"From,{periodStart:yyyy-MM-dd}");
+        sb.AppendLine($"To,{periodEnd:yyyy-MM-dd}");
         sb.AppendLine();
 
         sb.AppendLine("KPI,Value");

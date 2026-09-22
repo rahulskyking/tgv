@@ -239,38 +239,32 @@
                   asp-action="Index"
                   class="flex items-center gap-3">
 
-                <div class="relative">
-
-                    <i data-lucide="calendar"
-                       class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint"></i>
-
-                    <select name="range"
-                            onchange="this.form.submit()"
-                            class="cursor-pointer appearance-none rounded-xl border border-line bg-surface py-2.5 pl-9 pr-8 text-sm font-medium text-ink-soft shadow-sm transition hover:border-line-strong focus:outline-none focus:ring-2 focus:ring-orange-200">
-
-                        <option value="Last7Days" selected="@(Model.SelectedRange == "Last7Days")">
-                            Last 7 Days
-                        </option>
-
-                        <option value="Last30Days" selected="@(Model.SelectedRange == "Last30Days")">
-                            Last 30 Days
-                        </option>
-
-                        <option value="Last90Days" selected="@(Model.SelectedRange == "Last90Days")">
-                            Last 90 Days
-                        </option>
-
-                    </select>
-
-                    <i data-lucide="chevron-down"
-                       class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint"></i>
-
+                <div class="flex flex-wrap items-end gap-2 rounded-xl border border-line bg-surface p-2 shadow-sm">
+                    <label class="block">
+                        <span class="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-muted">From</span>
+                        <input type="date" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")"
+                               max="@Model.EndDate.ToString("yyyy-MM-dd")"
+                               class="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-medium text-ink focus:outline-none focus:ring-2 focus:ring-orange-200" />
+                    </label>
+                    <span class="hidden pb-2.5 text-ink-faint sm:block">—</span>
+                    <label class="block">
+                        <span class="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-muted">To</span>
+                        <input type="date" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")"
+                               min="@Model.StartDate.ToString("yyyy-MM-dd")"
+                               class="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-medium text-ink focus:outline-none focus:ring-2 focus:ring-orange-200" />
+                    </label>
+                    <button type="submit"
+                            class="inline-flex items-center gap-2 rounded-lg bg-[#fa743e] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#e56734]">
+                        <i data-lucide="filter" class="h-4 w-4"></i>
+                        Apply
+                    </button>
                 </div>
 
                 <a asp-area="Admin"
                    asp-controller="Dashboard"
                    asp-action="Export"
-                   asp-route-range="@Model.SelectedRange"
+                   asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")"
+                   asp-route-endDate="@Model.EndDate.ToString("yyyy-MM-dd")"
                    class="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink-soft shadow-sm transition hover:border-line-strong hover:bg-surface-muted">
 
                     <i data-lucide="download" class="h-4 w-4"></i>
@@ -302,6 +296,15 @@
     }
     else
     {
+
+        <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+            <span class="inline-flex items-center gap-2 font-medium">
+                <i data-lucide="calendar-range" class="h-4 w-4"></i>
+                Showing articles created from <strong>@Model.StartDate.ToString("dd MMM yyyy")</strong>
+                to <strong>@Model.EndDate.ToString("dd MMM yyyy")</strong>
+            </span>
+            <span class="text-xs text-blue-700">All cards, statuses, authors and activity use this period.</span>
+        </div>
 
         <section class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
 
@@ -470,7 +473,7 @@
                     <div class="min-w-0">
 
                         <p class="truncate text-sm font-medium text-ink-muted">
-                            Total Articles
+                            Articles in range
                         </p>
 
                         <p class="mt-2 text-fluid-3xl font-bold tracking-tight text-ink">
@@ -486,10 +489,7 @@
                 </div>
 
                 <p class="mt-3 text-xs text-ink-muted">
-                    <span class="font-semibold text-emerald-600">
-                        +@FormatNumber(Model.Kpis.CreatedInPeriod)
-                    </span>
-                    created in period
+                    Created during @Model.SelectedRangeLabel
                 </p>
 
             </div>
@@ -701,7 +701,7 @@
                         </p>
 
                         <p class="mt-1 text-xs text-ink-faint">
-                            All-time
+                            Selected date range
                         </p>
 
                     </div>
@@ -717,7 +717,7 @@
                         </p>
 
                         <p class="mt-1 text-xs text-ink-faint">
-                            All-time
+                            Selected date range
                         </p>
 
                     </div>

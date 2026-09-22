@@ -15,6 +15,14 @@ public sealed class DashboardFilter
         = DashboardDateRange.Last30Days;
 
     /// <summary>
+    /// Optional inclusive calendar dates in the dashboard timezone (IST).
+    /// When both values are supplied they take precedence over DateRange.
+    /// </summary>
+    public DateOnly? StartDate { get; set; }
+
+    public DateOnly? EndDate { get; set; }
+
+    /// <summary>
     /// When <c>true</c>, every dashboard metric is scoped to the articles
     /// authored by <see cref="AuthorId"/> (used for the Author role).
     /// </summary>
