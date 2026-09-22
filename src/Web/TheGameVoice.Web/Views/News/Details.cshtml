@@ -528,7 +528,7 @@
                 <div class="grid grid-cols-1 gap-x-8 md:grid-cols-2">
                     @foreach (var relatedArticle in Model.RelatedArticles.Take(6))
                     {
-                        <partial name="~/Views/Shared/Components/_ContinueReadingCard.cshtml"
+                        <partial name="~/Views/Shared/Components/_SidebarArticleCard.cshtml"
                                  model="relatedArticle" />
                     }
                 </div>
