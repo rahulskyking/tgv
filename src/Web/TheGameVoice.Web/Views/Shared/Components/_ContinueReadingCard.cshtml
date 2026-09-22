@@ -1,0 +1,63 @@
+@model TheGameVoice.Domain.Entities.Article
+
+<article class="group min-w-0">
+    <a asp-controller="News"
+       asp-action="Details"
+       asp-route-slug="@Model.Slug"
+       class="block h-full overflow-hidden rounded-2xl border border-line bg-surface transition duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+
+        <div class="aspect-video overflow-hidden bg-surface-raised">
+            @if (Model.FeaturedImage != null)
+            {
+                <img src="@Model.FeaturedImage.FilePath"
+                     alt="@Model.Title"
+                     loading="lazy"
+                     class="h-full w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+            }
+            else
+            {
+                <div class="flex h-full items-center justify-center text-ink-faint">
+                    <i data-lucide="newspaper" class="h-8 w-8" aria-hidden="true"></i>
+                </div>
+            }
+        </div>
+
+        <div class="p-4 sm:p-5">
+            <div class="mb-2 flex items-center gap-2 text-xs">
+                @if (Model.Category != null)
+                {
+                    <span class="truncate font-semibold uppercase tracking-wide text-primary">
+                        @Model.Category.Name
+                    </span>
+                }
+
+                @if (Model.PublishedAt.HasValue)
+                {
+                    <span class="text-ink-faint" aria-hidden="true">•</span>
+                    <time datetime="@Model.PublishedAt.Value.ToString("O")"
+                          class="shrink-0 text-ink-muted">
+                        @Model.PublishedAt.Value.ToLocalTime().ToString("dd MMM yyyy")
+                    </time>
+                }
+            </div>
+
+            <h3 class="line-clamp-2 text-base font-bold leading-snug text-ink transition-colors group-hover:text-primary sm:text-lg">
+                @Model.Title
+            </h3>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Summary))
+            {
+                <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-muted">
+                    @Model.Summary
+                </p>
+            }
+
+            <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+                Read article
+                <i data-lucide="arrow-right"
+                   class="h-4 w-4 transition-transform group-hover:translate-x-1"
+                   aria-hidden="true"></i>
+            </span>
+        </div>
+    </a>
+</article>
