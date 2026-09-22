@@ -41,14 +41,29 @@ public class DashboardService : IDashboardService
             scoped = scoped.Where(a => a.AuthorId == authorId);
         }
 
-        // Every analytical widget uses the same inclusive calendar-date range.
-        // CreatedAt is the stable cohort date: status, views, authors and lists
-        // therefore all describe the same set of articles.
-        scoped = scoped.Where(a =>
+        var createdInRange = scoped.Where(a =>
             a.CreatedAt >= periodStart && a.CreatedAt < periodEnd);
 
-        // ---- KPI counts: one grouped scan over the Status index ----
-        var statusCounts = await scoped
+        var publishedInRange = scoped.Where(a =>
+            a.Status == ArticleStatus.Published &&
+            a.PublishedAt >= periodStart && a.PublishedAt < periodEnd);
+
+        // Workflow uses the timestamp relevant to each status. This avoids the
+        // misleading behaviour where a recently published article disappeared
+        // merely because its draft was created before the selected period.
+        var statusInRange = scoped.Where(a =>
+            (a.Status == ArticleStatus.Published &&
+             a.PublishedAt >= periodStart && a.PublishedAt < periodEnd) ||
+            (a.Status == ArticleStatus.Scheduled &&
+             a.ScheduledPublishAt >= periodStart &&
+             a.ScheduledPublishAt < periodEnd) ||
+            (a.Status != ArticleStatus.Published &&
+             a.Status != ArticleStatus.Scheduled &&
+             (a.LastModifiedAt ?? a.UpdatedAt ?? a.CreatedAt) >= periodStart &&
+             (a.LastModifiedAt ?? a.UpdatedAt ?? a.CreatedAt) < periodEnd));
+
+        // ---- KPI counts: one grouped scan over the relevant status events ----
+        var statusCounts = await statusInRange
             .GroupBy(a => a.Status)
             .Select(g => new WorkflowStatusData
             {
@@ -60,22 +75,22 @@ public class DashboardService : IDashboardService
         var countsByStatus =
             statusCounts.ToDictionary(x => x.Status, x => x.Count);
 
-        var totalArticles = countsByStatus.Values.Sum();
+        var totalArticles = await createdInRange.CountAsync(cancellationToken);
 
-        var totalViews = await scoped
+        var totalViews = await publishedInRange
             .SumAsync(a => (long)a.ViewCount, cancellationToken);
 
-        var createdInPeriod = await scoped
+        var createdInPeriod = totalArticles;
+        var publishedInPeriod = await publishedInRange
             .CountAsync(cancellationToken);
-
-        var publishedInPeriod = await scoped
-            .CountAsync(a => a.PublishedAt >= periodStart && a.PublishedAt < periodEnd, cancellationToken);
 
         // ---- Upcoming scheduled publications (next 5, future only) ----
         var upcoming = await scoped
             .Where(a =>
                 a.Status == ArticleStatus.Scheduled &&
-                a.ScheduledPublishAt > utcNow)
+                a.ScheduledPublishAt > utcNow &&
+                a.ScheduledPublishAt >= periodStart &&
+                a.ScheduledPublishAt < periodEnd)
             .OrderBy(a => a.ScheduledPublishAt)
             .Take(5)
             .Select(a => new UpcomingArticleData
@@ -116,8 +131,7 @@ public class DashboardService : IDashboardService
                 cancellationToken);
 
         // ---- Most read: published articles ordered by ViewCount ----
-        var mostRead = await scoped
-            .Where(a => a.Status == ArticleStatus.Published)
+        var mostRead = await publishedInRange
             .OrderByDescending(a => a.ViewCount)
             .ThenByDescending(a => a.PublishedAt)
             .Take(5)
@@ -134,22 +148,42 @@ public class DashboardService : IDashboardService
 
         // ---- Author performance: one grouped aggregation per author ----
         var authorAggregates = await scoped
+            .Where(a =>
+                (a.CreatedAt >= periodStart && a.CreatedAt < periodEnd) ||
+                (a.PublishedAt >= periodStart && a.PublishedAt < periodEnd) ||
+                (a.ScheduledPublishAt >= periodStart && a.ScheduledPublishAt < periodEnd) ||
+                ((a.LastModifiedAt ?? a.UpdatedAt ?? a.CreatedAt) >= periodStart &&
+                 (a.LastModifiedAt ?? a.UpdatedAt ?? a.CreatedAt) < periodEnd))
             .GroupBy(a => a.AuthorId)
             .Select(g => new
             {
                 AuthorId = g.Key,
-                TotalArticles = g.Count(),
-                PublishedArticles =
-                    g.Count(a => a.Status == ArticleStatus.Published),
-                DraftArticles =
-                    g.Count(a => a.Status == ArticleStatus.Draft),
-                ReviewPendingArticles =
-                    g.Count(a => a.Status == ArticleStatus.ReviewPending),
-                ScheduledArticles =
-                    g.Count(a => a.Status == ArticleStatus.Scheduled),
-                RejectedArticles =
-                    g.Count(a => a.Status == ArticleStatus.Rejected),
-                TotalViews = g.Sum(a => (long)a.ViewCount)
+                TotalArticles = g.Count(a =>
+                    a.CreatedAt >= periodStart && a.CreatedAt < periodEnd),
+                PublishedArticles = g.Count(a =>
+                    a.Status == ArticleStatus.Published &&
+                    a.PublishedAt >= periodStart && a.PublishedAt < periodEnd),
+                DraftArticles = g.Count(a =>
+                    a.Status == ArticleStatus.Draft &&
+                    (a.LastModifiedAt ?? a.UpdatedAt ?? a.CreatedAt) >= periodStart &&
+                    (a.LastModifiedAt ?? a.UpdatedAt ?? a.CreatedAt) < periodEnd),
+                ReviewPendingArticles = g.Count(a =>
+                    a.Status == ArticleStatus.ReviewPending &&
+                    (a.LastModifiedAt ?? a.UpdatedAt ?? a.CreatedAt) >= periodStart &&
+                    (a.LastModifiedAt ?? a.UpdatedAt ?? a.CreatedAt) < periodEnd),
+                ScheduledArticles = g.Count(a =>
+                    a.Status == ArticleStatus.Scheduled &&
+                    a.ScheduledPublishAt >= periodStart &&
+                    a.ScheduledPublishAt < periodEnd),
+                RejectedArticles = g.Count(a =>
+                    a.Status == ArticleStatus.Rejected &&
+                    (a.LastModifiedAt ?? a.UpdatedAt ?? a.CreatedAt) >= periodStart &&
+                    (a.LastModifiedAt ?? a.UpdatedAt ?? a.CreatedAt) < periodEnd),
+                TotalViews = g.Sum(a =>
+                    a.Status == ArticleStatus.Published &&
+                    a.PublishedAt >= periodStart && a.PublishedAt < periodEnd
+                        ? (long)a.ViewCount
+                        : 0L)
             })
             .ToListAsync(cancellationToken);
 
@@ -311,8 +345,7 @@ public class DashboardService : IDashboardService
             item.CategoryName = categoryName;
         }
 
-        var publishedCount =
-            GetCount(countsByStatus, ArticleStatus.Published);
+        var publishedCount = publishedInPeriod;
 
         var authorPerformance = authorAggregates
             .Select(x =>
