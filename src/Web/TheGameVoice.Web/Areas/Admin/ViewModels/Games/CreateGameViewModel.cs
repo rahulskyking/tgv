@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using TheGameVoice.Domain.Common.Extensions;
 using TheGameVoice.Domain.Enums;
 using TheGameVoice.Web.Areas.Admin.ViewModels.Media;
@@ -68,6 +68,12 @@ public class CreateGameViewModel
     public string? SteamUrl { get; set; }
 
     public int? SteamAppId { get; set; }
+
+    public long? IgdbGameId { get; set; }
+
+    public string? IgdbCoverUrl { get; set; }
+
+    public string? IgdbBannerUrl { get; set; }
 
     public Guid? CoverImageId { get; set; }
 

@@ -82,6 +82,20 @@ Run application:
 dotnet run
 ```
 
+## IGDB Game Import
+
+The admin **Create Game** page can search IGDB and import metadata, cover art,
+and banner art. Register a confidential application in the Twitch Developer
+Console, then set these server-side environment variables:
+
+```text
+Igdb__ClientId=your-client-id
+Igdb__ClientSecret=your-client-secret
+```
+
+Never commit either value. Without these variables, manual game creation still
+works and the import panel displays a configuration message.
+
 ## Project Status
 
 Active Development

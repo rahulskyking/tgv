@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -101,7 +101,12 @@ public static class InfrastructureServiceRegistration
         services.Configure<CloudflareR2StorageOptions>(
             configuration.GetSection("CloudflareR2"));
 
+        services.Configure<IgdbOptions>(
+            configuration.GetSection(IgdbOptions.SectionName));
+
         services.AddHttpClient();
+        services.AddScoped<IGameMetadataProvider,
+            IgdbGameMetadataProvider>();
 
         services.AddScoped<SupabaseStorageService>();
 
