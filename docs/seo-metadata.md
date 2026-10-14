@@ -71,3 +71,26 @@ claiming detailed privacy practices.
 Robots rules, sitemap coverage, indexing directives, redirect policy, schema
 eligibility, and performance are separate audit work. Metadata alone does not
 guarantee rankings, and search engines may rewrite displayed snippets.
+
+## Discovery links and legacy URLs
+
+The preferred article path remains `/article/{slug}`. Sitemap and RSS article
+links now use `Url.Action("Details", "News", ...)`, so they follow the actual
+MVC route. The sitemap uses `XElement` to escape XML safely and still includes
+published articles across both gaming segments. Old `/news/{slug}` links
+permanently redirect to the matching article; the lower-priority legacy route
+leaves existing conventional routes such as `/news/index` available.
+
+`wwwroot/robots.txt` advertises `https://thegamevoice.com/sitemap.xml` instead
+of localhost. This uses the non-www domain already referenced by the project;
+if production's preferred hostname is different, update the robots directive
+to match. Sitemap/RSS absolute URLs continue to use the request's scheme and
+host, like the current article canonicals. Verify those behind the production
+proxy; preferred-origin configuration and proxy trust are separate follow-up
+work, not changed here.
+
+After deployment, check `/robots.txt`, `/sitemap.xml`, and `/feed`; sitemap and
+feed article links must resolve to published articles. Confirm a known old
+`/news/{slug}` returns 301 to `/article/{slug}`, `/news` and `/news/index` still
+show the listing, and nonexistent article slugs end in 404 rather than a home
+page redirect. The sitemap helps discovery but does not guarantee indexing.
