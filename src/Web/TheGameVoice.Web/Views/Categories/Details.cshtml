@@ -1,5 +1,11 @@
 ﻿@model TheGameVoice.Web.ViewModels.Categories.CategoryDetailsViewModel
 
+@{
+    ViewData["Title"] = $"{Model.Category.Name} Gaming Coverage | TheGameVoice";
+    ViewData["MetaDescription"] = SeoText.ToMetaDescription(
+        $"Explore {Model.Category.Name} gaming coverage, news, reviews, and features from TheGameVoice.");
+}
+
 <div class="tgv-container py-fluid-12 space-y-20">
 
     

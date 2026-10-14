@@ -1,5 +1,11 @@
 @model TheGameVoice.Web.ViewModels.Home.HomePageViewModel
 
+@{
+    ViewData["Title"] = "TheGameVoice | Gaming News, Reviews and Features";
+    ViewData["MetaDescription"] =
+        "TheGameVoice is your home for the latest gaming news, in-depth reviews, and industry analysis.";
+}
+
 @if (Model.Segment == GameSegment.Mobile && !Model.LatestNews.Any())
 {
     <!-- Mobile gaming section has no published articles yet: show a friendly

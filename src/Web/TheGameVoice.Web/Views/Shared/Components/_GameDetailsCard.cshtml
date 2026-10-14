@@ -1,8 +1,6 @@
 ﻿@model TheGameVoice.Domain.Entities.Game
 
 @{
-    ViewData["Title"] = Model.Name;
-
     var released =
         Model.ReleaseDate.HasValue &&
         Model.ReleaseDate.Value.Date <= DateTime.UtcNow.Date;

@@ -1,5 +1,16 @@
 ﻿@model TheGameVoice.Web.ViewModels.Search.SearchResultsViewModel
 
+@{
+    var searchQuery = Model.Query?.Trim();
+    ViewData["Title"] = string.IsNullOrWhiteSpace(searchQuery)
+        ? "Search Gaming Coverage | TheGameVoice"
+        : $"Search Results for {searchQuery} | TheGameVoice";
+    ViewData["MetaDescription"] = SeoText.ToMetaDescription(
+        string.IsNullOrWhiteSpace(searchQuery)
+            ? "Search TheGameVoice for gaming news, reviews, guides, and features."
+            : $"Find gaming news, reviews, guides, and features matching {searchQuery} on TheGameVoice.");
+}
+
 <div class="tgv-container py-fluid-12">
 
     <!-- SEARCH HERO -->
