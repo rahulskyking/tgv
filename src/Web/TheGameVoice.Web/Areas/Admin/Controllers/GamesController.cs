@@ -12,16 +12,28 @@ public class GamesController : BaseAdminController
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISlugService _slugService;
-    private readonly ICacheService
-_cacheService;
+    private readonly ICacheService _cacheService;
+    private readonly IGameMetadataProvider _gameMetadataProvider;
+    private readonly IStorageService _storageService;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ILogger<GamesController> _logger;
+
     public GamesController(
         IUnitOfWork unitOfWork,
         ISlugService slugService,
-        ICacheService cacheService)
+        ICacheService cacheService,
+        IGameMetadataProvider gameMetadataProvider,
+        IStorageService storageService,
+        IHttpClientFactory httpClientFactory,
+        ILogger<GamesController> logger)
     {
         _unitOfWork = unitOfWork;
         _slugService = slugService;
         _cacheService = cacheService;
+        _gameMetadataProvider = gameMetadataProvider;
+        _storageService = storageService;
+        _httpClientFactory = httpClientFactory;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Index()
@@ -32,6 +44,56 @@ _cacheService;
 
         return View(games);
     }
+    [HttpGet]
+    public async Task<IActionResult> SearchIgdb(
+        string query,
+        CancellationToken cancellationToken)
+    {
+        query = query?.Trim() ?? string.Empty;
+
+        if (query.Length < 2)
+        {
+            return BadRequest(new
+            {
+                message = "Enter at least two characters to search."
+            });
+        }
+
+        if (query.Length > 100)
+        {
+            return BadRequest(new { message = "The search is too long." });
+        }
+
+        if (!_gameMetadataProvider.IsConfigured)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+            {
+                message = "IGDB is not configured. Add Igdb__ClientId and Igdb__ClientSecret to the server environment."
+            });
+        }
+
+        try
+        {
+            var games = await _gameMetadataProvider
+                .SearchAsync(query, cancellationToken);
+
+            return Json(games);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return new EmptyResult();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "IGDB search failed for {Query}.", query);
+
+            return StatusCode(StatusCodes.Status502BadGateway, new
+            {
+                message = "IGDB is temporarily unavailable. You can still create the game manually."
+            });
+        }
+    }
+
     [HttpGet]
     public async Task<IActionResult> Create()
     {
@@ -93,6 +155,24 @@ _cacheService;
 
             return View(model);
         }
+        if (!model.CoverImageId.HasValue &&
+            !string.IsNullOrWhiteSpace(model.IgdbCoverUrl))
+        {
+            model.CoverImageId = await ImportIgdbImageAsync(
+                model.IgdbCoverUrl,
+                $"{model.Name}-cover.jpg",
+                cancellationToken: HttpContext.RequestAborted);
+        }
+
+        if (!model.BannerImageId.HasValue &&
+            !string.IsNullOrWhiteSpace(model.IgdbBannerUrl))
+        {
+            model.BannerImageId = await ImportIgdbImageAsync(
+                model.IgdbBannerUrl,
+                $"{model.Name}-banner.jpg",
+                cancellationToken: HttpContext.RequestAborted);
+        }
+
         var game = new Game
         {
             Name = model.Name,
@@ -143,8 +223,9 @@ _cacheService;
             BannerImageId =
              model.BannerImageId,
 
-            DataSource =
-             GameDataSource.Manual
+            DataSource = model.IgdbGameId.HasValue
+                ? GameDataSource.Igdb
+                : GameDataSource.Manual
         };
 
         await _unitOfWork.Games
@@ -329,6 +410,87 @@ _cacheService;
             .SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private async Task<Guid?> ImportIgdbImageAsync(
+        string imageUrl,
+        string fileName,
+        CancellationToken cancellationToken)
+    {
+        if (!Uri.TryCreate(imageUrl, UriKind.Absolute, out var uri) ||
+            uri.Scheme != Uri.UriSchemeHttps ||
+            !uri.Host.Equals("images.igdb.com", StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogWarning("Rejected an invalid IGDB image URL.");
+            return null;
+        }
+
+        try
+        {
+            fileName = string.Concat(fileName.Select(character =>
+                char.IsLetterOrDigit(character) || character is '.' or '-' or '_'
+                    ? character
+                    : '-'));
+
+            var client = _httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromSeconds(15);
+
+            using var response = await client.GetAsync(
+                uri,
+                HttpCompletionOption.ResponseHeadersRead,
+                cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            const long maxBytes = 5 * 1024 * 1024;
+            if (response.Content.Headers.ContentLength > maxBytes)
+            {
+                throw new InvalidOperationException("The IGDB image exceeds 5 MB.");
+            }
+
+            var contentType = response.Content.Headers.ContentType?.MediaType;
+            if (contentType is not ("image/jpeg" or "image/png" or "image/webp"))
+            {
+                throw new InvalidOperationException("IGDB returned an unsupported image type.");
+            }
+
+            await using var source = await response.Content
+                .ReadAsStreamAsync(cancellationToken);
+            await using var buffer = new MemoryStream();
+            await source.CopyToAsync(buffer, cancellationToken);
+
+            if (buffer.Length > maxBytes)
+            {
+                throw new InvalidOperationException("The IGDB image exceeds 5 MB.");
+            }
+
+            buffer.Position = 0;
+            var storedPath = await _storageService.UploadAsync(
+                buffer,
+                fileName,
+                contentType,
+                cancellationToken);
+
+            var media = new Media
+            {
+                FileName = fileName,
+                FilePath = storedPath,
+                ContentType = contentType,
+                FileSize = buffer.Length,
+                IsImage = true,
+                AltText = Path.GetFileNameWithoutExtension(fileName),
+                Credit = "IGDB"
+            };
+
+            await _unitOfWork.Media.AddAsync(media);
+            return media.Id;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not import image from IGDB.");
+            TempData["Warning"] =
+                "The game was imported, but one or more IGDB images could not be saved.";
+            return null;
+        }
     }
 
     #region Quick Create
