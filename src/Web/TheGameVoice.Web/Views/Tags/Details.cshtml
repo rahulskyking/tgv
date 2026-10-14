@@ -1,5 +1,11 @@
 ﻿@model TheGameVoice.Web.ViewModels.Tags.TagDetailsViewModel
 
+@{
+    ViewData["Title"] = $"{Model.Tag.Name} News and Coverage | TheGameVoice";
+    ViewData["MetaDescription"] = SeoText.ToMetaDescription(
+        $"Explore gaming news, reviews, and features related to {Model.Tag.Name} on TheGameVoice.");
+}
+
 <div class="tgv-container py-fluid-12 space-y-20">
 
     <!-- TAG HERO -->

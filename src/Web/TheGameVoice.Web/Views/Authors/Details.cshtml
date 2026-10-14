@@ -1,5 +1,11 @@
 @model TheGameVoice.Web.ViewModels.Authors.AuthorDetailsViewModel
 
+@{
+    ViewData["Title"] = $"{Model.FullName} | Author at TheGameVoice";
+    ViewData["MetaDescription"] = SeoText.ToMetaDescription(
+        $"Read gaming news, reviews, and features by {Model.FullName} on TheGameVoice.");
+}
+
 <div class="tgv-container py-fluid-12">
 
     <div class="mx-auto max-w-6xl">
