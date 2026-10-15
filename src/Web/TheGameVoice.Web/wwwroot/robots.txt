@@ -2,4 +2,4 @@
 
 Allow: /
 
-Sitemap: https://localhost:7025/sitemap.xml
+Sitemap: https://thegamevoice.com/sitemap.xml

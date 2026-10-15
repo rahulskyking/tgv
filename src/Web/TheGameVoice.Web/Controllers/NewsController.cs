@@ -46,7 +46,14 @@ _cacheService;
         return View(articles);
     }
 
-    // [Route("news/{slug}")]
+    // Keep old links working without serving the article at two URLs.
+    // A lower route priority preserves conventional routes such as /news/index.
+    [HttpGet("news/{slug}", Order = 100)]
+    public IActionResult LegacyDetails(string slug)
+    {
+        return RedirectToActionPermanent(nameof(Details), "News", new { slug });
+    }
+
     [Route("article/{slug}")]
     public async Task<IActionResult> Details(
         string slug)

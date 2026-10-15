@@ -1,5 +1,13 @@
 ﻿@model TheGameVoice.Web.ViewModels.Games.GameDetailsViewModel
 
+@{
+    ViewData["Title"] = $"{Model.Game.Name} Game Hub | TheGameVoice";
+    var gameDescription = SeoText.ToMetaDescription(Model.Game.Summary);
+    ViewData["MetaDescription"] = string.IsNullOrWhiteSpace(gameDescription)
+        ? SeoText.ToMetaDescription($"Explore {Model.Game.Name} game details and related coverage on TheGameVoice.")
+        : gameDescription;
+}
+
 <div class="tgv-container py-fluid-12 space-y-20">
 
 

@@ -1,4 +1,17 @@
-﻿<!DOCTYPE html>
+﻿@using TheGameVoice.Web.Helpers
+@{
+    var pageTitle = ViewData["Title"]?.ToString();
+    var metaDescription = ViewData["MetaDescription"]?.ToString();
+    var canonicalUrl = ViewData["CanonicalUrl"]?.ToString();
+    var ogType = ViewData["OgType"]?.ToString();
+
+    pageTitle = string.IsNullOrWhiteSpace(pageTitle)
+        ? SeoText.DefaultTitle : pageTitle.Trim();
+    metaDescription = string.IsNullOrWhiteSpace(metaDescription)
+        ? SeoText.DefaultDescription : metaDescription.Trim();
+    ogType = string.IsNullOrWhiteSpace(ogType) ? "website" : ogType;
+}
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 
 <head>
@@ -29,28 +42,20 @@
     @*  viewport-fit=cover lets .tgv-container honour the notch/safe area. *@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    @* Shared metadata is rendered here only; views supply values via ViewData. *@
+    <title>@pageTitle</title>
+    <meta name="description" content="@metaDescription" />
+
+    <meta property="og:title" content="@pageTitle" />
+    <meta property="og:description" content="@metaDescription" />
+    <meta property="og:type" content="@ogType" />
+
+    @if (!string.IsNullOrWhiteSpace(canonicalUrl))
+    {
+        <link rel="canonical" href="@canonicalUrl" />
+    }
+
     @RenderSection("Head", required: false)
-    <title>
-        @(ViewData["Title"] ?? "TheGameVoice")
-    </title>
-
-    <meta name="description"
-          content="@(ViewData["Description"] ?? "Gaming News, Reviews and Features")" />
-
-    <meta property="og:title"
-          content="@(ViewData["Title"] ?? "TheGameVoice")" />
-
-    <meta property="og:description"
-          content="@(ViewData["Description"] ?? "Gaming News, Reviews and Features")" />
-
-
-@if (ViewData["CanonicalUrl"] != null)
-{
-    <link rel="canonical"
-          href="@ViewData["CanonicalUrl"]" />
-}
-    <meta property="og:type"
-          content="website" />
 
     @*  One compiled stylesheet: tailwind.config.js + wwwroot/css/app.css
         → wwwroot/css/site.css  (npm run css:build) *@

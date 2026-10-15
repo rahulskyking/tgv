@@ -34,7 +34,7 @@ public class FeedController : Controller
                         "TheGameVoice"),
 
                     new XElement("link",
-                        $"{Request.Scheme}://{Request.Host}"),
+                        Url.Action("Index", "Home", null, Request.Scheme)),
 
                     new XElement("description",
                         "Latest gaming news, reviews and features"),
@@ -46,7 +46,7 @@ public class FeedController : Controller
                                 article.Title),
 
                             new XElement("link",
-                                $"{Request.Scheme}://{Request.Host}/news/{article.Slug}"),
+                                Url.Action("Details", "News", new { slug = article.Slug }, Request.Scheme)),
 
                             new XElement("description",
                                 article.Summary),

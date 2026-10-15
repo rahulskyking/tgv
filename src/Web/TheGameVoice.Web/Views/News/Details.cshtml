@@ -1,4 +1,5 @@
 @using System.Text.Json
+@using TheGameVoice.Web.Helpers
 @model TheGameVoice.Web.ViewModels.News.ArticleDetailsViewModel
 
 @{
@@ -6,13 +7,15 @@
 
     var seoTitle =
         !string.IsNullOrWhiteSpace(article.SeoTitle)
-            ? article.SeoTitle
+            ? article.SeoTitle.Trim()
             : article.Title;
 
-    var seoDescription =
-        !string.IsNullOrWhiteSpace(article.SeoDescription)
-            ? article.SeoDescription
-            : article.Summary;
+    var seoDescription = SeoText.ArticleDescription(
+        article.SeoDescription, article.Summary, article.Content);
+
+    ViewData["Title"] = seoTitle;
+    ViewData["MetaDescription"] = seoDescription;
+    ViewData["OgType"] = "article";
 
     var canonicalUrl =
         ViewData["CanonicalUrl"]?.ToString()
@@ -21,6 +24,8 @@
             "News",
             new { slug = article.Slug },
             Context.Request.Scheme);
+
+    ViewData["CanonicalUrl"] = canonicalUrl;
 
     var seoImage =
         article.FeaturedImage?.FilePath;
@@ -99,30 +104,7 @@
 
 @section Head
 {
-    <title>@seoTitle</title>
-
-    @if (!string.IsNullOrWhiteSpace(seoDescription))
-    {
-        <meta name="description"
-              content="@seoDescription" />
-    }
-
-    <link rel="canonical"
-          href="@canonicalUrl" />
-
-    <!-- Open Graph -->
-
-    <meta property="og:type"
-          content="article" />
-
-    <meta property="og:title"
-          content="@seoTitle" />
-
-    @if (!string.IsNullOrWhiteSpace(seoDescription))
-    {
-        <meta property="og:description"
-              content="@seoDescription" />
-    }
+    <!-- Article-specific metadata; shared tags are owned by _Layout. -->
 
     <meta property="og:url"
           content="@canonicalUrl" />

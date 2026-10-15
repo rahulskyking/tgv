@@ -4,7 +4,7 @@ using TheGameVoice.Infrastructure.Persistence.Context;
 using Microsoft.AspNetCore.Identity;
 using TheGameVoice.Infrastructure.Identity.Seed;
 using TheGameVoice.Infrastructure.Identity.Entities;
-using TheGameVoice.Web.Services;
+using TheGameVoice.Web.DependencyInjection;
 
 
 
@@ -14,14 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddInfrastructureServices(builder.Configuration);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
-// Site mode (PC / Console gaming vs Mobile gaming) is resolved per request
-// from the tgv_mode cookie.
-builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddScoped<ISiteSegmentAccessor, SiteSegmentAccessor>();
+// Register MVC and web-specific services separately from Infrastructure.
+builder.Services.AddWebServices();
 
 var app = builder.Build();
 
