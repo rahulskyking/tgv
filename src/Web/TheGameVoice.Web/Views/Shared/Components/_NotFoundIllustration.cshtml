@@ -1,0 +1,75 @@
+@* Lightweight, decorative vector art. Palette inherits the site's light/dark tokens. *@
+<svg class="tgv-notfound-illustration" viewBox="0 0 600 460" fill="none" focusable="false" aria-hidden="true">
+    <defs>
+        <linearGradient id="tgv404-orbit" x1="150" y1="80" x2="490" y2="400" gradientUnits="userSpaceOnUse">
+            <stop stop-color="currentColor" stop-opacity=".5" />
+            <stop offset="1" stop-color="currentColor" stop-opacity=".04" />
+        </linearGradient>
+        <linearGradient id="tgv404-controller" x1="200" y1="180" x2="370" y2="350" gradientUnits="userSpaceOnUse">
+            <stop stop-color="rgb(var(--tgv-surface))" />
+            <stop offset="1" stop-color="rgb(var(--tgv-surface-3))" />
+        </linearGradient>
+    </defs>
+
+    <!-- Broken map coordinates and an unconnected route. -->
+    <path d="M55 145h45l25-25h45m260 210h45l26-26h43M85 340h54l28-28" stroke="currentColor" stroke-opacity=".23" stroke-width="1.5" />
+    <circle cx="55" cy="145" r="4" fill="currentColor" fill-opacity=".35" />
+    <circle cx="544" cy="304" r="4" fill="currentColor" fill-opacity=".35" />
+    <circle cx="85" cy="340" r="4" fill="currentColor" fill-opacity=".35" />
+    <circle cx="306" cy="230" r="174" stroke="url(#tgv404-orbit)" stroke-width="1.5" />
+    <circle cx="306" cy="230" r="145" stroke="currentColor" stroke-opacity=".12" stroke-dasharray="4 10" />
+    <ellipse cx="306" cy="230" rx="230" ry="97" transform="rotate(-29 306 230)" stroke="currentColor" stroke-opacity=".12" />
+
+    <text x="300" y="236" text-anchor="middle" font-family="'Barlow Condensed', Impact, sans-serif" font-size="210" font-weight="800" letter-spacing="-7" fill="currentColor" fill-opacity=".08" stroke="currentColor" stroke-opacity=".15" stroke-width="1">404</text>
+
+    <path d="m145 98 6 6-6 6-6-6Z" fill="currentColor" fill-opacity=".65" />
+    <path d="M459 118v16m-8-8h16M119 249v12m-6-6h12" stroke="currentColor" stroke-opacity=".5" stroke-width="2" stroke-linecap="round" />
+    <circle cx="460" cy="335" r="6" stroke="currentColor" stroke-opacity=".4" stroke-width="2" />
+    <circle cx="395" cy="66" r="3" fill="currentColor" fill-opacity=".6" />
+    <path d="m198 370 5 5-5 5-5-5Z" fill="currentColor" fill-opacity=".4" />
+
+    <ellipse cx="305" cy="367" rx="108" ry="14" fill="currentColor" fill-opacity=".09" />
+    <ellipse cx="305" cy="367" rx="72" ry="7" fill="currentColor" fill-opacity=".07" />
+
+    <g class="tgv-notfound-controller">
+        <g transform="rotate(-12 300 260)">
+            <!-- Disconnected cable. -->
+            <path d="M302 201v-26c0-19 29-17 29-35v-10" stroke="currentColor" stroke-opacity=".45" stroke-width="5" stroke-linecap="round" />
+            <path d="M331 106V93m-17 19-8-8m40 8 8-8" stroke="currentColor" stroke-opacity=".65" stroke-width="2" stroke-linecap="round" />
+            <rect x="322" y="115" width="18" height="17" rx="4" fill="rgb(var(--tgv-surface))" stroke="currentColor" stroke-opacity=".6" stroke-width="2" />
+            <path d="M328 115v-7m6 7v-7" stroke="currentColor" stroke-opacity=".6" stroke-width="2" />
+
+            <!-- Main controller body and grips. -->
+            <path d="M230 204c-22 0-34 14-42 38l-17 60c-5 18 2 32 15 33 10 1 18-5 29-17l22-24h126l22 24c11 12 19 18 29 17 13-1 20-15 15-33l-17-60c-8-24-20-38-42-38Z" fill="currentColor" fill-opacity=".1" transform="translate(0 8)" />
+            <path d="M230 198c-22 0-34 14-42 38l-17 60c-5 18 2 32 15 33 10 1 18-5 29-17l22-24h126l22 24c11 12 19 18 29 17 13-1 20-15 15-33l-17-60c-8-24-20-38-42-38Z" fill="url(#tgv404-controller)" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" />
+            <path d="M228 208h143" stroke="currentColor" stroke-opacity=".12" stroke-width="2" stroke-linecap="round" />
+            <rect x="279" y="214" width="43" height="27" rx="7" fill="currentColor" fill-opacity=".08" stroke="currentColor" stroke-opacity=".2" />
+            <path d="m293 225 5 5 10-10" stroke="currentColor" stroke-opacity=".45" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+
+            <!-- D-pad. -->
+            <path d="M224 221h14v14h14v14h-14v14h-14v-14h-14v-14h14Z" fill="currentColor" fill-opacity=".85" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+            <path d="M225 241h12" stroke="rgb(var(--tgv-surface))" stroke-opacity=".45" stroke-width="1.5" stroke-linecap="round" />
+
+            <!-- Face buttons. -->
+            <circle cx="373" cy="222" r="8" fill="currentColor" fill-opacity=".15" stroke="currentColor" stroke-opacity=".65" stroke-width="1.5" />
+            <circle cx="392" cy="241" r="8" fill="currentColor" fill-opacity=".8" />
+            <circle cx="354" cy="241" r="8" fill="currentColor" fill-opacity=".15" stroke="currentColor" stroke-opacity=".65" stroke-width="1.5" />
+            <circle cx="373" cy="260" r="8" fill="currentColor" fill-opacity=".15" stroke="currentColor" stroke-opacity=".65" stroke-width="1.5" />
+            <path d="m389 238 6 6m0-6-6 6" stroke="rgb(var(--tgv-surface))" stroke-width="1.5" stroke-linecap="round" />
+
+            <!-- Thumbsticks and status LED. -->
+            <circle cx="267" cy="276" r="17" fill="rgb(var(--tgv-surface-3))" stroke="currentColor" stroke-opacity=".3" stroke-width="2" />
+            <circle cx="267" cy="274" r="10" fill="currentColor" fill-opacity=".75" />
+            <circle cx="333" cy="276" r="17" fill="rgb(var(--tgv-surface-3))" stroke="currentColor" stroke-opacity=".3" stroke-width="2" />
+            <circle cx="333" cy="274" r="10" fill="currentColor" fill-opacity=".75" />
+            <rect x="294" y="258" width="12" height="4" rx="2" fill="currentColor" fill-opacity=".4" />
+        </g>
+    </g>
+
+    <!-- A small floating map marker, not an interactive control. -->
+    <g transform="rotate(10 460 210)">
+        <rect x="438" y="188" width="43" height="43" rx="12" fill="rgb(var(--tgv-surface))" stroke="currentColor" stroke-opacity=".3" stroke-width="1.5" />
+        <path d="M460 197c-5 0-8 3-8 8 0 6 8 14 8 14s8-8 8-14c0-5-3-8-8-8Z" stroke="currentColor" stroke-opacity=".8" stroke-width="1.8" />
+        <circle cx="460" cy="205" r="2.5" fill="currentColor" fill-opacity=".8" />
+    </g>
+</svg>

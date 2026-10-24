@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "404 — Page Not Found | TheGameVoice";
+    ViewData["MetaDescription"] = "This page is out of bounds. Head back to TheGameVoice or search for your next gaming story.";
+    ViewData["CanonicalUrl"] = null;
+}
+
+<section class="tgv-container tgv-notfound" aria-labelledby="notfound-title">
+    <div class="tgv-notfound-panel">
+        <div class="tgv-notfound-content">
+            <div class="tgv-notfound-label">
+                <span aria-hidden="true"></span>
+                ERROR CODE / 404
+            </div>
+
+            <h1 id="notfound-title" class="tgv-notfound-title">
+                This level<br />
+                <span>doesn't exist.</span>
+            </h1>
+
+            <p class="tgv-notfound-description">
+                Looks like you've wandered out of bounds. This page may have moved,
+                been removed, or never spawned in the first place.
+            </p>
+
+            <div class="tgv-notfound-actions">
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="tgv-notfound-button tgv-notfound-button-primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-8H9v8H4a1 1 0 0 1-1-1Z" stroke-linejoin="round" /></svg>
+                    Back to home
+                </a>
+                <a asp-area="" asp-controller="News" asp-action="Index" class="tgv-notfound-button tgv-notfound-button-secondary">
+                    Latest articles
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </a>
+            </div>
+
+            <form asp-area="" asp-controller="Search" asp-action="Index" method="get" class="tgv-notfound-search" role="search" aria-label="Find an article">
+                <label for="notfound-query">Looking for a specific story?</label>
+                <div class="tgv-notfound-search-field">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" stroke-linecap="round" /></svg>
+                    <input id="notfound-query" name="query" type="search" placeholder="Search gaming news, reviews…" maxlength="200" required />
+                    <button type="submit">Search <span aria-hidden="true">↗</span></button>
+                </div>
+            </form>
+        </div>
+
+        <div class="tgv-notfound-visual" aria-hidden="true">
+            <div class="tgv-notfound-visual-grid"></div>
+            <div class="tgv-notfound-coordinate">TGV // UNCHARTED TERRITORY</div>
+            <partial name="~/Views/Shared/Components/_NotFoundIllustration.cshtml" />
+            <div class="tgv-notfound-signal"><span></span> CHECKPOINT NOT FOUND</div>
+            <div class="tgv-notfound-visual-caption">Wrong turn. Same great games.</div>
+        </div>
+    </div>
+
+    <p class="tgv-notfound-footnote">Every good adventure has a detour. Your next story is one click away.</p>
+</section>

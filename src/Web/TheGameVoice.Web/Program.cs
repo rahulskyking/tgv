@@ -34,6 +34,12 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Render empty error responses in-place (including unmatched routes and
+// controller NotFound() results), without redirecting or changing a 404 to 200.
+// Register before static files and routing so their missing URLs are covered.
+app.UseStatusCodePagesWithReExecute("/error/{0}");
+
 app.UseStaticFiles();
 
 app.UseRouting();
