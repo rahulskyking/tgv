@@ -27,8 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{80A9CA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheGameVoice.Shared", "src\Shared\TheGameVoice.Shared\TheGameVoice.Shared.csproj", "{11A76ACC-7D58-4A45-8D38-53FA0D55F43F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheGameVoice.Web.Tests", "tests\TheGameVoice.Web.Tests\TheGameVoice.Web.Tests.csproj", "{6F58FC43-8965-4F66-BBBF-136C753649A9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,18 +37,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6F58FC43-8965-4F66-BBBF-136C753649A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6F58FC43-8965-4F66-BBBF-136C753649A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6F58FC43-8965-4F66-BBBF-136C753649A9}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{6F58FC43-8965-4F66-BBBF-136C753649A9}.Debug|x64.Build.0 = Debug|Any CPU
-		{6F58FC43-8965-4F66-BBBF-136C753649A9}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{6F58FC43-8965-4F66-BBBF-136C753649A9}.Debug|x86.Build.0 = Debug|Any CPU
-		{6F58FC43-8965-4F66-BBBF-136C753649A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6F58FC43-8965-4F66-BBBF-136C753649A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6F58FC43-8965-4F66-BBBF-136C753649A9}.Release|x64.ActiveCfg = Release|Any CPU
-		{6F58FC43-8965-4F66-BBBF-136C753649A9}.Release|x64.Build.0 = Release|Any CPU
-		{6F58FC43-8965-4F66-BBBF-136C753649A9}.Release|x86.ActiveCfg = Release|Any CPU
-		{6F58FC43-8965-4F66-BBBF-136C753649A9}.Release|x86.Build.0 = Release|Any CPU
 		{B36AFB45-96D0-4A0F-9A7B-4D6FBD1A9377}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B36AFB45-96D0-4A0F-9A7B-4D6FBD1A9377}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B36AFB45-96D0-4A0F-9A7B-4D6FBD1A9377}.Debug|x64.ActiveCfg = Debug|Any CPU
