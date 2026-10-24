@@ -20,6 +20,7 @@ public class ArticleRepository
     {
         return await _context.Articles
             .Include(x => x.Category)
+            .Include(x => x.Event)
             .Include(x => x.FeaturedImage)
 
             .Include(x => x.ArticleTags)
@@ -107,6 +108,7 @@ public class ArticleRepository
             .Include(x => x.FeaturedImage)
 
             .Include(x => x.Category)
+            .Include(x => x.Event)
 
             .Include(x => x.ArticleTags)
                 .ThenInclude(x => x.Tag)

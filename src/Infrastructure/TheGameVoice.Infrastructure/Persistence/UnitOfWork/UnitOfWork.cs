@@ -16,6 +16,7 @@ public class UnitOfWork : IUnitOfWork
     public IArticleViewRepository ArticleViews { get; }
 
     public IGameRepository Games { get; }
+    public IEventRepository Events { get; }
     public UnitOfWork(AppDbContext context)
     {
         _context = context;
@@ -24,6 +25,7 @@ public class UnitOfWork : IUnitOfWork
         Categories = new CategoryRepository(_context);
         Tags = new TagRepository(_context);
         Games = new GameRepository(_context);
+        Events = new EventRepository(_context);
         ArticleViews = new ArticleViewRepository(_context);
     }
 

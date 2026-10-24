@@ -31,6 +31,10 @@ public class Article : AuditableEntity
     public Guid? PublishedById { get; set; }
     public Guid AuthorId { get; set; }
     
+    // An optional event does not replace the primary category.
+    public Guid? EventId { get; set; }
+    public GamingEvent? Event { get; set; }
+
     public Guid CategoryId { get; set; }
 
     public Category Category { get; set; } = default!;

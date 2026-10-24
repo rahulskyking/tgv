@@ -5,6 +5,7 @@ namespace TheGameVoice.Application.Interfaces.Persistence;
 public interface IUnitOfWork
 {
     IArticleRepository Articles { get; }
+    IEventRepository Events { get; }
 
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);

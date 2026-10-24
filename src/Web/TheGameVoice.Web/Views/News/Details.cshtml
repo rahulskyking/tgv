@@ -222,6 +222,15 @@
 
 <div class="tgv-container py-fluid-12">
 
+    @if (article.Event != null)
+    {
+        <a asp-controller="Events" asp-action="Details" asp-route-slug="@article.Event.Slug"
+           class="mb-6 inline-block rounded-full border border-default px-4 py-2 text-sm font-bold text-primary">
+            @article.Event.Name coverage →
+        </a>
+    }
+
+
     @if (ViewData["SwitchedModeNotice"] != null)
     {
         <!-- The reader opened an article from the other gaming section, so

@@ -60,6 +60,13 @@ public class ArticleConfiguration
             x.PublishedAt
         });
 
+        builder.HasOne(x => x.Event)
+            .WithMany(x => x.Articles)
+            .HasForeignKey(x => x.EventId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(x => new { x.EventId, x.Status, x.PublishedAt });
+
         builder.HasOne(x => x.Category)
             .WithMany(x => x.Articles)
             .HasForeignKey(x => x.CategoryId);

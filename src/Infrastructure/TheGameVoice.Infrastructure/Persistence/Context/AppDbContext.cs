@@ -21,6 +21,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     public DbSet<Review> Reviews => Set<Review>();
 
     public DbSet<Category> Categories => Set<Category>();
+    public DbSet<GamingEvent> Events => Set<GamingEvent>();
 
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<ArticleTag> ArticleTags => Set<ArticleTag>();

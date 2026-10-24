@@ -92,6 +92,7 @@ public static class InfrastructureServiceRegistration
     SlugService>();
         
 
+        services.AddScoped<IEventRepository, EventRepository>();
         services.AddScoped<IGameRepository, GameRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
 

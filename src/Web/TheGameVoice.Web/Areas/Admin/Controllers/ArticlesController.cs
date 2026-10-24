@@ -164,8 +164,10 @@ public class ArticlesController : BaseAdminController
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateArticleViewModel model)
     {
+        await ValidateEventSelection(model);
         if (!ModelState.IsValid)
         {
             await PopulateArticleFormData(model);
@@ -190,6 +192,7 @@ public class ArticlesController : BaseAdminController
             Status = ArticleStatus.Draft,
             Segment = model.Segment,
             CategoryId = model.CategoryId,
+            EventId = model.EventId,
             Slug = await _slugService.GenerateSlugAsync(model.Title),
 
             // Review fields only
@@ -284,6 +287,7 @@ public class ArticlesController : BaseAdminController
             SeoDescription = article.SeoDescription,
             FeaturedImageId = article.FeaturedImageId,
             CategoryId = article.CategoryId,
+            EventId = article.EventId,
             AuthorId = article.AuthorId,
             SelectedTagIds = article.ArticleTags.Select(x => x.TagId).ToList(),
             SelectedGameIds = article.ArticleGames.Select(x => x.GameId).ToList(),
@@ -332,6 +336,7 @@ public class ArticlesController : BaseAdminController
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditArticleViewModel model)
     {
         if (!ModelState.IsValid)
@@ -353,6 +358,13 @@ public class ArticlesController : BaseAdminController
             return Forbid();
         }
 
+        await ValidateEventSelection(model, article.EventId);
+        if (!ModelState.IsValid)
+        {
+            await PopulateArticleFormData(model);
+            return View(model);
+        }
+
         // Basic fields
 
         article.Title = model.Title;
@@ -362,6 +374,7 @@ public class ArticlesController : BaseAdminController
         article.SeoDescription = model.SeoDescription;
         article.FeaturedImageId = model.FeaturedImageId;
         article.CategoryId = model.CategoryId;
+        article.EventId = model.EventId;
 
         // Audience section(s) this article belongs to.
         article.Segment = model.Segment;
@@ -455,6 +468,9 @@ public class ArticlesController : BaseAdminController
 
         _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
 
+        _cacheService.Remove(CacheKeys.ForSegment($"article_{article.Slug}", GameSegment.PcConsole));
+        _cacheService.Remove(CacheKeys.ForSegment($"article_{article.Slug}", GameSegment.Mobile));
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -505,12 +521,27 @@ public class ArticlesController : BaseAdminController
         return RedirectToAction(nameof(Index));
     }
 
+    private async Task ValidateEventSelection(ArticleFormViewModel model, Guid? existingEventId = null)
+    {
+        if (!model.EventId.HasValue) return;
+        var selected = await _unitOfWork.Events.GetByIdAsync(model.EventId.Value);
+        if (selected is null || (!selected.IsActive && model.EventId != existingEventId))
+            ModelState.AddModelError(nameof(model.EventId), "Choose an active event, or keep the article's existing archived event.");
+    }
+
     //Helper Method
     private async Task PopulateArticleFormData(ArticleFormViewModel model)
     {
         model.Categories = (await _unitOfWork.Categories.GetAllAsync())
             .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name })
             .ToList();
+
+        model.Events = (await _unitOfWork.Events.GetAllAsync())
+            .Where(x => x.IsActive || x.Id == model.EventId)
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(), Text = x.Name + (x.IsActive ? "" : " (Archived)")
+            }).ToList();
 
         model.Tags = (await _unitOfWork.Tags.GetAllAsync())
             .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name })
@@ -751,6 +782,7 @@ public class ArticlesController : BaseAdminController
             PublishedAt = DateTime.UtcNow,
             AuthorId = model.AuthorId,
             CategoryId = model.CategoryId,
+            EventId = model.EventId,
             IsReview = model.IsReview,
             ReviewScore = model.IsReview ? model.ReviewScore : null,
             ReviewVerdict = model.IsReview ? model.ReviewVerdict : null,
@@ -762,6 +794,9 @@ public class ArticlesController : BaseAdminController
             article.Category =
                 await _unitOfWork.Categories.GetByIdAsync(model.CategoryId);
         }
+
+        if (model.EventId.HasValue)
+            article.Event = await _unitOfWork.Events.GetByIdAsync(model.EventId.Value);
 
         if (model.FeaturedImageId.HasValue)
         {

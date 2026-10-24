@@ -1,0 +1,52 @@
+@model TheGameVoice.Web.ViewModels.Events.EventDetailsViewModel
+@{
+    var item = Model.Event;
+    var pageSuffix = Model.Page > 1 ? $" | Page {Model.Page}" : "";
+    ViewData["Title"] = $"{item.Name} Coverage{pageSuffix} | TheGameVoice";
+    var description = SeoText.ToMetaDescription(item.Description);
+    ViewData["MetaDescription"] = string.IsNullOrWhiteSpace(description)
+        ? SeoText.ToMetaDescription($"Follow {item.Name} coverage, news, reviews, and features on TheGameVoice.") : description;
+}
+<div class="tgv-container space-y-12 py-fluid-12">
+    <a asp-action="Index" asp-route-archived="@(!item.IsActive)" class="font-semibold text-primary">← All @(item.IsActive ? "events" : "archived events")</a>
+    <section class="overflow-hidden rounded-2xl border border-default bg-surface">
+        @if (item.BannerImage != null)
+        {
+            <img src="@item.BannerImage.FilePath" alt="@(item.BannerAltText ?? item.Name)" width="1600" height="600" fetchpriority="high" class="aspect-[16/6] w-full object-cover" />
+        }
+        <div class="space-y-5 p-6 md:p-12">
+            <span class="inline-block rounded-full bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wide text-primary">@(item.IsActive ? "Event coverage" : "Archived event")</span>
+            <h1 class="text-fluid-5xl font-black">@item.Name</h1>
+            <div class="flex flex-wrap gap-4 text-sm font-semibold text-ink-muted">
+                @if (item.StartDate.HasValue)
+                {
+                    <span><time datetime="@item.StartDate.Value.ToString("yyyy-MM-dd")">@item.StartDate.Value.ToString("dd MMM yyyy")</time>
+                    @if (item.EndDate.HasValue && item.EndDate != item.StartDate)
+                    { <text> – </text><time datetime="@item.EndDate.Value.ToString("yyyy-MM-dd")">@item.EndDate.Value.ToString("dd MMM yyyy")</time> }
+                    </span>
+                }
+                @if (!string.IsNullOrWhiteSpace(item.Location)) { <span>@item.Location</span> }
+            </div>
+            @if (!string.IsNullOrWhiteSpace(item.Description)) { <p class="whitespace-pre-line text-lg leading-relaxed text-ink-muted">@item.Description</p> }
+            @if (!item.IsActive) { <p class="text-sm text-ink-muted">This event is archived. Its coverage remains available below.</p> }
+            @if (!string.IsNullOrWhiteSpace(item.OfficialWebsite))
+            { <a href="@item.OfficialWebsite" target="_blank" rel="noopener noreferrer" class="inline-block rounded-full border border-default px-5 py-3 font-bold text-primary">Official event website ↗</a> }
+        </div>
+    </section>
+    <section aria-labelledby="event-coverage-heading" class="space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3"><h2 id="event-coverage-heading" class="text-3xl font-black">Latest coverage</h2><span class="text-sm text-ink-muted">@Model.TotalArticles article@(Model.TotalArticles == 1 ? "" : "s")</span></div>
+        @if (!Model.Articles.Any()) { <p class="rounded-2xl border border-default bg-surface p-8 text-ink-muted">@(item.IsActive ? "Coverage is coming soon. Check back for articles from this event." : "No published coverage is available for this archived event.")</p> }
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            @foreach (var article in Model.Articles)
+            { <partial name="~/Views/Shared/Components/_CategoryArticleCard.cshtml" model="article" /> }
+        </div>
+        @if (Model.TotalPages > 1)
+        {
+            <nav aria-label="Event coverage pages" class="flex flex-wrap items-center justify-center gap-4">
+                @if (Model.Page > 1) { <a asp-action="Details" asp-route-slug="@item.Slug" asp-route-page="@(Model.Page - 1)" class="rounded-full border border-default px-5 py-3">← Previous</a> }
+                <span class="text-sm text-ink-muted">Page @Model.Page of @Model.TotalPages</span>
+                @if (Model.Page < Model.TotalPages) { <a asp-action="Details" asp-route-slug="@item.Slug" asp-route-page="@(Model.Page + 1)" class="rounded-full border border-default px-5 py-3">Next →</a> }
+            </nav>
+        }
+    </section>
+</div>

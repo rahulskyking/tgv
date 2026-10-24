@@ -11,17 +11,20 @@ public class SitemapController : Controller
     private readonly ICategoryRepository _categoryRepository;
     private readonly ITagRepository _tagRepository;
     private readonly IGameRepository _gameRepository;
+    private readonly IEventRepository _eventRepository;
 
     public SitemapController(
         IArticleRepository articleRepository,
         ICategoryRepository categoryRepository,
         ITagRepository tagRepository,
-        IGameRepository gameRepository)
+        IGameRepository gameRepository,
+        IEventRepository eventRepository)
     {
         _articleRepository = articleRepository;
         _categoryRepository = categoryRepository;
         _tagRepository = tagRepository;
         _gameRepository = gameRepository;
+        _eventRepository = eventRepository;
     }
 
     [Route("sitemap.xml")]
@@ -66,6 +69,12 @@ public class SitemapController : Controller
         foreach (var game in games)
         {
             AddUrl(Url.Action("Details", "Games", new { slug = game.Slug }, Request.Scheme));
+        }
+
+        AddUrl(Url.Action("Index", "Events", null, Request.Scheme));
+        foreach (var gamingEvent in await _eventRepository.GetAllAsync())
+        {
+            AddUrl(Url.Action("Details", "Events", new { slug = gamingEvent.Slug }, Request.Scheme));
         }
 
         var xml = new XDocument(new XDeclaration("1.0", "utf-8", null), urlset);

@@ -12,13 +12,17 @@ public class NavigationViewComponent
     private readonly ICategoryRepository
         _categoryRepository;
 
+    private readonly IEventRepository _events;
+
     private readonly ISiteSegmentAccessor
         _siteSegment;
 
     public NavigationViewComponent(
         ICategoryRepository categoryRepository,
+        IEventRepository events,
         ISiteSegmentAccessor siteSegment)
     {
+        _events = events;
         _categoryRepository =
             categoryRepository;
 
@@ -47,6 +51,7 @@ public class NavigationViewComponent
             new NavigationViewModel
             {
                 Categories = categories,
+                Events = await _events.GetNavigationAsync(),
 
                 CurrentSegment = segment,
 

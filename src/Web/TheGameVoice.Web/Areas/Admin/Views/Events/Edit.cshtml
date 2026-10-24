@@ -1,0 +1,11 @@
+@model TheGameVoice.Web.Areas.Admin.ViewModels.Events.EventFormViewModel
+@{ ViewData["Title"] = "Edit Event"; }
+<div class="space-y-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <h1 class="text-fluid-3xl font-bold">Edit @Model.Name</h1>
+        <a asp-area="" asp-controller="Events" asp-action="Details" asp-route-slug="@Model.Slug" class="font-semibold text-primary">View landing page →</a>
+    </div>
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" data-dirty-guard class="space-y-6">
+        <partial name="_EventForm" model="Model" />
+    </form>
+</div>

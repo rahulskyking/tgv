@@ -320,6 +320,10 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
+                    b.Property<Guid?>("EventId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("event_id");
+
                     b.Property<Guid?>("FeaturedImageId")
                         .HasColumnType("uuid")
                         .HasColumnName("featured_image_id");
@@ -415,6 +419,9 @@ namespace TheGameVoice.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId")
                         .HasDatabaseName("ix_articles_category_id");
+
+                    b.HasIndex("EventId", "Status", "PublishedAt")
+                        .HasDatabaseName("ix_articles_event_id_status_published_at");
 
                     b.HasIndex("FeaturedImageId")
                         .HasDatabaseName("ix_articles_featured_image_id");
@@ -788,6 +795,103 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.ToTable("games", (string)null);
                 });
 
+            modelBuilder.Entity("TheGameVoice.Domain.Entities.GamingEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("BannerImageId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("banner_image_id");
+
+                    b.Property<string>("BannerAltText")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("banner_alt_text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)")
+                        .HasColumnName("description");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("display_order");
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date")
+                        .HasColumnName("end_date");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("location");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("OfficialWebsite")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("official_website");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("published_at");
+
+                    b.Property<bool>("ShowInNavigation")
+                        .HasColumnType("boolean")
+                        .HasColumnName("show_in_navigation");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("slug");
+
+                    b.Property<DateOnly?>("StartDate")
+                        .HasColumnType("date")
+                        .HasColumnName("start_date");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id").HasName("pk_events");
+                    b.HasIndex("BannerImageId").HasDatabaseName("ix_events_banner_image_id");
+                    b.HasIndex("Slug").IsUnique().HasDatabaseName("ix_events_slug");
+                    b.HasIndex("IsActive", "ShowInNavigation", "DisplayOrder")
+                        .HasDatabaseName("ix_events_is_active_show_in_navigation_display_order");
+                    b.ToTable("events", (string)null);
+                });
+
             modelBuilder.Entity("TheGameVoice.Domain.Entities.Media", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1127,6 +1231,12 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_articles_categories_category_id");
 
+                    b.HasOne("TheGameVoice.Domain.Entities.GamingEvent", "Event")
+                        .WithMany("Articles")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_articles_events_event_id");
+
                     b.HasOne("TheGameVoice.Domain.Entities.Media", "FeaturedImage")
                         .WithMany()
                         .HasForeignKey("FeaturedImageId")
@@ -1134,6 +1244,8 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasConstraintName("fk_articles_media_featured_image_id");
 
                     b.Navigation("Category");
+
+                    b.Navigation("Event");
 
                     b.Navigation("FeaturedImage");
                 });
@@ -1253,6 +1365,16 @@ namespace TheGameVoice.Infrastructure.Migrations
                     b.Navigation("AvatarImage");
                 });
 
+            modelBuilder.Entity("TheGameVoice.Domain.Entities.GamingEvent", b =>
+                {
+                    b.HasOne("TheGameVoice.Domain.Entities.Media", "BannerImage")
+                        .WithMany()
+                        .HasForeignKey("BannerImageId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_events_media_banner_image_id");
+                    b.Navigation("BannerImage");
+                });
+
             modelBuilder.Entity("TheGameVoice.Domain.Entities.Article", b =>
                 {
                     b.Navigation("ArticleGames");
@@ -1276,6 +1398,11 @@ namespace TheGameVoice.Infrastructure.Migrations
             modelBuilder.Entity("TheGameVoice.Domain.Entities.Game", b =>
                 {
                     b.Navigation("ArticleGames");
+                });
+
+            modelBuilder.Entity("TheGameVoice.Domain.Entities.GamingEvent", b =>
+                {
+                    b.Navigation("Articles");
                 });
 
             modelBuilder.Entity("TheGameVoice.Domain.Entities.Media", b =>

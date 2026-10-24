@@ -9,6 +9,8 @@ public class NavigationViewModel
     { get; set; }
         = new List<Category>();
 
+    public IReadOnlyList<GamingEvent> Events { get; set; } = Array.Empty<GamingEvent>();
+
     /// <summary>Site mode the header is rendered for.</summary>
     public GameSegment CurrentSegment { get; set; }
         = GameSegment.PcConsole;

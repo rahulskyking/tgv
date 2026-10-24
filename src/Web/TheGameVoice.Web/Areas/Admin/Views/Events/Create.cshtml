@@ -1,0 +1,9 @@
+@model TheGameVoice.Web.Areas.Admin.ViewModels.Events.EventFormViewModel
+@{ ViewData["Title"] = "Create Event"; }
+<div class="space-y-6">
+    <h1 class="text-fluid-3xl font-bold">Create event</h1>
+    <p class="text-ink-muted">Build a reusable event hub without changing your primary categories.</p>
+    <form asp-action="Create" method="post" data-dirty-guard class="space-y-6">
+        <partial name="_EventForm" model="Model" />
+    </form>
+</div>

@@ -1,0 +1,37 @@
+@model IReadOnlyList<TheGameVoice.Domain.Entities.GamingEvent>
+@{
+    var archived = ViewData["Archived"] is true;
+    ViewData["Title"] = (archived ? "Archived Gaming Events" : "Gaming Events") + " | TheGameVoice";
+    ViewData["MetaDescription"] = archived
+        ? "Explore TheGameVoice's archived gaming events and their news, reviews, and features."
+        : "Explore gaming events and follow their news, reviews, and features on TheGameVoice.";
+}
+<div class="tgv-container space-y-8 py-fluid-12">
+    <div><p class="font-bold uppercase tracking-wide text-primary">TheGameVoice coverage</p><h1 class="mt-3 text-fluid-5xl font-black">@(archived ? "Archived events" : "Gaming events")</h1></div>
+    <nav aria-label="Event status" class="flex flex-wrap gap-4">
+        <a asp-action="Index" class="rounded-full border border-default px-5 py-2 font-semibold">Active events</a>
+        <a asp-action="Index" asp-route-archived="true" class="rounded-full border border-default px-5 py-2 font-semibold">Archived events</a>
+    </nav>
+    @if (!Model.Any())
+    {
+        <p class="rounded-2xl border border-default bg-surface p-8">@(archived ? "No archived events yet." : "No active events right now. Check back soon or browse our event archive.")</p>
+    }
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        @foreach (var item in Model)
+        {
+            <a asp-action="Details" asp-route-slug="@item.Slug" class="block overflow-hidden rounded-2xl border border-default bg-surface transition hover:shadow-xl">
+                @if (item.BannerImage != null)
+                {
+                    <img src="@item.BannerImage.FilePath" alt="@(item.BannerAltText ?? item.Name)" loading="lazy" width="960" height="540" class="aspect-[16/9] w-full object-cover" />
+                }
+                <div class="p-6">
+                    <span class="text-xs font-bold uppercase text-primary">@(item.IsActive ? "Event coverage" : "Archived event")</span>
+                    <h2 class="mt-2 text-2xl font-black">@item.Name</h2>
+                    @if (item.StartDate.HasValue) { <p class="mt-3 text-sm text-ink-muted">@item.StartDate.Value.ToString("dd MMM yyyy")</p> }
+                    @if (!string.IsNullOrWhiteSpace(item.Location)) { <p class="mt-2 text-sm text-ink-muted">@item.Location</p> }
+                    @if (!string.IsNullOrWhiteSpace(item.Description)) { <p class="mt-3 line-clamp-3 text-ink-muted">@item.Description</p> }
+                </div>
+            </a>
+        }
+    </div>
+</div>

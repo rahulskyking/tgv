@@ -119,6 +119,14 @@
                     Categories
                 </a>
 
+                @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+                {
+                    <a asp-area="Admin" asp-controller="Events" asp-action="Index" class="@NavClass("Events")">
+                        <i data-lucide="calendar-days" class="h-4 w-4"></i>
+                        Events
+                    </a>
+                }
+
                 <a asp-area="Admin"
                    asp-controller="Tags"
                    asp-action="Index"

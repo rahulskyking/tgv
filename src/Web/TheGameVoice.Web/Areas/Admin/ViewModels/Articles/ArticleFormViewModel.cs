@@ -33,6 +33,11 @@ public class ArticleFormViewModel : IValidatableObject
     [Required(ErrorMessage = "Please select a category.")]
     public Guid CategoryId { get; set; }
 
+    [Display(Name = "Event (optional)")]
+    public Guid? EventId { get; set; }
+
+    public List<SelectListItem> Events { get; set; } = new();
+
     #region Audience segment
 
     /// <summary>

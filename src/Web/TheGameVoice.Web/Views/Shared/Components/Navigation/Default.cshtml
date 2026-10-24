@@ -4,14 +4,18 @@
     var isMobileMode =
         Model.CurrentSegment == GameSegment.Mobile;
 
+    var primaryEvents = Model.Events.Take(2).ToList();
+    var secondaryEvents = Model.Events.Skip(2).ToList();
+    var primaryCategoryCount = Math.Max(1, 7 - primaryEvents.Count);
+
     var primaryCategories =
         Model.Categories
-            .Take(7)
+            .Take(primaryCategoryCount)
             .ToList();
 
     var secondaryCategories =
         Model.Categories
-            .Skip(7)
+            .Skip(primaryCategoryCount)
             .ToList();
 }
 
@@ -43,7 +47,7 @@
 
                 <!-- PRIMARY NAV -->
 
-                <nav class="flex items-center gap-6">
+                <nav class="flex flex-wrap items-center gap-4">
 
                    @*  <a asp-controller="Home"
                        asp-action="Index"
@@ -63,6 +67,12 @@
                             @category.Name
 
                         </a>
+                    }
+
+                    @foreach (var gamingEvent in primaryEvents)
+                    {
+                        <a asp-controller="Events" asp-action="Details" asp-route-slug="@gamingEvent.Slug"
+                           class="text-sm font-bold uppercase tracking-[0.12em] text-primary transition hover:underline">@gamingEvent.Name</a>
                     }
 
                 </nav>
@@ -96,7 +106,7 @@
         </div>
 
         <!-- SECONDARY NAV -->
-        @if (secondaryCategories.Any())
+        @if (secondaryCategories.Any() || secondaryEvents.Any())
         {
             <div class="hidden border-t border-default lg:block">
 
@@ -114,6 +124,11 @@
                         </a>
                     }
 
+                    @foreach (var gamingEvent in secondaryEvents)
+                    {
+                        <a asp-controller="Events" asp-action="Details" asp-route-slug="@gamingEvent.Slug"
+                           class="text-sm font-semibold uppercase tracking-[0.12em] text-primary hover:underline">@gamingEvent.Name</a>
+                    }
                 </nav>
 
             </div>
@@ -158,7 +173,7 @@
 <!-- MOBILE OVERLAY -->
 
 <div id="mobile-menu-overlay"
-     class="fixed inset-0 z-[999] hidden bg-surface">
+     class="fixed inset-0 z-[999] hidden overflow-y-auto bg-surface">
 
     <div class="tgv-container">
 
@@ -237,6 +252,11 @@
                     </a>
                 }
 
+                @foreach (var gamingEvent in Model.Events)
+                {
+                    <a asp-controller="Events" asp-action="Details" asp-route-slug="@gamingEvent.Slug"
+                       class="text-lg font-bold uppercase text-primary">@gamingEvent.Name</a>
+                }
             </nav>
 
         </div>
