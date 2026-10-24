@@ -9,13 +9,6 @@ public class EventsController : Controller
     private readonly IEventRepository _events;
     public EventsController(IEventRepository events) => _events = events;
 
-    [HttpGet("events")]
-    public async Task<IActionResult> Index(bool archived = false)
-    {
-        ViewData["Archived"] = archived;
-        return View((await _events.GetAllAsync()).Where(x => x.IsActive != archived).ToList());
-    }
-
     [HttpGet("events/{slug}")]
     public async Task<IActionResult> Details(string slug, int page = 1)
     {

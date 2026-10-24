@@ -24,11 +24,15 @@ articles, but only articles with Published status appear publicly.
 
 ## Public pages
 
-- `/events`: active events, with a link to the archive.
-- `/events?archived=true`: archived events.
 - `/events/{slug}`: banner, details, and paginated published coverage (12/page).
-- Assigned article detail pages link back to the event hub.
-- The sitemap includes event hubs, including archives.
+- Event-name links in desktop/mobile navigation are the only event-discovery
+  links in the public interface. Article pages do not add event backlinks.
+- There is no public event directory, archive browser, or "All events" link.
+  `/events` and `/events?archived=true` have no listing endpoint and return 404.
+- Individual event URLs remain accessible via direct/shared links, including
+  archived events. Navbar-only navigation is not an access-control mechanism.
+- The sitemap includes individual event hubs, including archives, but no
+  directory URL. Admin event listing/edit/view controls are unchanged.
 
 Event pages, event selection, and event navigation query current data rather
 than storing an additional event cache. Event edits/archive/reactivation also
@@ -40,7 +44,7 @@ article invalidates its detail caches so changed event assignments appear.
 Archiving is NOT deletion, unpublishing, or privacy control. An archived event:
 
 - Disappears from promoted navigation, even if Show in navigation stays checked.
-- Moves to the public archive and keeps its original landing-page URL.
+- Is labelled Archived on its original landing page; no public archive directory is provided.
 - Keeps all images/details and article associations.
 - Does not affect article categories, publication status, or article URLs.
 - Can be reactivated, restoring its saved navigation preference.
@@ -98,10 +102,10 @@ in an SDK-enabled environment before production deployment.
 - Create a News article assigned to the event; publish it. It appears in News
   and event coverage with the same `/article/{slug}` URL.
 - Draft/rejected/scheduled/archived articles do not appear in event coverage.
-- Editing an article to another event or None updates both event listings and
-  its detail-page event link after save (including a previously cached page).
+- Changing an article's event or selecting None updates coverage on the affected
+  event hubs after save.
 - Archive the event. Navigation disappears, but the original hub/article URLs
-  work and the hub appears in the archive. Existing assignments remain intact.
+  work and the hub is labelled Archived. Existing assignments remain intact.
 - Edit an article with an archived assignment without changing it; save succeeds.
   Forging a new archived/missing EventId is rejected.
 - Reactivate the event and verify its selected navigation preference returns.
@@ -109,5 +113,7 @@ in an SDK-enabled environment before production deployment.
   reversed dates, and non-HTTP(S) website URLs. A tampered edit slug is rejected.
 - Author/Editor accounts cannot manage events; anonymous access is protected.
   Mutating event requests without a valid antiforgery token are rejected.
+- Confirm `/events`, `/events?archived=true`, and a missing event slug return 404.
+  No public event-directory/archive links or article event backlinks are rendered.
 - Existing categories, unassigned articles, media uploads, article previews, and
   existing navigation continue to work. Check empty events and >12 articles.

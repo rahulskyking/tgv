@@ -71,7 +71,6 @@ public class SitemapController : Controller
             AddUrl(Url.Action("Details", "Games", new { slug = game.Slug }, Request.Scheme));
         }
 
-        AddUrl(Url.Action("Index", "Events", null, Request.Scheme));
         foreach (var gamingEvent in await _eventRepository.GetAllAsync())
         {
             AddUrl(Url.Action("Details", "Events", new { slug = gamingEvent.Slug }, Request.Scheme));

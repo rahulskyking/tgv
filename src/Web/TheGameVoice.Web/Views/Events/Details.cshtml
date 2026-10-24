@@ -8,7 +8,6 @@
         ? SeoText.ToMetaDescription($"Follow {item.Name} coverage, news, reviews, and features on TheGameVoice.") : description;
 }
 <div class="tgv-container space-y-12 py-fluid-12">
-    <a asp-action="Index" asp-route-archived="@(!item.IsActive)" class="font-semibold text-primary">← All @(item.IsActive ? "events" : "archived events")</a>
     <section class="overflow-hidden rounded-2xl border border-default bg-surface">
         @if (item.BannerImage != null)
         {
