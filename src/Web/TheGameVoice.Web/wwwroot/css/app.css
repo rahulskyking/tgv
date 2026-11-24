@@ -1038,3 +1038,32 @@
         .tgv-review-thumbnail--hero:has(> .tgv-review-score) > .tgv-review-thumbnail-caption { padding-right: 4.75rem; }
     }
 }
+
+/* Admin tag library: compact rows on desktop, stacked controls on small screens. */
+@layer components {
+    .tgv-tag-stat {
+        display: block;
+        min-width: 0;
+        padding: 1rem;
+        border: 1px solid rgb(var(--tgv-border));
+        border-radius: 1rem;
+        background: rgb(var(--tgv-surface));
+    }
+    .tgv-tag-stat:hover,
+    .tgv-tag-stat--active { border-color: rgb(var(--tgv-primary)); }
+    .tgv-tag-stat--active { box-shadow: inset 0 3px 0 rgb(var(--tgv-primary)); }
+    .tgv-tag-row {
+        display: grid;
+        gap: 1rem;
+        padding: 1.25rem;
+        align-items: center;
+    }
+    @media (min-width: 768px) {
+        .tgv-tag-row { grid-template-columns: minmax(0, 1fr) 10rem; }
+        .tgv-tag-row > :last-child { grid-column: 1 / -1; }
+    }
+    @media (min-width: 1280px) {
+        .tgv-tag-row { grid-template-columns: minmax(0, 1fr) 10rem auto; gap: 1.5rem; }
+        .tgv-tag-row > :last-child { grid-column: auto; }
+    }
+}

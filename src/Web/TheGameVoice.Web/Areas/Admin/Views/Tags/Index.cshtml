@@ -1,116 +1,157 @@
-﻿@model IReadOnlyList<TheGameVoice.Domain.Entities.Tag>
+@model TheGameVoice.Web.Areas.Admin.ViewModels.Tags.TagIndexViewModel
+@{
+    ViewData["Title"] = "Tags";
+    var tags = Model.Result.Tags;
+    var filtered = Model.Search.Length > 0 || Model.Usage != "all";
+}
 
-<div class="space-y-6">
-
-    @if (TempData["Success"] != null)
-    {
-        <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
-            @TempData["Success"]
+<div class="space-y-6 text-ink">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <p class="mb-2 text-xs font-bold uppercase tracking-widest text-primary">Content library</p>
+            <h1 class="text-fluid-3xl font-bold">Tags</h1>
+            <p class="mt-2 max-w-2xl text-sm text-ink-muted">Keep your coverage connected. Find existing tags, check usage, and tidy up unused ones.</p>
         </div>
-    }
-
-    @if (TempData["Error"] != null)
-    {
-        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-            @TempData["Error"]
-        </div>
-    }
-    <div class="flex items-center justify-between">
-
-        <h1 class="text-fluid-3xl font-bold">
-            Tags
-        </h1>
-
-        <a asp-action="Create"
-           class="tgv-button-primary">
-            Create Tag
+        <a asp-action="Create" class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-5 py-3 font-semibold text-white transition hover:bg-primary-hover">
+            <i data-lucide="plus" class="h-4 w-4" aria-hidden="true"></i>Create tag
         </a>
-
     </div>
 
-    <div class="overflow-hidden rounded-2xl bg-surface shadow-sm">
+    @if (TempData["Success"] is string success)
+    {
+        <div role="status" class="rounded-xl border border-primary/30 bg-surface p-4 text-sm font-semibold">@success</div>
+    }
+    @if (TempData["Error"] is string error)
+    {
+        <div role="alert" class="rounded-xl border border-red-400 bg-surface p-4 text-sm font-semibold text-red-600">@error</div>
+    }
 
-        <table class="min-w-full">
+    <nav aria-label="Filter tags by usage" class="grid grid-cols-3 gap-2 sm:gap-4">
+        <a asp-action="Index" asp-route-search="@Model.Search" asp-route-sort="@Model.Sort" asp-route-usage="all"
+           aria-current="@(Model.Usage == "all" ? "page" : null)"
+           class="tgv-tag-stat @(Model.Usage == "all" ? "tgv-tag-stat--active" : "")">
+            <span class="text-xs font-semibold text-ink-muted sm:text-sm">All tags</span><strong class="mt-2 block break-all text-xl sm:text-2xl">@Model.Result.TotalTags</strong>
+        </a>
+        <a asp-action="Index" asp-route-search="@Model.Search" asp-route-sort="@Model.Sort" asp-route-usage="used"
+           aria-current="@(Model.Usage == "used" ? "page" : null)"
+           class="tgv-tag-stat @(Model.Usage == "used" ? "tgv-tag-stat--active" : "")">
+            <span class="text-xs font-semibold text-ink-muted sm:text-sm">In use</span><strong class="mt-2 block break-all text-xl sm:text-2xl">@Model.Result.UsedTags</strong>
+        </a>
+        <a asp-action="Index" asp-route-search="@Model.Search" asp-route-sort="@Model.Sort" asp-route-usage="unused"
+           aria-current="@(Model.Usage == "unused" ? "page" : null)"
+           class="tgv-tag-stat @(Model.Usage == "unused" ? "tgv-tag-stat--active" : "")">
+            <span class="text-xs font-semibold text-ink-muted sm:text-sm">Unused</span><strong class="mt-2 block break-all text-xl sm:text-2xl">@Model.Result.UnusedTags</strong>
+        </a>
+    </nav>
 
-            <thead class="border-b bg-surface-muted">
+    <section aria-labelledby="tag-library-heading" class="overflow-hidden rounded-2xl border border-line bg-surface">
+        <div class="border-b border-line p-4 md:p-6">
+            <h2 id="tag-library-heading" class="text-lg font-bold">Your tag library</h2>
+            <p id="tag-filter-help" class="mt-1 text-xs leading-relaxed text-ink-muted">Counts above cover the whole library. Assignment counts include all linked articles, including drafts and archived or deleted articles. Only unused tags can be deleted.</p>
+            <form asp-action="Index" method="get" class="mt-5 grid items-end gap-3 sm:grid-cols-2 xl:grid-cols-12">
+                <div class="min-w-0 sm:col-span-2 xl:col-span-5">
+                    <label for="tag-search" class="mb-2 block text-xs font-semibold">Search tags</label>
+                    <input id="tag-search" name="search" value="@Model.Search" type="search" maxlength="100" placeholder="Search by name or URL slug…"
+                           class="min-h-11 w-full rounded-xl border border-line bg-canvas px-4 py-3 text-sm" />
+                </div>
+                <div class="min-w-0 xl:col-span-2">
+                    <label for="tag-usage" class="mb-2 block text-xs font-semibold">Usage</label>
+                    <select id="tag-usage" name="usage" class="min-h-11 w-full rounded-xl border border-line bg-canvas px-3 py-3 text-sm">
+                        <option value="all" selected="@(Model.Usage == "all")">All tags</option>
+                        <option value="used" selected="@(Model.Usage == "used")">In use</option>
+                        <option value="unused" selected="@(Model.Usage == "unused")">Unused</option>
+                    </select>
+                </div>
+                <div class="min-w-0 xl:col-span-3">
+                    <label for="tag-sort" class="mb-2 block text-xs font-semibold">Sort by</label>
+                    <select id="tag-sort" name="sort" class="min-h-11 w-full rounded-xl border border-line bg-canvas px-3 py-3 text-sm">
+                        <option value="name" selected="@(Model.Sort == "name")">Name: A–Z</option>
+                        <option value="name-desc" selected="@(Model.Sort == "name-desc")">Name: Z–A</option>
+                        <option value="newest" selected="@(Model.Sort == "newest")">Newest first</option>
+                        <option value="most-used" selected="@(Model.Sort == "most-used")">Most used</option>
+                    </select>
+                </div>
+                <button type="submit" class="min-h-11 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover xl:col-span-2">Apply filters</button>
+            </form>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3 text-sm md:px-6">
+            <p class="text-ink-muted">Showing <strong class="text-ink">@(tags.StartItem)–@(tags.EndItem)</strong> of <strong class="text-ink">@tags.TotalCount</strong> tags</p>
+            @if (filtered || Model.Sort != "name")
+            {
+                <a asp-action="Index" class="inline-flex min-h-11 items-center font-semibold text-primary">Reset filters</a>
+            }
+        </div>
 
-                <tr>
-
-                    <th class="px-6 py-4 text-left">
-                        Name
-                    </th>
-
-                    <th class="px-6 py-4 text-left">
-                        Slug
-                    </th>
-
-                    <th class="px-6 py-4 text-left">
-                        Created
-                    </th>
-
-                    <th class="px-6 py-4 text-center w-40">
-                        Actions
-                    </th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                @foreach (var tag in Model)
+        @if (tags.Items.Count == 0)
+        {
+            <div class="px-5 py-12 text-center">
+                <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary"><i data-lucide="tags" class="h-6 w-6" aria-hidden="true"></i></div>
+                <h3 class="text-xl font-bold">@(Model.Result.TotalTags == 0 ? "Start your tag library" : "No tags match these filters")</h3>
+                <p class="mx-auto mt-2 max-w-md text-sm text-ink-muted">@(Model.Result.TotalTags == 0 ? "Create short, reusable tags for topics, games, and platforms. You can assign them from the article editor." : "Try a shorter search, change the usage filter, or reset to see all tags.")</p>
+                @if (Model.Result.TotalTags == 0)
                 {
-                    <tr class="border-b hover:bg-surface-muted">
-
-                        <td class="px-6 py-4 font-medium">
-                            @tag.Name
-                        </td>
-
-                        <td class="px-6 py-4 text-ink-muted">
-                            @tag.Slug
-                        </td>
-
-                        <td class="px-6 py-4">
-                            @tag.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
-                        </td>
-
-                        <td class="px-6 py-4">
-
-                            <div class="flex justify-center">
-
-                                <form asp-action="Delete"
-                                      method="post">
-
-                                    @Html.AntiForgeryToken()
-
-                                    <input type="hidden"
-                                           name="id"
-                                           value="@tag.Id" />
-
-                                    <button type="submit"
-                                            data-confirm="It will be removed from every article using it."
-                                            data-confirm-title="Delete this tag?"
-                                            data-confirm-action="Delete"
-                                            data-confirm-tone="danger"
-                                            class="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600">
-
-                                        Delete
-
-                                    </button>
-
-                                </form>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
+                    <a asp-action="Create" class="mt-5 inline-flex min-h-11 items-center rounded-xl bg-primary px-5 py-3 font-semibold text-white">Create your first tag</a>
                 }
+                else
+                {
+                    <a asp-action="Index" class="mt-5 inline-flex min-h-11 items-center rounded-xl border border-line px-5 py-3 font-semibold text-primary">Show all tags</a>
+                }
+            </div>
+        }
+        else
+        {
+            <ul class="divide-y divide-line" aria-label="Tags">
+                @foreach (var tag in tags.Items)
+                {
+                    var usageLabel = tag.ArticleCount == 0 ? "Unused" : $"{tag.ArticleCount} {(tag.ArticleCount == 1 ? "article" : "articles")}";
+                    <li class="tgv-tag-row">
+                        <div class="min-w-0">
+                            <a asp-action="Edit" asp-route-id="@tag.Id" class="break-words font-bold text-ink hover:text-primary">@tag.Name</a>
+                            <p class="mt-1 break-all text-xs text-ink-muted">/tag/@tag.Slug</p>
+                        </div>
+                        <div class="text-sm">
+                            <span class="inline-flex rounded-full bg-surface-raised px-3 py-1 text-xs font-semibold">@usageLabel</span>
+                            <p class="mt-2 text-xs text-ink-muted">Created @tag.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <a asp-action="Edit" asp-route-id="@tag.Id" aria-label="Edit @tag.Name" class="inline-flex min-h-11 items-center rounded-lg border border-line px-3 text-sm font-semibold text-primary">Edit</a>
+                            <a asp-area="" asp-controller="Tags" asp-action="Details" asp-route-slug="@tag.Slug" aria-label="View public tag page for @tag.Name" class="inline-flex min-h-11 items-center rounded-lg border border-line px-3 text-sm font-semibold">View</a>
+                            @if (tag.ArticleCount > 0)
+                            {
+                                <button type="button" disabled title="Remove article assignments before deleting this tag." aria-label="Cannot delete @tag.Name while assigned to articles" class="min-h-11 cursor-not-allowed rounded-lg border border-line px-3 text-sm text-ink-muted opacity-60">Delete</button>
+                            }
+                            else
+                            {
+                                <form asp-action="Delete" method="post">
+                                    <input type="hidden" name="id" value="@tag.Id" />
+                                    <input type="hidden" name="search" value="@Model.Search" />
+                                    <input type="hidden" name="usage" value="@Model.Usage" />
+                                    <input type="hidden" name="sort" value="@Model.Sort" />
+                                    <input type="hidden" name="page" value="@tags.CurrentPage" />
+                                    <button type="submit" aria-label="Delete unused tag @tag.Name" data-confirm="This unused tag will be deleted. No articles will be changed." data-confirm-title="Delete this unused tag?" data-confirm-action="Delete tag" data-confirm-tone="danger" class="min-h-11 rounded-lg border border-red-400 px-3 text-sm font-semibold text-red-600">Delete</button>
+                                </form>
+                            }
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
 
-            </tbody>
-
-        </table>
-
-    </div>
-
+    @if (tags.HasMultiplePages)
+    {
+        <nav aria-label="Tag library pages" class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-ink-muted">Page @tags.CurrentPage of @tags.TotalPages · 20 tags per page</p>
+            <div class="flex flex-wrap gap-2">
+                @if (tags.HasPreviousPage)
+                {
+                    <a asp-action="Index" asp-route-search="@Model.Search" asp-route-usage="@Model.Usage" asp-route-sort="@Model.Sort" asp-route-page="@(tags.CurrentPage - 1)" class="inline-flex min-h-11 items-center rounded-xl border border-line bg-surface px-4 text-sm font-semibold">Previous</a>
+                }
+                @if (tags.HasNextPage)
+                {
+                    <a asp-action="Index" asp-route-search="@Model.Search" asp-route-usage="@Model.Usage" asp-route-sort="@Model.Sort" asp-route-page="@(tags.CurrentPage + 1)" class="inline-flex min-h-11 items-center rounded-xl border border-line bg-surface px-4 text-sm font-semibold">Next</a>
+                }
+            </div>
+        </nav>
+    }
 </div>

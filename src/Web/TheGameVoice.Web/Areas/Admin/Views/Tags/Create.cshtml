@@ -1,32 +1,23 @@
-﻿@model TheGameVoice.Web.Areas.Admin.ViewModels.Tags.CreateTagViewModel
+@model TheGameVoice.Web.Areas.Admin.ViewModels.Tags.CreateTagViewModel
+@{ ViewData["Title"] = "Create Tag"; }
 
-<div class="max-w-2xl space-y-6">
-
-    <h1 class="text-fluid-3xl font-bold">
-        Create Tag
-    </h1>
-
-    <form method="post"
-          class="space-y-6">
-
-        <div>
-
-            <label class="mb-2 block font-medium">
-                Tag Name
-            </label>
-
-            <input asp-for="Name"
-                   class="w-full rounded-2xl border px-4 py-3" />
-
+<div class="mx-auto max-w-2xl space-y-6 text-ink">
+    <a asp-action="Index" class="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary"><span aria-hidden="true">←</span> Back to tag library</a>
+    <div>
+        <p class="mb-2 text-xs font-bold uppercase tracking-widest text-primary">Content library</p>
+        <h1 class="text-fluid-3xl font-bold">Create a tag</h1>
+        <p class="mt-2 text-sm text-ink-muted">One reusable topic. Better connected coverage.</p>
+    </div>
+    <form asp-action="Create" method="post" class="space-y-6 rounded-2xl border border-line bg-surface p-5 md:p-8">
+        <partial name="_NameField" model="Model" />
+        <div class="rounded-xl bg-primary/10 p-4 text-sm leading-relaxed text-ink-soft">A unique public URL is generated when you save. Creating a tag does not change any articles; assign it from the article editor when you're ready.</div>
+        <div class="flex flex-wrap items-center gap-3 border-t border-line pt-5">
+            <button type="submit" class="min-h-11 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover">Create tag</button>
+            <a asp-action="Index" class="inline-flex min-h-11 items-center rounded-xl border border-line px-5 py-3 text-sm font-semibold">Cancel</a>
         </div>
-
-        <button type="submit"
-                class="tgv-button-primary">
-
-            Create Tag
-
-        </button>
-
     </form>
-
 </div>
+
+@section Scripts {
+    <partial name="~/Views/Shared/_ValidationScriptsPartial.cshtml" />
+}

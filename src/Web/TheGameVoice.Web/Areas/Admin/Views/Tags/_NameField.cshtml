@@ -1,0 +1,10 @@
+@model TheGameVoice.Web.Areas.Admin.ViewModels.Tags.CreateTagViewModel
+
+<div asp-validation-summary="ModelOnly" role="alert" class="mb-4 text-sm font-semibold text-red-600"></div>
+<div>
+    <label asp-for="Name" class="mb-2 block text-sm font-semibold">Tag name</label>
+    <input asp-for="Name" maxlength="100" required autocomplete="off" aria-describedby="tag-name-help tag-name-error"
+           placeholder="e.g. Survival horror" class="min-h-11 w-full rounded-xl border border-line bg-canvas px-4 py-3 text-ink" />
+    <p id="tag-name-help" class="mt-2 text-sm leading-relaxed text-ink-muted">Use a short, specific topic readers will recognise. Check for an existing tag before creating a similar one. Maximum 100 characters.</p>
+    <span id="tag-name-error" asp-validation-for="Name" class="mt-2 block text-sm font-semibold text-red-600"></span>
+</div>
