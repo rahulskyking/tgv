@@ -97,6 +97,14 @@
                     Articles
                 </a>
 
+                @if (User.IsInRole("Editor") || User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+                {
+                    <a asp-area="Admin" asp-controller="HomepagePins" asp-action="Index" class="@NavClass("HomepagePins")">
+                        <i data-lucide="pin" class="h-4 w-4"></i>
+                        Homepage Pins
+                    </a>
+                }
+
                 <a href="#"
                    class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-gray-800 hover:text-white">
                     <i data-lucide="star" class="h-4 w-4"></i>

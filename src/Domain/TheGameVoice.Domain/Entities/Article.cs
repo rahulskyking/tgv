@@ -19,6 +19,12 @@ public class Article : AuditableEntity
 
     public ArticleStatus Status { get; set; }
 
+    /// <summary>Editorial priority in the homepage hero mosaic only.</summary>
+    public bool IsHomepagePinned { get; set; }
+
+    /// <summary>Lower numbers appear first; equal priorities use publication recency.</summary>
+    public int HomepagePinOrder { get; set; } = 1;
+
     /// <summary>
     /// Which audience this article is written for: PC / Console gaming,
     /// Mobile gaming, or both. Drives what the public site shows in each

@@ -328,6 +328,18 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("featured_image_id");
 
+                    b.Property<int>("HomepagePinOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1)
+                        .HasColumnName("homepage_pin_order");
+
+                    b.Property<bool>("IsHomepagePinned")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_homepage_pinned");
+
                     b.Property<bool>("IsReview")
                         .HasColumnType("boolean")
                         .HasColumnName("is_review");

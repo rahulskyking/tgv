@@ -26,6 +26,12 @@ public class ArticleConfiguration
         builder.Property(x => x.Segment)
             .HasDefaultValue(GameSegment.PcConsole);
 
+        builder.Property(x => x.IsHomepagePinned)
+            .HasDefaultValue(false);
+
+        builder.Property(x => x.HomepagePinOrder)
+            .HasDefaultValue(1);
+
         builder.HasIndex(x => x.Slug)
             .IsUnique();
 

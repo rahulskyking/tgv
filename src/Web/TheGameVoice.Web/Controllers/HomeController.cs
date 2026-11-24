@@ -53,6 +53,17 @@ public class HomeController : Controller
                         await _articleRepository
                             .GetPublishedAsync(segment);
 
+                    // GetPublishedAsync already enforces published status, segment,
+                    // and soft-delete visibility. Pins never bypass those rules.
+                    var homepageArticles = latestNews
+                        .OrderByDescending(x => x.IsHomepagePinned)
+                        .ThenBy(x => x.IsHomepagePinned ? x.HomepagePinOrder : 0)
+                        .ThenByDescending(x => x.PublishedAt)
+                        .ThenByDescending(x => x.CreatedAt)
+                        .ThenBy(x => x.Id)
+                        .Take(9)
+                        .ToList();
+
                     var games =
                         (await _gameRepository
                             .GetAllAsync())
@@ -74,7 +85,9 @@ public class HomeController : Controller
                         Segment = segment,
 
                         HeroArticle =
-                            latestNews.FirstOrDefault(),
+                            homepageArticles.FirstOrDefault(),
+
+                        HomepageArticles = homepageArticles,
 
                         LatestNews =
                             latestNews.Take(9).ToList(),

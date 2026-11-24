@@ -102,6 +102,23 @@ public class ArticleRepository
                 x.PublishedAt)
             .ToListAsync();
     }
+    public async Task<IReadOnlyList<Article>> GetHomepagePinnedAsync()
+    {
+        // Deliberately do not filter by publication status or audience here:
+        // editors need to see inactive pins and why they are not on the homepage.
+        return await _context.Articles
+            .AsNoTracking()
+            .Where(x => x.IsHomepagePinned)
+            .OrderBy(x => x.HomepagePinOrder)
+            // PostgreSQL's DESC null ordering differs from in-memory LINQ.
+            // Match the public homepage even when a publication date is missing.
+            .ThenByDescending(x => x.PublishedAt.HasValue)
+            .ThenByDescending(x => x.PublishedAt)
+            .ThenByDescending(x => x.CreatedAt)
+            .ThenBy(x => x.Id)
+            .ToListAsync();
+    }
+
     public async Task<Article?> GetBySlugAsync(string slug)
     {
         return await _context.Articles

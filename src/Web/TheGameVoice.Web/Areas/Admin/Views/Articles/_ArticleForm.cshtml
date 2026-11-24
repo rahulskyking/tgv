@@ -186,6 +186,31 @@
 
     <div class="grid gap-6 md:grid-cols-2">
 
+        @if (User.IsInRole(Roles.Editor) || User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin))
+        {
+            <div class="rounded-2xl border border-default bg-surface p-5 md:col-span-2">
+                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide">Homepage placement</h3>
+                <label class="flex min-h-11 cursor-pointer items-center gap-3">
+                    <input asp-for="IsHomepagePinned" class="h-5 w-5 rounded border-line-strong accent-primary" aria-describedby="homepage-pin-help" />
+                    <span class="font-semibold">Pin to homepage</span>
+                </label>
+                <span asp-validation-for="IsHomepagePinned" class="mt-2 block text-xs text-red-600"></span>
+                <div class="mt-4 max-w-xs">
+                    <label asp-for="HomepagePinOrder" class="mb-2 block text-sm font-semibold"></label>
+                    <input asp-for="HomepagePinOrder" type="number" min="1" max="9999" step="1"
+                           aria-describedby="homepage-pin-help"
+                           class="w-full rounded-xl border border-default bg-surface px-4 py-3" />
+                    <span asp-validation-for="HomepagePinOrder" class="mt-2 block text-xs text-red-600"></span>
+                </div>
+                <p id="homepage-pin-help" class="mt-3 text-sm text-ink-muted">
+                    Lower numbers appear first: the first story becomes the main hero, followed by up to eight more.
+                    Equal numbers use newest publication first. Remaining spaces use the latest articles.
+                    Pins appear only while published and only in the article's selected audience sections.
+                    Uncheck to return this story to normal date order. The Latest Articles feed stays newest-first.
+                </p>
+            </div>
+        }
+
         <div class="rounded-2xl border border-default bg-surface p-5">
             <label asp-for="EventId" class="mb-4 block text-sm font-bold uppercase tracking-wide"></label>
             <select asp-for="EventId" asp-items="Model.Events" class="w-full rounded-xl border border-default bg-surface px-4 py-3">

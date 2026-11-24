@@ -13,6 +13,10 @@ public class HomePageViewModel
     { get; set; }
         = new List<Article>();
 
+    /// <summary>Pinned stories first, then newest, for the nine-slot hero mosaic.</summary>
+    public IReadOnlyList<Article> HomepageArticles { get; set; }
+        = new List<Article>();
+
     public IReadOnlyList<Article> Reviews
     { get; set; }
         = new List<Article>();

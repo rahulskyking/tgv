@@ -38,6 +38,13 @@ public class ArticleFormViewModel : IValidatableObject
 
     public List<SelectListItem> Events { get; set; } = new();
 
+    [Display(Name = "Pin to homepage")]
+    public bool IsHomepagePinned { get; set; }
+
+    [Display(Name = "Homepage display order")]
+    [Range(1, 9999, ErrorMessage = "Homepage display order must be between 1 and 9999.")]
+    public int HomepagePinOrder { get; set; } = 1;
+
     #region Audience segment
 
     /// <summary>

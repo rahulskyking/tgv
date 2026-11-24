@@ -1,0 +1,87 @@
+@using TheGameVoice.Domain.Common.Extensions
+@model IReadOnlyList<TheGameVoice.Web.Areas.Admin.ViewModels.HomepagePins.HomepagePinRowViewModel>
+@{
+    ViewData["Title"] = "Homepage Pins";
+}
+
+<div class="space-y-6 text-ink">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <h1 class="text-fluid-3xl font-bold">Homepage Pins</h1>
+            <p class="mt-2 text-sm text-ink-muted">@Model.Count pinned articles, sorted in homepage priority order.</p>
+        </div>
+        <a asp-controller="Articles" asp-action="Index" class="rounded-xl border border-line px-5 py-3 font-semibold text-primary">Browse articles</a>
+    </div>
+
+    @if (TempData["PinSuccess"] is string success)
+    {
+        <div role="status" class="rounded-xl border border-primary/30 bg-surface p-4 text-sm font-semibold">@success</div>
+    }
+    @if (TempData["PinError"] is string error)
+    {
+        <div role="alert" class="rounded-xl border border-red-400 bg-surface p-4 text-sm font-semibold text-red-600">@error</div>
+    }
+
+    <div class="rounded-2xl border border-line bg-surface p-5 text-sm text-ink-soft">
+        Lower order numbers appear first. Ties use newest publication first. Only published pins count toward the nine hero-grid positions in each audience section;
+        remaining spaces fill with the newest unpinned stories. Unpublished pins are listed here so nothing gets lost.
+        To add a pin, open an article's <strong>Details → Homepage placement</strong> settings.
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="rounded-2xl border border-dashed border-line-strong bg-surface p-8 text-center">
+            <h2 class="text-xl font-bold">No pinned articles yet</h2>
+            <p class="mt-2 text-sm text-ink-muted">The homepage is using newest-first ordering. Choose an article and enable “Pin to homepage” to start.</p>
+            <a asp-controller="Articles" asp-action="Index" class="mt-5 inline-flex rounded-xl bg-primary px-5 py-3 font-semibold text-white">Choose articles</a>
+        </div>
+    }
+    else
+    {
+        <div class="space-y-4">
+            @foreach (var row in Model)
+            {
+                var article = row.Article;
+                <section aria-labelledby="pin-title-@article.Id" class="rounded-2xl border border-line bg-surface p-5">
+                    <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+                        <div class="min-w-0 flex-1">
+                            <div class="mb-2 flex flex-wrap items-center gap-2 text-xs font-semibold">
+                                <span class="rounded-full bg-primary/10 px-3 py-1 text-primary">Order @article.HomepagePinOrder</span>
+                                <span class="rounded-full bg-surface-raised px-3 py-1">@article.Status</span>
+                                <span class="text-ink-muted">@article.Segment.ToDisplayName()</span>
+                            </div>
+                            <h2 id="pin-title-@article.Id" class="break-words text-lg font-bold">@article.Title</h2>
+                            <dl class="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+                                <div><dt class="font-semibold text-ink-muted">PC / Console</dt><dd class="mt-1">@row.PcPlacement</dd></div>
+                                <div><dt class="font-semibold text-ink-muted">Mobile</dt><dd class="mt-1">@row.MobilePlacement</dd></div>
+                            </dl>
+                        </div>
+
+                        <div class="flex flex-col gap-3 xl:w-72 xl:shrink-0">
+                            <form asp-action="UpdateOrder" method="post" class="flex flex-wrap items-end gap-2">
+                                <input type="hidden" name="Id" value="@article.Id" />
+                                <input type="hidden" name="ExpectedOrder" value="@article.HomepagePinOrder" />
+                                <div class="min-w-0 flex-1">
+                                    <label for="pin-order-@article.Id" class="mb-2 block text-xs font-semibold">Display order</label>
+                                    <input id="pin-order-@article.Id" name="HomepagePinOrder" value="@article.HomepagePinOrder"
+                                           aria-label="Display order for @article.Title" type="number" min="1" max="9999" step="1" required
+                                           class="min-h-11 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm" />
+                                </div>
+                                <button type="submit" aria-label="Save order for @article.Title" class="min-h-11 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white">Save order</button>
+                            </form>
+                            <div class="flex flex-wrap items-center justify-between gap-3 text-sm font-semibold">
+                                <a asp-controller="Articles" asp-action="Edit" asp-route-id="@article.Id" aria-label="Edit @article.Title" class="inline-flex min-h-11 items-center text-primary">Edit article</a>
+                                <form asp-action="Unpin" method="post">
+                                    <input type="hidden" name="id" value="@article.Id" />
+                                    <input type="hidden" name="expectedOrder" value="@article.HomepagePinOrder" />
+                                    <button type="submit" aria-label="Unpin @article.Title" class="min-h-11 rounded-lg border border-line px-4 py-2">Unpin</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+        </div>
+    }
+    <p class="text-sm text-ink-muted">Placements reflect saved settings, not a cached page. The Latest Articles feed remains newest-first. Other app instances may take up to five minutes to refresh.</p>
+</div>

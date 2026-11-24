@@ -77,7 +77,7 @@
                 var hero = Model.HeroArticle;
 
                 var secondary =
-                Model.LatestNews
+                Model.HomepageArticles
                 .Where(x => hero == null || x.Id != hero.Id)
                 .Take(8)
                 .ToList();

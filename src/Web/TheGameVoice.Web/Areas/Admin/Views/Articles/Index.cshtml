@@ -66,6 +66,16 @@
 
         </div>
 
+        <div class="flex flex-wrap items-center gap-3">
+            @if (User.IsInRole(Roles.Editor) || User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SuperAdmin))
+            {
+                <a asp-controller="HomepagePins" asp-action="Index"
+                   class="inline-flex items-center gap-2 rounded-xl border border-line px-5 py-3 font-semibold text-primary">
+                    <i data-lucide="pin" class="h-5 w-5"></i>
+                    Homepage Pins
+                </a>
+            }
+
         <a asp-action="Create"
            class="inline-flex items-center gap-2 rounded-xl bg-[#fa743e] px-5 py-3 font-semibold text-white transition hover:bg-[#e56734]">
 
@@ -74,6 +84,7 @@
             <span>New Article</span>
 
         </a>
+        </div>
 
     </div>
 
@@ -443,6 +454,16 @@
                         </td>
                         <td class="px-6 py-4">
                             @article.Title
+                            @if (article.IsHomepagePinned)
+                            {
+                                <span class="mt-1 block text-xs font-semibold text-primary">
+                                    Homepage pin · Order @article.HomepagePinOrder
+                                    @if (article.Status != ArticleStatus.Published)
+                                    {
+                                        <span class="font-normal text-ink-muted">(inactive until published)</span>
+                                    }
+                                </span>
+                            }
                         </td>
                     <td class="px-6 py-4 text-ink-mid">
 

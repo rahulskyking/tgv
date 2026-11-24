@@ -20,6 +20,9 @@ public interface IArticleRepository
             int count,
             GameSegment? segment = null);
 
+    /// <summary>All non-deleted pins, including unpublished ones, in homepage priority order.</summary>
+    Task<IReadOnlyList<Article>> GetHomepagePinnedAsync();
+
     Task<Article?> GetBySlugAsync(string slug);
 
     Task<IReadOnlyList<Article>>

@@ -37,6 +37,12 @@ public class ArticlesController : BaseAdminController
         _cacheService = cacheService;
     }
 
+    // Never trust posted pin fields from authors or other non-editor roles.
+    private bool CanManageHomepagePins =>
+        User.IsInRole(Roles.Editor) ||
+        User.IsInRole(Roles.Admin) ||
+        User.IsInRole(Roles.SuperAdmin);
+
     public async Task<IActionResult> Index(ArticleFilter filter)
     {
         var currentUser = await _userManager.GetUserAsync(User);
@@ -190,6 +196,8 @@ public class ArticlesController : BaseAdminController
             FeaturedImageId = model.FeaturedImageId,
             AuthorId = authorId,
             Status = ArticleStatus.Draft,
+            IsHomepagePinned = CanManageHomepagePins && model.IsHomepagePinned,
+            HomepagePinOrder = CanManageHomepagePins ? model.HomepagePinOrder : 1,
             Segment = model.Segment,
             CategoryId = model.CategoryId,
             EventId = model.EventId,
@@ -288,6 +296,8 @@ public class ArticlesController : BaseAdminController
             FeaturedImageId = article.FeaturedImageId,
             CategoryId = article.CategoryId,
             EventId = article.EventId,
+            IsHomepagePinned = article.IsHomepagePinned,
+            HomepagePinOrder = article.HomepagePinOrder,
             AuthorId = article.AuthorId,
             SelectedTagIds = article.ArticleTags.Select(x => x.TagId).ToList(),
             SelectedGameIds = article.ArticleGames.Select(x => x.GameId).ToList(),
@@ -375,6 +385,12 @@ public class ArticlesController : BaseAdminController
         article.FeaturedImageId = model.FeaturedImageId;
         article.CategoryId = model.CategoryId;
         article.EventId = model.EventId;
+
+        if (CanManageHomepagePins)
+        {
+            article.IsHomepagePinned = model.IsHomepagePinned;
+            article.HomepagePinOrder = model.HomepagePinOrder;
+        }
 
         // Audience section(s) this article belongs to.
         article.Segment = model.Segment;
