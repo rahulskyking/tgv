@@ -7,9 +7,10 @@
     "doc": "docs"
   },
   "scripts": {
-  "css": "tailwindcss -i ./src/Web/TheGameVoice.Web/wwwroot/css/app.css -o ./src/Web/TheGameVoice.Web/wwwroot/css/site.css --watch",
-  "css:build": "tailwindcss -i ./src/Web/TheGameVoice.Web/wwwroot/css/app.css -o ./src/Web/TheGameVoice.Web/wwwroot/css/site.css --minify"
-},
+    "css": "tailwindcss --config ./tailwind.config.js -i ./src/Web/TheGameVoice.Web/wwwroot/css/app.css -o ./src/Web/TheGameVoice.Web/wwwroot/css/site.css --watch",
+    "css:build": "tailwindcss --config ./tailwind.config.js -i ./src/Web/TheGameVoice.Web/wwwroot/css/app.css -o ./src/Web/TheGameVoice.Web/wwwroot/css/site.css --minify",
+    "css:test": "node --test scripts/css-build.test.cjs"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

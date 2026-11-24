@@ -17,11 +17,16 @@ const withAlpha = (variable) => `rgb(var(${variable}) / <alpha-value>)`;
 module.exports = {
     darkMode: ['selector', '[data-theme="dark"]'],
 
-    content: [
-        "./src/Web/TheGameVoice.Web/**/*.cshtml",
-        "./src/Web/TheGameVoice.Web/**/*.html",
-        "./src/Web/TheGameVoice.Web/**/*.js"
-    ],
+    content: {
+        // Editors may invoke Tailwind from the Web project instead of the repo root.
+        // Keep template scanning anchored to this configuration file in either case.
+        relative: true,
+        files: [
+            "./src/Web/TheGameVoice.Web/**/*.cshtml",
+            "./src/Web/TheGameVoice.Web/**/*.html",
+            "./src/Web/TheGameVoice.Web/**/*.js"
+        ]
+    },
 
     theme: {
         screens: {

@@ -1,3 +1,6 @@
+/* Resolve the theme from this stylesheet, not the terminal/editor working directory. */
+@config "../../../../../tailwind.config.js";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
