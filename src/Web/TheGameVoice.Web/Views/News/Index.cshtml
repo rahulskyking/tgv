@@ -27,8 +27,12 @@
 
                 @if (article.FeaturedImage != null)
                 {
-                    <img src="@article.FeaturedImage.FilePath"
-                         class="h-56 w-full object-cover" />
+                    <div class="relative tgv-review-thumbnail overflow-hidden">
+                        <img src="@article.FeaturedImage.FilePath"
+                             alt="@article.Title"
+                             class="h-56 w-full object-cover" />
+                        <partial name="~/Views/Shared/Components/_ReviewScoreBadge.cshtml" model="article" />
+                    </div>
                 }
 
             <div class="p-5">

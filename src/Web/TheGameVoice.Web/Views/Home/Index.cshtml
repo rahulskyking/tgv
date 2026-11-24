@@ -1,9 +1,28 @@
+@using System.Text.Json
 @model TheGameVoice.Web.ViewModels.Home.HomePageViewModel
 
 @{
     ViewData["Title"] = "TheGameVoice | Gaming News, Reviews and Features";
     ViewData["MetaDescription"] =
         "TheGameVoice is your home for the latest gaming news, in-depth reviews, and industry analysis.";
+
+    // Machine-readable brand identity only; no visible alternate-name text.
+    var websiteStructuredData = JsonSerializer.Serialize(new Dictionary<string, object>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "WebSite",
+        ["@id"] = "https://thegamevoice.com/#website",
+        ["url"] = "https://thegamevoice.com/",
+        ["name"] = "TheGameVoice",
+        ["alternateName"] = "The Game Voice"
+    });
+}
+
+@section Head
+{
+    <script type="application/ld+json">
+        @Html.Raw(websiteStructuredData)
+    </script>
 }
 
 @if (Model.Segment == GameSegment.Mobile && !Model.LatestNews.Any())
@@ -77,13 +96,14 @@
                            asp-route-slug="@hero.Slug"
                            class="group block">
 
-                            <div class="relative overflow-hidden rounded-2xl">
+                            <div class="relative tgv-review-thumbnail tgv-review-thumbnail--hero overflow-hidden rounded-2xl">
 
                                 @if (hero.FeaturedImage != null)
                                 {
                                     <img src="@hero.FeaturedImage.FilePath"
                                          alt="@hero.Title"
                                          class="h-[420px] w-full object-cover transition duration-700 group-hover:scale-105" />
+                                    <partial name="~/Views/Shared/Components/_ReviewScoreBadge.cshtml" model="hero" />
                                 }
 
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
@@ -124,13 +144,14 @@
                                asp-route-slug="@article.Slug"
                                class="group block">
 
-                                <div class="relative overflow-hidden rounded-2xl">
+                                <div class="relative tgv-review-thumbnail overflow-hidden rounded-2xl">
 
                                     @if (article.FeaturedImage != null)
                                     {
                                         <img src="@article.FeaturedImage.FilePath"
                                              alt="@article.Title"
                                              class="h-[202px] w-full object-cover transition duration-500 group-hover:scale-105" />
+                                        <partial name="~/Views/Shared/Components/_ReviewScoreBadge.cshtml" model="article" />
                                     }
 
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
@@ -165,13 +186,14 @@
                            asp-route-slug="@article.Slug"
                            class="group block">
 
-                            <div class="relative overflow-hidden rounded-2xl">
+                            <div class="relative tgv-review-thumbnail overflow-hidden rounded-2xl">
 
                                 @if (article.FeaturedImage != null)
                                 {
                                     <img src="@article.FeaturedImage.FilePath"
                                          alt="@article.Title"
                                          class="h-[180px] w-full object-cover transition duration-500 group-hover:scale-105" />
+                                    <partial name="~/Views/Shared/Components/_ReviewScoreBadge.cshtml" model="article" />
                                 }
 
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
@@ -206,13 +228,14 @@
                                asp-route-slug="@article.Slug"
                                class="group block">
 
-                                <div class="relative overflow-hidden rounded-2xl">
+                                <div class="relative tgv-review-thumbnail overflow-hidden rounded-2xl">
 
                                     @if (article.FeaturedImage != null)
                                     {
                                         <img src="@article.FeaturedImage.FilePath"
                                              alt="@article.Title"
                                              class="h-[180px] w-full object-cover transition duration-500 group-hover:scale-105" />
+                                        <partial name="~/Views/Shared/Components/_ReviewScoreBadge.cshtml" model="article" />
                                     }
 
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
@@ -287,11 +310,12 @@
 
                                 @if (item.article.FeaturedImage != null)
                                 {
-                                    <div class="h-20 w-32 shrink-0 overflow-hidden rounded-xl border border-line">
+                                    <div class="relative tgv-review-thumbnail tgv-review-thumbnail--compact h-20 w-32 shrink-0 overflow-hidden rounded-xl border border-line">
 
                                         <img src="@item.article.FeaturedImage.FilePath"
                                              alt="@item.article.Title"
                                              class="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+                                        <partial name="~/Views/Shared/Components/_ReviewScoreBadge.cshtml" model="item.article" />
 
                                     </div>
                                 }
