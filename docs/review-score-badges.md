@@ -9,8 +9,8 @@ review data. No new rating field, user-rating system, or migration is involved.
 A badge appears only when the article has a loaded featured image, `IsReview`
 is true, and `ReviewScore` is between 1 and 10 inclusive (the existing editor's
 valid range). Null/missing/out-of-range scores and non-review articles do not
-show a badge. Scores use invariant formatting with at most one decimal place,
-for example `8`, `8.5`, or `10`. Only the number is visible; no `/10` denominator
+show a badge. Scores use invariant formatting with exactly one decimal place,
+for example `8.0`, `8.5`, or `10.0`. Only the number is visible; no `/10` denominator
 is shown. No score is invented.
 
 ## Coverage and styling

@@ -4,7 +4,7 @@
 @* Keep score visibility/formatting identical across every article thumbnail. *@
 @if (Model.FeaturedImage != null && Model.IsReview && Model.ReviewScore is >= 1m and <= 10m)
 {
-    var score = Model.ReviewScore.Value.ToString("0.#", CultureInfo.InvariantCulture);
+    var score = Model.ReviewScore.Value.ToString("0.0", CultureInfo.InvariantCulture);
 
     <span class="tgv-review-score" role="img" aria-label="TheGameVoice review score: @score out of 10">
         <span class="tgv-review-score-value" aria-hidden="true">@score</span>
