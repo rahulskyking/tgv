@@ -984,70 +984,57 @@
     }
 }
 
-/* Review-thumbnail ratings: one component, scaled for hero and compact cards. */
+/* Score-only review overlays: a purple fade anchored to the image corner. */
 @layer components {
     .tgv-review-thumbnail { position: relative; }
     .tgv-review-score {
         position: absolute;
-        top: .65rem;
-        right: .65rem;
+        right: 0;
+        bottom: 0;
         z-index: 10;
         display: inline-flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: .15rem;
-        width: 3.1rem;
-        min-height: 3.4rem;
-        padding: .3rem .35rem .35rem;
-        border: 1px solid rgb(var(--tgv-primary) / .3);
-        border-top: 3px solid rgb(var(--tgv-primary));
-        border-radius: .6rem;
-        background: rgb(var(--tgv-surface) / .97);
-        color: rgb(var(--tgv-primary));
-        box-shadow: 0 3px 12px rgb(0 0 0 / .22);
+        align-items: flex-end;
+        justify-content: flex-end;
+        width: 4.5rem;
+        height: 3.75rem;
+        padding: 0 .75rem .65rem 0;
+        border: 0;
+        background: radial-gradient(ellipse at bottom right,
+            rgb(65 25 112 / .95) 0%,
+            rgb(65 25 112 / .82) 32%,
+            rgb(65 25 112 / .4) 57%,
+            transparent 76%);
+        color: #fff;
         line-height: 1;
         pointer-events: none;
         user-select: none;
     }
     .tgv-review-score-value {
         font-family: 'Space Grotesk', Inter, system-ui, sans-serif;
-        font-size: 1.4rem;
+        font-size: 1.65rem;
         font-weight: 700;
         font-variant-numeric: tabular-nums;
-        letter-spacing: -.06em;
-    }
-    [data-theme="dark"] .tgv-review-score { color: rgb(var(--tgv-primary-hover)); }
-    .tgv-review-score-scale {
-        color: rgb(var(--tgv-text-soft));
-        font-family: Inter, system-ui, sans-serif;
-        font-size: .6rem;
-        font-weight: 700;
-        letter-spacing: .04em;
+        letter-spacing: -.04em;
+        text-shadow: 0 1px 5px rgb(0 0 0 / .7);
     }
     .tgv-review-thumbnail--compact > .tgv-review-score {
-        top: .3rem;
-        right: .3rem;
-        width: 2.25rem;
-        min-height: 2.55rem;
-        padding: .2rem;
-        gap: .1rem;
-        border-top-width: 2px;
-        border-radius: .45rem;
+        width: 3.25rem;
+        height: 2.75rem;
+        padding: 0 .45rem .4rem 0;
     }
-    .tgv-review-thumbnail--compact > .tgv-review-score .tgv-review-score-value { font-size: 1.05rem; }
-    .tgv-review-thumbnail--compact > .tgv-review-score .tgv-review-score-scale { font-size: .55rem; }
+    .tgv-review-thumbnail--compact > .tgv-review-score .tgv-review-score-value { font-size: 1.25rem; }
     .tgv-review-thumbnail--hero > .tgv-review-score {
-        top: 1rem;
-        right: 1rem;
-        width: 3.7rem;
-        min-height: 4rem;
-        border-radius: .75rem;
+        width: 6rem;
+        height: 5rem;
+        padding: 0 1rem .85rem 0;
     }
-    .tgv-review-thumbnail--hero > .tgv-review-score .tgv-review-score-value { font-size: 1.85rem; }
-    .tgv-review-thumbnail--hero > .tgv-review-score .tgv-review-score-scale { font-size: .625rem; }
+    .tgv-review-thumbnail--hero > .tgv-review-score .tgv-review-score-value { font-size: 2.25rem; }
+    /* Reserve space only on scored mosaic cards, not ordinary news titles. */
+    .tgv-review-thumbnail:has(> .tgv-review-score) > .tgv-review-thumbnail-caption { padding-right: 4.75rem; }
+    .tgv-review-thumbnail--hero:has(> .tgv-review-score) > .tgv-review-thumbnail-caption { padding-right: 6.25rem; }
     @media (max-width: 639px) {
-        .tgv-review-thumbnail--hero > .tgv-review-score { top: .65rem; right: .65rem; width: 3.1rem; min-height: 3.4rem; }
-        .tgv-review-thumbnail--hero > .tgv-review-score .tgv-review-score-value { font-size: 1.4rem; }
+        .tgv-review-thumbnail--hero > .tgv-review-score { width: 4.5rem; height: 3.75rem; padding: 0 .75rem .65rem 0; }
+        .tgv-review-thumbnail--hero > .tgv-review-score .tgv-review-score-value { font-size: 1.65rem; }
+        .tgv-review-thumbnail--hero:has(> .tgv-review-score) > .tgv-review-thumbnail-caption { padding-right: 4.75rem; }
     }
 }

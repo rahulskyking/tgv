@@ -1,7 +1,7 @@
 # Review thumbnail score badges
 
 The shared partial `Views/Shared/Components/_ReviewScoreBadge.cshtml` renders a
-non-interactive top-right rating overlay using the article's existing editorial
+non-interactive bottom-right rating overlay using the article's existing editorial
 review data. No new rating field, user-rating system, or migration is involved.
 
 ## Eligibility
@@ -10,7 +10,8 @@ A badge appears only when the article has a loaded featured image, `IsReview`
 is true, and `ReviewScore` is between 1 and 10 inclusive (the existing editor's
 valid range). Null/missing/out-of-range scores and non-review articles do not
 show a badge. Scores use invariant formatting with at most one decimal place,
-for example `8`, `8.5`, or `10`, with a `/10` denominator. No score is invented.
+for example `8`, `8.5`, or `10`. Only the number is visible; no `/10` denominator
+is shown. No score is invented.
 
 ## Coverage and styling
 
@@ -25,8 +26,9 @@ Thumbnail wrappers use `tgv-review-thumbnail`. Add
 `tgv-review-thumbnail--hero` for hero images. CSS is maintained in `app.css`
 and compiled into `site.css` with `npm run css:build`.
 
-The overlay inherits the site's purple and surface/text tokens, using the
-lighter purple accent for legibility in dark mode. It sits above image
+The overlay uses white score text over a soft, transparent purple corner fade
+in both themes, without a solid badge box or border. Homepage mosaic captions
+reserve room for the score on eligible review cards. It sits above image
 gradients and stays stationary when the image zooms. It contains no links or
 buttons and does not intercept clicks on the article card. Its accessible
 label announces the review score out of 10.
