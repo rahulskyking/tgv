@@ -104,6 +104,24 @@ _cacheService;
         return RedirectToAction(nameof(Index));
     }
 
+    /// <summary>Only navigation changes; publication, category URLs, and assignments are untouched.</summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SetNavigationVisibility(Guid id, bool? showInNavigation)
+    {
+        if (!ModelState.IsValid || !showInNavigation.HasValue) return BadRequest();
+        var category = await _unitOfWork.Categories.GetByIdAsync(id);
+        if (category is null) return NotFound();
+
+        category.ShowInNavigation = showInNavigation.Value;
+        await _unitOfWork.SaveChangesAsync();
+        _cacheService.RemoveMany(CacheKeys.AllHomePageKeys());
+        TempData["Success"] = category.ShowInNavigation
+            ? $"{category.Name} is now shown in navigation for its selected audience sections."
+            : $"{category.Name} is hidden from navigation only. Its page and articles remain available.";
+        return RedirectToAction(nameof(Index));
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reorder([FromBody] List<Guid> ids)

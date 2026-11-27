@@ -654,6 +654,12 @@ namespace TheGameVoice.Infrastructure.Migrations
                         .HasDefaultValue(3)
                         .HasColumnName("segment");
 
+                    b.Property<bool>("ShowInNavigation")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("show_in_navigation");
+
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasMaxLength(200)

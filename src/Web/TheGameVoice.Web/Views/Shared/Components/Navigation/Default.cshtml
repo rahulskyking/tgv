@@ -1,307 +1,117 @@
 @model TheGameVoice.Web.ViewModels.Shared.NavigationViewModel
-
 @{
-    var isMobileMode =
-        Model.CurrentSegment == GameSegment.Mobile;
-
-    var primaryEvents = Model.Events.Take(2).ToList();
-    var secondaryEvents = Model.Events.Skip(2).ToList();
-    var primaryCategoryCount = Math.Max(1, 7 - primaryEvents.Count);
-
-    var primaryCategories =
-        Model.Categories
-            .Take(primaryCategoryCount)
-            .ToList();
-
-    var secondaryCategories =
-        Model.Categories
-            .Skip(primaryCategoryCount)
-            .ToList();
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentSlug = ViewContext.RouteData.Values["slug"]?.ToString();
 }
 
-<header class="sticky top-0 z-50 border-b border-default bg-surface">
-
+<header class="tgv-site-header sticky top-0 z-50 border-b border-line bg-surface" data-site-header>
     <div class="tgv-container">
-
-        <!-- MAIN NAVIGATION -->
-
-        <div class="hidden lg:flex items-center justify-between py-5">
-
-            <!-- LEFT -->
-
-            <div class="flex items-center gap-fluid-10">
-
-                <!-- LOGO -->
-
-                <div class="shrink-0">
-
-                    <a asp-controller="Home"
-                       asp-action="Index"
-                       class="block text-fluid-3xl font-black leading-none tracking-tight text-primary">
-
-                        TheGameVoice
-
-                    </a>
-
-                </div>
-
-                <!-- PRIMARY NAV -->
-
-                <nav class="flex flex-wrap items-center gap-4">
-
-                   @*  <a asp-controller="Home"
-                       asp-action="Index"
-                       class="text-sm font-bold uppercase tracking-[0.12em] text-ink transition hover:text-primary">
-
-                        Home
-
-                    </a> *@
-
-                    @foreach (var category in primaryCategories)
-                    {
-                        <a asp-controller="Categories"
-                           asp-action="Details"
-                           asp-route-slug="@category.Slug"
-                           class="text-sm font-bold uppercase tracking-[0.12em] text-ink transition hover:text-primary">
-
-                            @category.Name
-
-                        </a>
-                    }
-
-                    @foreach (var gamingEvent in primaryEvents)
-                    {
-                        <a asp-controller="Events" asp-action="Details" asp-route-slug="@gamingEvent.Slug"
-                           class="text-sm font-bold uppercase tracking-[0.12em] text-primary transition hover:underline">@gamingEvent.Name</a>
-                    }
-
-                </nav>
-
-            </div>
-
-            <!-- SECTION + SEARCH + THEME -->
-
-            <div class="flex items-center gap-3">
-
-                @*  Site-mode (PC / Mobile) toggle — hidden for now, re-enable
-                    later by un-commenting this partial. *@
-                @* <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
-                         model="Model" /> *@
-
-                <form method="get"
-                      asp-controller="Search"
-                      asp-action="Index">
-
-                    <input type="text"
-                           name="query"
-                           placeholder="Search articles..."
-                           class="w-56 rounded-full border border-default bg-surface px-5 py-2.5 text-sm text-ink outline-none transition focus:border-primary" />
-
-                </form>
-
-                <partial name="~/Views/Shared/Components/_ThemeToggle.cshtml" />
-
-            </div>
-
-        </div>
-
-        <!-- SECONDARY NAV -->
-        @if (secondaryCategories.Any() || secondaryEvents.Any())
-        {
-            <div class="hidden border-t border-default lg:block">
-
-                <nav class="flex flex-wrap items-center gap-6 py-3">
-
-                    @foreach (var category in secondaryCategories)
-                    {
-                        <a asp-controller="Categories"
-                           asp-action="Details"
-                           asp-route-slug="@category.Slug"
-                           class="text-sm font-semibold uppercase tracking-[0.12em] text-ink-mid transition hover:text-primary">
-
-                            @category.Name
-
-                        </a>
-                    }
-
-                    @foreach (var gamingEvent in secondaryEvents)
-                    {
-                        <a asp-controller="Events" asp-action="Details" asp-route-slug="@gamingEvent.Slug"
-                           class="text-sm font-semibold uppercase tracking-[0.12em] text-primary hover:underline">@gamingEvent.Name</a>
-                    }
-                </nav>
-
-            </div>
-        }
-
-        <!-- MOBILE HEADER -->
-
-        <div class="flex h-16 items-center justify-between gap-3 lg:hidden">
-
-            <a asp-controller="Home"
-               asp-action="Index"
-               class="text-2xl font-black leading-none tracking-tight text-primary">
-
-                TheGameVoice
-
-            </a>
-
-            @*  Site-mode toggle hidden for now (see header note). *@
-            @* <div class="max-xs:hidden">
-
-                <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
-                         model="Model" />
-
-            </div> *@
-
-            <partial name="~/Views/Shared/Components/_ThemeToggle.cshtml" />
-
-            <button id="mobile-menu-button"
-                    type="button"
-                    class="flex h-10 w-10 items-center justify-center rounded-md border border-default bg-surface">
-
-                ☰
-
-            </button>
-
-        </div>
-
-    </div>
-
-</header>
-
-<!-- MOBILE OVERLAY -->
-
-<div id="mobile-menu-overlay"
-     class="fixed inset-0 z-[999] hidden overflow-y-auto bg-surface">
-
-    <div class="tgv-container">
-
-        <div class="flex h-16 items-center justify-between border-b border-default">
-
-            <span class="text-2xl font-black text-primary">
-
-                TheGameVoice
-
-            </span>
-
-            <button id="mobile-menu-close"
-                    type="button"
-                    class="text-fluid-3xl">
-
-                ×
-
-            </button>
-
-        </div>
-
-        <div class="py-8">
-
-            <!-- THEME -->
-
-            <div class="mb-6 flex items-center justify-between gap-3">
-
-                @*  Site-mode toggle hidden for now (see header note).
-                @{ ViewData["SiteModeLabels"] = true; }
-
-                <partial name="~/Views/Shared/Components/_SiteModeToggle.cshtml"
-                         model="Model" />
-
-                @{ ViewData["SiteModeLabels"] = null; }
-                *@
-
-                <partial name="~/Views/Shared/Components/_ThemeToggle.cshtml" />
-
-            </div>
-
-            <!-- SEARCH -->
-
-            <form method="get"
-                  asp-controller="Search"
-                  asp-action="Index"
-                  class="mb-8">
-
-                <input type="text"
-                       name="query"
-                       placeholder="Search articles..."
-                       class="w-full rounded-full border border-default bg-surface px-5 py-3 text-ink outline-none focus:border-primary" />
-
-            </form>
-
-            <!-- NAVIGATION -->
-
-            <nav class="flex flex-col gap-5">
-
-                <a asp-controller="Home"
-                   asp-action="Index"
-                   class="text-lg font-bold uppercase">
-
-                    Home
-
-                </a>
-
+        <div class="tgv-nav-desktop hidden lg:grid">
+            <a asp-controller="Home" asp-action="Index" class="tgv-nav-brand">TheGameVoice</a>
+
+            @* One category block: compress gently before wrapping; never send overflow to a second bar. *@
+            <nav aria-label="Categories" class="tgv-nav-categories" data-category-nav>
                 @foreach (var category in Model.Categories)
                 {
-                    <a asp-controller="Categories"
-                       asp-action="Details"
-                       asp-route-slug="@category.Slug"
-                       class="text-lg font-bold uppercase">
-
-                        @category.Name
-
-                    </a>
-                }
-
-                @foreach (var gamingEvent in Model.Events)
-                {
-                    <a asp-controller="Events" asp-action="Details" asp-route-slug="@gamingEvent.Slug"
-                       class="text-lg font-bold uppercase text-primary">@gamingEvent.Name</a>
+                    var active = currentController == "Categories" && string.Equals(currentSlug, category.Slug, StringComparison.OrdinalIgnoreCase);
+                    <a asp-controller="Categories" asp-action="Details" asp-route-slug="@category.Slug"
+                       aria-current="@(active ? "page" : null)" class="tgv-nav-category">@category.Name</a>
                 }
             </nav>
 
+            <div class="tgv-nav-tools">
+                @* The existing site-mode toggle remains intentionally hidden. *@
+                <form asp-controller="Search" asp-action="Index" method="get" role="search">
+                    <label for="desktop-nav-search" class="sr-only">Search articles</label>
+                    <div class="tgv-nav-search">
+                        <input id="desktop-nav-search" type="search" name="query" placeholder="Search articles…" />
+                        <button type="submit" aria-label="Search articles">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
+                        </button>
+                    </div>
+                </form>
+                <partial name="~/Views/Shared/Components/_ThemeToggle.cshtml" />
+            </div>
         </div>
 
+        <div class="flex min-h-16 items-center justify-between gap-3 py-2 lg:hidden">
+            <a asp-controller="Home" asp-action="Index" class="tgv-nav-brand">TheGameVoice</a>
+            <div class="flex shrink-0 items-center gap-2">
+                <partial name="~/Views/Shared/Components/_ThemeToggle.cshtml" />
+                <button id="mobile-menu-button" type="button" aria-label="Open navigation menu"
+                        aria-controls="mobile-menu-overlay" aria-expanded="false" aria-haspopup="dialog" class="tgv-nav-menu-button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+                </button>
+            </div>
+        </div>
     </div>
 
+    @* Event names live only in this dedicated desktop row and the mobile menu. *@
+    @if (Model.Events.Any())
+    {
+        <div class="tgv-events-bar hidden lg:block">
+            <div class="tgv-container tgv-events-inner">
+                <span class="tgv-events-label"><span class="tgv-events-marker" aria-hidden="true"></span>Events</span>
+                <nav aria-label="Event coverage" class="tgv-events-links">
+                    @foreach (var gamingEvent in Model.Events)
+                    {
+                        var active = currentController == "Events" && string.Equals(currentSlug, gamingEvent.Slug, StringComparison.OrdinalIgnoreCase);
+                        <a asp-controller="Events" asp-action="Details" asp-route-slug="@gamingEvent.Slug"
+                           aria-current="@(active ? "page" : null)" class="tgv-event-link">@gamingEvent.Name<span aria-hidden="true">↗</span></a>
+                    }
+                </nav>
+            </div>
+        </div>
+    }
+</header>
+
+<div id="mobile-menu-overlay" role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title" tabindex="-1"
+     class="fixed inset-0 z-[999] hidden overflow-y-auto bg-surface lg:hidden">
+    <div class="tgv-container">
+        <div class="flex min-h-16 items-center justify-between gap-3 border-b border-line py-2">
+            <span id="mobile-menu-title" class="tgv-nav-brand">TheGameVoice <span class="sr-only">navigation</span></span>
+            <button id="mobile-menu-close" type="button" aria-label="Close navigation menu" class="tgv-nav-menu-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+            </button>
+        </div>
+
+        <div class="space-y-7 py-6">
+            <form asp-controller="Search" asp-action="Index" method="get" role="search">
+                <label for="mobile-nav-search" class="sr-only">Search articles</label>
+                <div class="tgv-nav-search tgv-nav-search--mobile">
+                    <input id="mobile-nav-search" type="search" name="query" placeholder="Search articles…" />
+                    <button type="submit" aria-label="Search articles">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
+                    </button>
+                </div>
+            </form>
+
+            <nav aria-label="Main navigation" class="space-y-1">
+                <a asp-controller="Home" asp-action="Index" class="tgv-mobile-category">Home<span aria-hidden="true">↗</span></a>
+                @foreach (var category in Model.Categories)
+                {
+                    var active = currentController == "Categories" && string.Equals(currentSlug, category.Slug, StringComparison.OrdinalIgnoreCase);
+                    <a asp-controller="Categories" asp-action="Details" asp-route-slug="@category.Slug"
+                       aria-current="@(active ? "page" : null)" class="tgv-mobile-category">@category.Name<span aria-hidden="true">↗</span></a>
+                }
+            </nav>
+
+            @if (Model.Events.Any())
+            {
+                <section aria-labelledby="mobile-events-title" class="tgv-mobile-events">
+                    <h2 id="mobile-events-title" class="tgv-events-label"><span class="tgv-events-marker" aria-hidden="true"></span>Events</h2>
+                    <nav aria-label="Event coverage" class="mt-3 space-y-1">
+                        @foreach (var gamingEvent in Model.Events)
+                        {
+                            var active = currentController == "Events" && string.Equals(currentSlug, gamingEvent.Slug, StringComparison.OrdinalIgnoreCase);
+                            <a asp-controller="Events" asp-action="Details" asp-route-slug="@gamingEvent.Slug"
+                               aria-current="@(active ? "page" : null)" class="tgv-mobile-event-link">@gamingEvent.Name<span aria-hidden="true">↗</span></a>
+                        }
+                    </nav>
+                </section>
+            }
+        </div>
+    </div>
 </div>
 
-<script>
-
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const openButton =
-            document.getElementById("mobile-menu-button");
-
-        const closeButton =
-            document.getElementById("mobile-menu-close");
-
-        const overlay =
-            document.getElementById("mobile-menu-overlay");
-
-        if (openButton && overlay) {
-
-            openButton.addEventListener("click", function () {
-
-                overlay.classList.remove("hidden");
-
-                document.body.style.overflow = "hidden";
-
-            });
-
-        }
-
-        if (closeButton && overlay) {
-
-            closeButton.addEventListener("click", function () {
-
-                overlay.classList.add("hidden");
-
-                document.body.style.overflow = "";
-
-            });
-
-        }
-
-    });
-
-</script>
+<script src="~/js/navigation.js" asp-append-version="true" defer></script>

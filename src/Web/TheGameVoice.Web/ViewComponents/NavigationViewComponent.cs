@@ -37,7 +37,7 @@ public class NavigationViewComponent
         var categories =
             (await _categoryRepository
                 .GetAllAsync())
-            .Where(x => x.Segment.Includes(segment))
+            .Where(x => x.ShowInNavigation && x.Segment.Includes(segment))
             .ToList();
 
         var request = HttpContext?.Request;

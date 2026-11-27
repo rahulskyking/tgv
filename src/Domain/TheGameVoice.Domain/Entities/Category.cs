@@ -14,6 +14,9 @@ public class Category : AuditableEntity
     // Controls the order in navigation, homepage, etc.
     public int DisplayOrder { get; set; }
 
+    /// <summary>Header/menu visibility only. Never hides category pages or their articles.</summary>
+    public bool ShowInNavigation { get; set; } = true;
+
     /// <summary>
     /// Which site mode(s) this category appears in (header navigation,
     /// homepage sections). Defaults to both so nothing disappears from the

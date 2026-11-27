@@ -26,6 +26,9 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.Property(x => x.Segment)
             .HasDefaultValue(GameSegment.All);
 
+        builder.Property(x => x.ShowInNavigation)
+            .HasDefaultValue(true);
+
         builder.HasIndex(x => x.Slug)
             .IsUnique();
     }

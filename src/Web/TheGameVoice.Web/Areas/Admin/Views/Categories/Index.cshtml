@@ -7,14 +7,14 @@
 
 @if (TempData["Success"] != null)
 {
-    <div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-5 py-3 text-sm text-green-800">
+    <div role="status" class="mb-6 rounded-xl border border-primary/30 bg-surface px-5 py-3 text-sm font-semibold text-ink">
         @TempData["Success"]
     </div>
 }
 
 <div class="space-y-8">
 
-    <div class="flex items-center justify-between">
+    <div class="flex flex-wrap items-center justify-between gap-4">
 
         <div>
             <h1 class="text-fluid-3xl font-bold text-ink">
@@ -22,21 +22,21 @@
             </h1>
 
             <p class="mt-1 text-sm text-ink-muted">
-                Drag and drop categories to control their order across the website.
+                Drag categories to arrange navigation. Hide a category from menus without hiding its page or articles.
             </p>
         </div>
 
-        <div class="flex gap-3">
+        <div class="flex flex-wrap gap-3">
 
             <a asp-action="Create"
-               class="rounded-xl bg-[#fa743e] px-5 py-3 font-medium text-white shadow transition hover:opacity-90">
+               class="min-h-11 rounded-xl bg-primary px-5 py-3 font-medium text-white shadow transition hover:opacity-90">
 
                 + Create Category
 
             </a>
 
-            <button id="saveOrder"
-                    class="rounded-xl bg-[#7c3aed] px-5 py-3 font-medium text-white shadow transition hover:bg-[#6d28d9]">
+            <button id="saveOrder" type="button" disabled="@(!Model.Any())"
+                    class="min-h-11 rounded-xl border border-line bg-surface px-5 py-3 font-medium text-primary shadow transition hover:border-primary">
 
                 Save Order
 
@@ -46,36 +46,48 @@
 
     </div>
 
+    <p class="rounded-xl border border-line bg-surface p-4 text-sm text-ink-muted">
+        <strong class="text-ink">Navigation visibility only:</strong> hidden categories stay available in the article editor, homepage, search, and through direct category/article links.
+        Hiding affects both desktop navigation and the mobile hamburger menu in the selected audience sections.
+    </p>
+
     <div class="rounded-2xl border border-line bg-surface shadow-sm">
 
+        @if (!Model.Any())
+        {
+            <p class="p-6 text-sm text-ink-muted">No categories yet. Create one to start organising navigation.</p>
+        }
         <ul id="categoryList">
 
             @foreach (var category in Model)
             {
                 <li data-id="@category.Id"
-                    class="flex cursor-move items-center justify-between border-b border-line-subtle px-6 py-5 transition hover:bg-violet-50">
+                    class="flex flex-col justify-between gap-4 border-b border-line-subtle px-5 py-5 transition hover:bg-surface-muted xl:flex-row xl:items-center">
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex min-w-0 items-center gap-4">
 
-                        <div class="text-2xl text-ink-faint">
+                        <div class="category-drag-handle shrink-0 cursor-grab text-2xl text-ink-faint" aria-hidden="true">
                             ☰
                         </div>
 
-                        <div>
+                        <div class="min-w-0">
 
-                            <div class="font-semibold text-ink">
+                            <div class="break-words font-semibold text-ink">
                                 @category.Name
                             </div>
 
-                            <div class="text-sm text-ink-muted">
+                            <div class="break-all text-sm text-ink-muted">
                                 @category.Slug
                             </div>
+                            <span class="mt-2 inline-flex rounded-full bg-surface-raised px-3 py-1 text-xs font-semibold text-ink-soft">
+                                @(category.ShowInNavigation ? "Shown in navigation" : "Hidden from navigation")
+                            </span>
 
                         </div>
 
                     </div>
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex flex-wrap items-center gap-3">
 
                         <!-- Which side of the site this category belongs to -->
                         <form asp-action="SetSegment"
@@ -86,9 +98,10 @@
                                    name="id"
                                    value="@category.Id" />
 
-                            <select name="segment"
+                            <label for="category-section-@category.Id" class="sr-only">Audience for @category.Name</label>
+                            <select id="category-section-@category.Id" name="segment"
                                     onchange="this.form.submit()"
-                                    class="rounded-lg border border-line px-3 py-2 text-sm">
+                                    class="min-h-11 max-w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink">
 
                                 <option value="@((int)GameSegment.PcConsole)"
                                         selected="@(category.Segment == GameSegment.PcConsole)">
@@ -107,6 +120,15 @@
 
                             </select>
 
+                        </form>
+
+                        <form asp-action="SetNavigationVisibility" method="post">
+                            <input type="hidden" name="id" value="@category.Id" />
+                            <input type="hidden" name="showInNavigation" value="@((!category.ShowInNavigation).ToString().ToLowerInvariant())" />
+                            <button type="submit" aria-label="@(category.ShowInNavigation ? $"Hide {category.Name} from navigation" : $"Show {category.Name} in navigation")"
+                                    class="min-h-11 rounded-lg border border-line px-4 py-2 text-sm font-semibold text-primary transition hover:border-primary">
+                                @(category.ShowInNavigation ? "Hide from navigation" : "Show in navigation")
+                            </button>
                         </form>
 
                         <div class="text-sm text-ink-faint">
@@ -132,11 +154,11 @@
 
     <script>
 
-        new Sortable(document.getElementById("categoryList"),{
+        if (window.Sortable) new Sortable(document.getElementById("categoryList"),{
 
             animation:200,
-
-            ghostClass:"bg-violet-100"
+            handle:".category-drag-handle",
+            ghostClass:"bg-surface-muted"
 
         });
 
@@ -144,7 +166,7 @@
         .getElementById("saveOrder")
         .addEventListener("click",async()=>{
 
-            const ids=[...document.querySelectorAll("#categoryList li")]
+            const ids=[...document.querySelectorAll("#categoryList li[data-id]")]
                 .map(x=>x.dataset.id);
 
             const token=document.querySelector("input[name='__RequestVerificationToken']")?.value;
